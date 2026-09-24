@@ -24,7 +24,9 @@ const PlayerCard = ({ player, variant = 'standard' }) => {
               src={getImageUrl(player.imageUrl)}
               alt={player.name}
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-              onError={(e) => { e.target.style.display = 'none'; }}
+              onError={(e) => {
+                e.target.src = 'https://placehold.co/400x400/4A148C/FFFFFF?text=Player';
+              }}
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
@@ -70,7 +72,9 @@ const PlayerCard = ({ player, variant = 'standard' }) => {
               src={getImageUrl(player.imageUrl)}
               alt={player.name}
               className="h-full object-contain object-bottom group-hover:scale-110 transition-transform duration-700"
-              onError={(e) => { e.target.style.display = 'none'; }}
+              onError={(e) => {
+                e.target.src = 'https://placehold.co/400x600/4A148C/FFFFFF?text=Player';
+              }}
             />
           ) : (
             <div className="flex items-center justify-center h-full">
