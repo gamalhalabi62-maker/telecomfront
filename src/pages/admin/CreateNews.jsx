@@ -7,6 +7,7 @@ import { useToast } from '../../context/ToastContext';
 const CreateNews = () => {
   const navigate = useNavigate();
   const toast = useToast();
+
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -14,6 +15,7 @@ const CreateNews = () => {
     category: 'general',
     isFeatured: false,
   });
+
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -29,6 +31,8 @@ const CreateNews = () => {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
+    console.log('File selected:', file);
+
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
@@ -43,6 +47,7 @@ const CreateNews = () => {
 
     setImage(file);
     setPreview(URL.createObjectURL(file));
+    console.log('Image state set:', file.name, file.size);
   };
 
   const handleSubmit = async (e) => {
@@ -57,7 +62,18 @@ const CreateNews = () => {
       if (formData.excerpt) data.append('excerpt', formData.excerpt);
       data.append('category', formData.category);
       data.append('isFeatured', formData.isFeatured);
-      if (image) data.append('image', image);
+
+      if (image) {
+        data.append('image', image);
+        console.log('Appended image:', image.name);
+      } else {
+        console.log('No image to append');
+      }
+
+      console.log('FormData entries:');
+      for (let pair of data.entries()) {
+        console.log(pair[0], pair[1]);
+      }
 
       await newsAPI.create(data);
       toast.success('تم إضافة الخبر بنجاح');
@@ -116,19 +132,18 @@ const CreateNews = () => {
                   onChange={(e) => setFormData({ ...formData, isFeatured: e.target.checked })}
                   className="w-5 h-5 accent-primary"
                 />
-                <span className="font-bold text-gray-700">خبر مميز (يظهر في الرئيسية)</span>
+                <span className="font-bold text-gray-700">خبر مميز</span>
               </label>
             </div>
           </div>
 
           <div>
-            <label className="block font-bold text-gray-700 mb-2">مقتطف (اختياري)</label>
+            <label className="block font-bold text-gray-700 mb-2">مقتطف</label>
             <textarea
               value={formData.excerpt}
               onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
               rows="2"
               className="input-field resize-none"
-              placeholder="ملخص قصير للخبر..."
             ></textarea>
           </div>
 
@@ -140,15 +155,12 @@ const CreateNews = () => {
               required
               rows="10"
               className="input-field resize-none"
-              placeholder="اكتب محتوى الخبر كاملاً..."
             ></textarea>
           </div>
 
           <div>
             <label className="block font-bold text-gray-700 mb-2">صورة الخبر</label>
-            <p className="text-xs text-gray-500 mb-2">
-              💡 الحد الأقصى 5MB - يتم الرفع إلى Cloudinary تلقائياً
-            </p>
+            <p className="text-xs text-gray-500 mb-2">💡 الحد الأقصى 5MB</p>
             <div className="flex flex-col md:flex-row gap-4 items-start">
               <label className="cursor-pointer bg-primary text-white px-6 py-3 rounded-lg font-bold hover:bg-primary-dark transition flex items-center gap-2">
                 <FaImage /> اختر صورة
