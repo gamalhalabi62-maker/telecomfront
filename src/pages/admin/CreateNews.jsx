@@ -7,7 +7,6 @@ import { useToast } from '../../context/ToastContext';
 const CreateNews = () => {
   const navigate = useNavigate();
   const toast = useToast();
-
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -15,8 +14,6 @@ const CreateNews = () => {
     category: 'general',
     isFeatured: false,
   });
-
-  // ✅ state منفصل للملف
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -32,11 +29,6 @@ const CreateNews = () => {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    console.log('🖼️ File selected:', file);
-    console.log('   - name:', file?.name);
-    console.log('   - size:', file?.size);
-    console.log('   - type:', file?.type);
-
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
@@ -51,7 +43,6 @@ const CreateNews = () => {
 
     setImage(file);
     setPreview(URL.createObjectURL(file));
-    console.log('✅ Image state set');
   };
 
   const handleSubmit = async (e) => {
@@ -66,20 +57,7 @@ const CreateNews = () => {
       if (formData.excerpt) data.append('excerpt', formData.excerpt);
       data.append('category', formData.category);
       data.append('isFeatured', formData.isFeatured);
-
-      // ✅ إرسال الملف نفسه
-      if (image) {
-        data.append('image', image);
-        console.log('📤 Appending image file:', image.name);
-      } else {
-        console.log('⚠️ No image to append');
-      }
-
-      // عرض محتويات FormData
-      console.log('📋 FormData contents:');
-      for (let pair of data.entries()) {
-        console.log('   ', pair[0], '=', pair[1] instanceof File ? `File(${pair[1].name})` : pair[1]);
-      }
+      if (image) data.append('image', image);
 
       await newsAPI.create(data);
       toast.success('تم إضافة الخبر بنجاح');
