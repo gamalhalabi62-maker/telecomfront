@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import { FaCalendar, FaEye, FaArrowLeft, FaClock, FaFire, FaStar } from 'react-icons/fa';
-import { formatRelativeTime, getImageUrl, getCategoryName } from '../utils/formatDate';
+import { FaCalendar, FaEye, FaArrowLeft, FaClock } from 'react-icons/fa';
+import { formatRelativeTime, getCategoryName } from '../utils/formatDate';
 
 const getReadingTime = (content = '') => {
   const words = content.split(/\s+/).length;
@@ -12,6 +12,16 @@ const isNew = (date) => {
   return hours < 24;
 };
 
+// دالة ذكية للتعامل مع جميع أنواع الصور (Base64، روابط كاملة، روابط قديمة)
+const resolveImageUrl = (url) => {
+  if (!url) return 'https://placehold.co/600x400/4A148C/FFFFFF?text=Telecom+Egypt';
+  // إذا كانت الصورة مخزنة كـ Base64 أو رابط خارجي (http / https) نعرضها مباشرة
+  if (url.startsWith('data:') || url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+  // للروابط النسبية القديمة إن وجدت
+  return url;
+};
 
 export const FeaturedCard = ({ news }) => {
   if (!news) return null;
@@ -19,10 +29,10 @@ export const FeaturedCard = ({ news }) => {
     <Link to={`/news/${news._id}`} className="block group animate-fade-in-up">
       <div className="relative overflow-hidden rounded-3xl shadow-2xl h-[400px] md:h-[600px]">
         <img
-          src={getImageUrl(news.imageUrl)}
+          src={resolveImageUrl(news.imageUrl)}
           alt={news.title}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1.5s] ease-out"
-          onError={(e) => { e.target.src = 'https://via.placeholder.com/1200x600/4A148C/FFFFFF?text=Telecom+Egypt'; }}
+          onError={(e) => { e.target.src = 'https://placehold.co/1200x600/4A148C/FFFFFF?text=Telecom+Egypt'; }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-primary-dark via-primary-dark/60 to-transparent"></div>
 
@@ -68,17 +78,16 @@ export const FeaturedCard = ({ news }) => {
   );
 };
 
-
 export const LargeCard = ({ news }) => {
   if (!news) return null;
   return (
     <Link to={`/news/${news._id}`} className="block group animate-fade-in-up">
       <div className="relative overflow-hidden rounded-2xl shadow-xl h-[350px]">
         <img
-          src={getImageUrl(news.imageUrl)}
+          src={resolveImageUrl(news.imageUrl)}
           alt={news.title}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-          onError={(e) => { e.target.src = 'https://via.placeholder.com/800x400/4A148C/FFFFFF?text=News'; }}
+          onError={(e) => { e.target.src = 'https://placehold.co/800x400/4A148C/FFFFFF?text=News'; }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent"></div>
 
@@ -112,7 +121,6 @@ export const LargeCard = ({ news }) => {
   );
 };
 
-
 const NewsCard = ({ news, variant = 'standard' }) => {
   if (variant === 'featured') return <FeaturedCard news={news} />;
   if (variant === 'large') return <LargeCard news={news} />;
@@ -124,10 +132,10 @@ const NewsCard = ({ news, variant = 'standard' }) => {
       <article className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 h-full flex flex-col">
         <div className="relative overflow-hidden h-56 flex-shrink-0">
           <img
-            src={getImageUrl(news.imageUrl)}
+            src={resolveImageUrl(news.imageUrl)}
             alt={news.title}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-            onError={(e) => { e.target.src = 'https://via.placeholder.com/400x300/4A148C/FFFFFF?text=News'; }}
+            onError={(e) => { e.target.src = 'https://placehold.co/400x300/4A148C/FFFFFF?text=News'; }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-primary-dark/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
