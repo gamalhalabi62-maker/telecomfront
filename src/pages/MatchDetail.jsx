@@ -7,7 +7,7 @@ import {
 import { matchAPI } from '../services/api';
 import Loading from '../components/Loading';
 import MatchCard from '../components/MatchCard';
-import { formatDate } from '../utils/formatDate';
+import { formatDate, getImageUrl } from '../utils/formatDate';
 
 const competitionNames = {
   league: 'الدوري',
@@ -79,7 +79,7 @@ const MatchDetail = () => {
     <div className="bg-gray-50 min-h-screen">
       <div className="bg-white border-b">
         <div className="container-custom py-4">
-          <nav className="flex items-center gap-2 text-sm text-gray-500">
+          <nav className="flex items-center gap-2 text-sm text-gray-500 flex-wrap">
             <Link to="/" className="hover:text-primary">الرئيسية</Link>
             <span>›</span>
             <Link to="/matches" className="hover:text-primary">المباريات</Link>
@@ -111,16 +111,17 @@ const MatchDetail = () => {
           </div>
 
           <div className="grid grid-cols-3 gap-4 md:gap-8 items-center max-w-4xl mx-auto">
-<div className="text-center">
-  <div className="w-24 h-24 md:w-32 md:h-32 mx-auto flex items-center justify-center mb-4">
-    <img
-      src="/logo.jpeg"
-      alt="المصرية للاتصالات"
-      className="w-full h-full object-contain drop-shadow-2xl"
-    />
-  </div>
-  <p className="font-black text-base md:text-xl"> Telecom</p>
-</div>
+            <div className="text-center">
+              <div className="w-24 h-24 md:w-32 md:h-32 mx-auto flex items-center justify-center mb-4">
+                <img
+                  src="/logo.jpeg"
+                  alt="المصرية للاتصالات"
+                  className="w-full h-full object-contain drop-shadow-2xl"
+                  onError={(e) => { e.target.style.display = 'none'; }}
+                />
+              </div>
+              <p className="font-black text-base md:text-xl">Telecom</p>
+            </div>
 
             <div className="text-center">
               {isFinished || isLive ? (
@@ -159,7 +160,7 @@ const MatchDetail = () => {
               <div className="w-24 h-24 md:w-32 md:h-32 mx-auto bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center overflow-hidden border-4 border-white/30 shadow-2xl mb-4">
                 {match.opponentLogo ? (
                   <img
-                    src={match.opponentLogo.startsWith('http') ? match.opponentLogo : `http://localhost:3000${match.opponentLogo}`}
+                    src={getImageUrl(match.opponentLogo)}
                     alt={match.opponent}
                     className="w-full h-full object-cover"
                     onError={(e) => { e.target.style.display = 'none'; }}
@@ -206,18 +207,18 @@ const MatchDetail = () => {
                         event.team === 'us' ? 'bg-primary/5 border-r-4 border-primary' : 'bg-red-50 border-l-4 border-red-500'
                       }`}
                     >
-                      <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center font-black text-primary shadow-md">
+                      <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center font-black text-primary shadow-md flex-shrink-0">
                         {event.minute}'
                       </div>
-                      <div className="flex-1">
-                        <p className="font-bold text-primary">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-primary truncate">
                           {eventIcons[event.type]} {event.player}
                         </p>
                         {event.description && (
-                          <p className="text-sm text-gray-600">{event.description}</p>
+                          <p className="text-sm text-gray-600 truncate">{event.description}</p>
                         )}
                       </div>
-                      <span className={`text-xs px-3 py-1 rounded-full font-bold ${
+                      <span className={`text-xs px-3 py-1 rounded-full font-bold flex-shrink-0 ${
                         event.team === 'us' ? 'bg-primary text-white' : 'bg-red-500 text-white'
                       }`}>
                         {event.team === 'us' ? 'لنا' : 'علينا'}
@@ -251,10 +252,17 @@ const MatchDetail = () => {
                 </p>
               </div>
             )}
+
+            {(!match.events || match.events.length === 0) && !match.notes && !match.lineup && (
+              <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
+                <FaFutbol className="text-5xl text-gray-300 mx-auto mb-4" />
+                <p className="text-gray-500 font-bold">لا توجد تفاصيل إضافية عن المباراة</p>
+              </div>
+            )}
           </div>
 
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-24">
+            <div className="bg-white rounded-2xl shadow-lg p-6 lg:sticky lg:top-24">
               <h3 className="text-xl font-black text-primary mb-4 pb-3 border-b-2 border-secondary">
                 🎯 مباريات ذات صلة
               </h3>
@@ -272,7 +280,11 @@ const MatchDetail = () => {
                       </div>
                       <div className="flex justify-between items-center mt-2">
                         <span className="text-xs text-gray-500">
-                          {m.status === 'finished' ? `${m.ourScore}-${m.opponentScore}` : m.status === 'live' ? 'مباشر' : 'قادمة'}
+                          {m.status === 'finished'
+                            ? `${m.ourScore}-${m.opponentScore}`
+                            : m.status === 'live'
+                            ? 'مباشر'
+                            : 'قادمة'}
                         </span>
                         <span className="text-secondary font-black text-xs">
                           {competitionNames[m.competition]}
