@@ -37,10 +37,10 @@ const Dashboard = () => {
       pending: 0,
       attendingWorking: 0,
       attendingRetired: 0,
-      workingTotal: 0,
-      retiredTotal: 0,
       notAttendingWorking: 0,
       notAttendingRetired: 0,
+      workingTotal: 0,
+      retiredTotal: 0,
     },
   });
 
@@ -168,6 +168,14 @@ const Dashboard = () => {
     ? Math.round((stats.election.registered / stats.election.totalMembers) * 100)
     : 0;
 
+  const workingAttendanceRate = stats.election.workingTotal > 0
+    ? Math.round((stats.election.attendingWorking / stats.election.workingTotal) * 100)
+    : 0;
+
+  const retiredAttendanceRate = stats.election.retiredTotal > 0
+    ? Math.round((stats.election.attendingRetired / stats.election.retiredTotal) * 100)
+    : 0;
+
   return (
     <div className="container-custom py-8">
       <div className="bg-gradient-to-l from-primary to-primary-dark text-white p-8 rounded-2xl mb-8 relative overflow-hidden">
@@ -223,7 +231,7 @@ const Dashboard = () => {
           { icon: <FaTrophy />, label: 'الأرقام', value: stats.statsCount, color: 'bg-secondary', link: '/admin/statistics' },
           { icon: <FaEnvelope />, label: 'الرسائل', value: stats.messagesCount, color: 'bg-primary-light', link: '/admin/messages', badge: stats.newMessagesCount },
           { icon: <FaEye />, label: 'المشاهدات', value: stats.views, color: 'bg-primary', link: '#' },
-          { icon: <FaVoteYea />, label: 'مسجلي الانتخابات', value: stats.election.registered, color: 'bg-indigo-600', link: '/admin/elections', badge: stats.election.attending },
+          { icon: <FaVoteYea />, label: 'مسجلي الانتخابات', value: stats.election.registered, color: 'bg-primary', link: '/admin/elections', badge: stats.election.attending },
         ].map((stat, i) => (
           <Link
             key={i}
@@ -247,291 +255,164 @@ const Dashboard = () => {
         ))}
       </div>
 
-      {/* ELECTION SECTION - NEW PROFESSIONAL DESIGN */}
-      <div className="relative overflow-hidden rounded-3xl shadow-2xl mb-8 bg-gradient-to-br from-indigo-900 via-indigo-800 to-blue-900">
-        <div className="absolute inset-0 opacity-30">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-500 rounded-full blur-3xl translate-y-1/2 -translate-x-1/3"></div>
+      <div className="bg-white rounded-2xl shadow-md mb-8 overflow-hidden">
+        <div className="flex flex-wrap items-center justify-between gap-4 p-6 border-b border-gray-100">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary text-xl">
+              <FaVoteYea />
+            </div>
+            <div>
+              <h2 className="text-xl font-black text-primary flex items-center gap-2">
+                انتخابات الجمعية العمومية
+                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+              </h2>
+              <p className="text-xs text-gray-500">متابعة تسجيلات الحضور</p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <Link
+              to="/admin/elections"
+              className="bg-primary/5 hover:bg-primary/10 text-primary px-4 py-2 rounded-lg font-bold text-sm transition flex items-center gap-2"
+            >
+              <FaChartBar /> إدارة
+            </Link>
+            <Link
+              to="/admin/elections/upload"
+              className="bg-secondary/20 hover:bg-secondary/30 text-primary px-4 py-2 rounded-lg font-bold text-sm transition flex items-center gap-2"
+            >
+              <FaPlus /> رفع
+            </Link>
+          </div>
         </div>
 
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 via-indigo-400 to-purple-500"></div>
-
-        <div className="relative z-10 p-6 md:p-8">
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-6 pb-6 border-b border-white/10">
-            <div className="flex items-center gap-4">
-              <div className="relative">
-                <div className="w-16 h-16 bg-gradient-to-br from-cyan-400 to-indigo-500 rounded-2xl flex items-center justify-center text-white text-3xl shadow-2xl shadow-indigo-500/50 transform rotate-3">
-                  <FaVoteYea />
-                </div>
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-green-400 rounded-full border-4 border-indigo-900 animate-pulse"></span>
+        <div className="p-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+            <div className="bg-gray-50 rounded-xl p-4 border-r-4 border-gray-300">
+              <div className="flex items-center justify-between mb-2">
+                <FaUsers className="text-gray-400 text-lg" />
+                <span className="text-[10px] font-black text-gray-400 uppercase">Total</span>
               </div>
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <h2 className="text-2xl md:text-3xl font-black text-white">
-                    انتخابات الجمعية العمومية
-                  </h2>
-                  <span className="bg-cyan-400/20 backdrop-blur-md text-cyan-300 text-xs font-black px-3 py-1 rounded-full border border-cyan-400/30">
-                    LIVE
-                  </span>
-                </div>
-                <p className="text-indigo-200 text-sm font-medium">
-                  متابعة لحظية لتسجيلات الحضور والتحليلات
-                </p>
+              <p className="text-2xl font-black text-primary">{stats.election.totalMembers}</p>
+              <p className="text-xs text-gray-500 font-bold mt-1">إجمالي الأعضاء</p>
+              <div className="flex gap-1 mt-2 text-[10px] text-gray-500">
+                <span>👷 {stats.election.workingTotal}</span>
+                <span className="text-gray-300">•</span>
+                <span>👴 {stats.election.retiredTotal}</span>
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-2">
-              <Link
-                to="/admin/elections"
-                className="group bg-white/10 hover:bg-white/20 backdrop-blur-md px-5 py-3 rounded-xl font-bold text-white transition-all flex items-center gap-2 border border-white/20 hover:border-white/40 hover:-translate-y-0.5"
-              >
-                <FaChartBar className="text-cyan-300" />
-                <span>إدارة الانتخابات</span>
-                <FaChevronLeft className="text-xs opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-1" />
-              </Link>
-              <Link
-                to="/admin/elections/upload"
-                className="group bg-gradient-to-l from-cyan-400 to-indigo-500 hover:from-cyan-300 hover:to-indigo-400 text-white px-5 py-3 rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/50 hover:-translate-y-0.5"
-              >
-                <FaPlus />
-                <span>رفع أعضاء</span>
-              </Link>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div className="relative bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-md rounded-2xl p-5 border border-white/10 hover:border-white/30 transition-all group overflow-hidden">
-              <div className="absolute top-0 right-0 w-20 h-20 bg-blue-500/20 rounded-full blur-2xl"></div>
-              <div className="relative">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="w-11 h-11 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-xl flex items-center justify-center text-white text-lg shadow-lg group-hover:scale-110 transition">
-                    <FaUsers />
-                  </div>
-                  <span className="text-[10px] font-black text-blue-300 bg-blue-500/20 px-2 py-1 rounded-full uppercase tracking-wider">
-                    Total
-                  </span>
-                </div>
-                <p className="text-3xl md:text-4xl font-black text-white mb-1">
-                  {stats.election.totalMembers}
-                </p>
-                <p className="text-xs text-indigo-200 font-bold">إجمالي الأعضاء</p>
-                <div className="flex gap-2 mt-3 text-[10px]">
-                  <span className="bg-blue-500/20 text-blue-200 px-2 py-0.5 rounded-full font-bold">
-                    👷 {stats.election.workingTotal}
-                  </span>
-                  <span className="bg-purple-500/20 text-purple-200 px-2 py-0.5 rounded-full font-bold">
-                    👴 {stats.election.retiredTotal}
-                  </span>
-                </div>
+            <div className="bg-gray-50 rounded-xl p-4 border-r-4 border-green-500">
+              <div className="flex items-center justify-between mb-2">
+                <FaUserCheck className="text-green-500 text-lg" />
+                <span className="text-[10px] font-black text-green-500 uppercase">Yes</span>
+              </div>
+              <p className="text-2xl font-black text-green-600">{stats.election.attending}</p>
+              <p className="text-xs text-gray-500 font-bold mt-1">سيحضر</p>
+              <div className="flex gap-1 mt-2 text-[10px] text-gray-500">
+                <span>👷 {stats.election.attendingWorking}</span>
+                <span className="text-gray-300">•</span>
+                <span>👴 {stats.election.attendingRetired}</span>
               </div>
             </div>
 
-            <div className="relative bg-gradient-to-br from-emerald-500/20 to-green-500/10 backdrop-blur-md rounded-2xl p-5 border border-emerald-400/30 hover:border-emerald-400/60 transition-all group overflow-hidden">
-              <div className="absolute top-0 right-0 w-20 h-20 bg-emerald-500/30 rounded-full blur-2xl"></div>
-              <div className="relative">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="w-11 h-11 bg-gradient-to-br from-emerald-400 to-green-500 rounded-xl flex items-center justify-center text-white text-lg shadow-lg shadow-emerald-500/40 group-hover:scale-110 transition">
-                    <FaUserCheck />
-                  </div>
-                  <span className="text-[10px] font-black text-emerald-300 bg-emerald-500/20 px-2 py-1 rounded-full uppercase tracking-wider">
-                    Yes
-                  </span>
-                </div>
-                <p className="text-3xl md:text-4xl font-black text-white mb-1">
-                  {stats.election.attending}
-                </p>
-                <p className="text-xs text-emerald-200 font-bold">سيحضر</p>
-                <div className="flex gap-2 mt-3 text-[10px]">
-                  <span className="bg-emerald-500/20 text-emerald-200 px-2 py-0.5 rounded-full font-bold">
-                    👷 {stats.election.attendingWorking}
-                  </span>
-                  <span className="bg-purple-500/20 text-purple-200 px-2 py-0.5 rounded-full font-bold">
-                    👴 {stats.election.attendingRetired}
-                  </span>
-                </div>
+            <div className="bg-gray-50 rounded-xl p-4 border-r-4 border-red-500">
+              <div className="flex items-center justify-between mb-2">
+                <FaUserTimes className="text-red-500 text-lg" />
+                <span className="text-[10px] font-black text-red-500 uppercase">No</span>
+              </div>
+              <p className="text-2xl font-black text-red-600">{stats.election.notAttending}</p>
+              <p className="text-xs text-gray-500 font-bold mt-1">لن يحضر</p>
+              <div className="flex gap-1 mt-2 text-[10px] text-gray-500">
+                <span>👷 {stats.election.notAttendingWorking}</span>
+                <span className="text-gray-300">•</span>
+                <span>👴 {stats.election.notAttendingRetired}</span>
               </div>
             </div>
 
-            <div className="relative bg-gradient-to-br from-rose-500/20 to-red-500/10 backdrop-blur-md rounded-2xl p-5 border border-rose-400/30 hover:border-rose-400/60 transition-all group overflow-hidden">
-              <div className="absolute top-0 right-0 w-20 h-20 bg-rose-500/30 rounded-full blur-2xl"></div>
-              <div className="relative">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="w-11 h-11 bg-gradient-to-br from-rose-400 to-red-500 rounded-xl flex items-center justify-center text-white text-lg shadow-lg shadow-rose-500/40 group-hover:scale-110 transition">
-                    <FaUserTimes />
-                  </div>
-                  <span className="text-[10px] font-black text-rose-300 bg-rose-500/20 px-2 py-1 rounded-full uppercase tracking-wider">
-                    No
-                  </span>
-                </div>
-                <p className="text-3xl md:text-4xl font-black text-white mb-1">
-                  {stats.election.notAttending}
-                </p>
-                <p className="text-xs text-rose-200 font-bold">لن يحضر</p>
-                <div className="flex gap-2 mt-3 text-[10px]">
-                  <span className="bg-rose-500/20 text-rose-200 px-2 py-0.5 rounded-full font-bold">
-                    👷 {stats.election.notAttendingWorking}
-                  </span>
-                  <span className="bg-purple-500/20 text-purple-200 px-2 py-0.5 rounded-full font-bold">
-                    👴 {stats.election.notAttendingRetired}
-                  </span>
-                </div>
+            <div className="bg-gray-50 rounded-xl p-4 border-r-4 border-secondary">
+              <div className="flex items-center justify-between mb-2">
+                <FaClock className="text-secondary text-lg" />
+                <span className="text-[10px] font-black text-secondary uppercase">Wait</span>
               </div>
-            </div>
-
-            <div className="relative bg-gradient-to-br from-amber-500/20 to-yellow-500/10 backdrop-blur-md rounded-2xl p-5 border border-amber-400/30 hover:border-amber-400/60 transition-all group overflow-hidden">
-              <div className="absolute top-0 right-0 w-20 h-20 bg-amber-500/30 rounded-full blur-2xl"></div>
-              <div className="relative">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="w-11 h-11 bg-gradient-to-br from-amber-400 to-yellow-500 rounded-xl flex items-center justify-center text-white text-lg shadow-lg shadow-amber-500/40 group-hover:scale-110 transition">
-                    <FaClock />
-                  </div>
-                  <span className="text-[10px] font-black text-amber-300 bg-amber-500/20 px-2 py-1 rounded-full uppercase tracking-wider">
-                    Wait
-                  </span>
-                </div>
-                <p className="text-3xl md:text-4xl font-black text-white mb-1">
-                  {stats.election.pending}
-                </p>
-                <p className="text-xs text-amber-200 font-bold">لم يسجل بعد</p>
-                <p className="text-[10px] text-amber-300 mt-3 font-medium">
-                  ⏳ في انتظار التسجيل
-                </p>
-              </div>
+              <p className="text-2xl font-black text-primary">{stats.election.pending}</p>
+              <p className="text-xs text-gray-500 font-bold mt-1">لم يسجل بعد</p>
+              <p className="text-[10px] text-gray-400 mt-2">⏳ في انتظار التسجيل</p>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <div className="lg:col-span-1 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-md rounded-2xl p-5 border border-white/10">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <p className="text-xs text-indigo-200 font-bold mb-1">نسبة التسجيل العامة</p>
-                  <p className="text-4xl font-black text-white">
-                    {electionAttendanceRate}
-                    <span className="text-xl text-cyan-300">%</span>
-                  </p>
-                </div>
-                <div className="w-16 h-16 relative">
-                  <svg className="transform -rotate-90" viewBox="0 0 36 36">
-                    <circle
-                      cx="18"
-                      cy="18"
-                      r="15.9155"
-                      fill="none"
-                      stroke="rgba(255,255,255,0.1)"
-                      strokeWidth="3"
-                    />
-                    <circle
-                      cx="18"
-                      cy="18"
-                      r="15.9155"
-                      fill="none"
-                      stroke="url(#electionGradient)"
-                      strokeWidth="3"
-                      strokeDasharray={`${electionAttendanceRate}, 100`}
-                      strokeLinecap="round"
-                      className="transition-all duration-1000"
-                    />
-                    <defs>
-                      <linearGradient id="electionGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#22d3ee" />
-                        <stop offset="100%" stopColor="#818cf8" />
-                      </linearGradient>
-                    </defs>
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-xs font-black text-cyan-300">
-                      {stats.election.registered}
-                    </span>
-                  </div>
-                </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-xs font-black text-gray-500 uppercase">نسبة التسجيل</p>
+                <span className="text-xs font-black text-primary">
+                  {stats.election.registered}/{stats.election.totalMembers}
+                </span>
               </div>
-              <div className="flex justify-between text-[10px] text-indigo-300 font-bold">
-                <span>مسجل: {stats.election.registered}</span>
-                <span>متبقي: {stats.election.pending}</span>
+              <p className="text-3xl font-black text-primary mb-2">
+                {electionAttendanceRate}
+                <span className="text-lg text-secondary">%</span>
+              </p>
+              <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-primary to-secondary rounded-full transition-all duration-1000"
+                  style={{ width: `${electionAttendanceRate}%` }}
+                ></div>
               </div>
             </div>
 
-            <div className="lg:col-span-1 bg-gradient-to-br from-blue-500/10 to-indigo-500/5 backdrop-blur-md rounded-2xl p-5 border border-blue-400/20">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-lg">👷</span>
-                <p className="text-xs font-black text-blue-200 uppercase tracking-wide">
-                  العاملين
-                </p>
-              </div>
-              <div className="flex items-baseline gap-2 mb-3">
-                <p className="text-3xl font-black text-white">
-                  {stats.election.attendingWorking}
-                </p>
-                <span className="text-sm text-blue-300 font-bold">
-                  / {stats.election.workingTotal}
+            <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-xs font-black text-gray-500 uppercase">👷 العاملين</p>
+                <span className="text-xs font-black text-primary">
+                  {stats.election.attendingWorking}/{stats.election.workingTotal}
                 </span>
               </div>
-              <div className="relative w-full h-2 bg-white/10 rounded-full overflow-hidden mb-2">
+              <p className="text-3xl font-black text-primary mb-2">
+                {workingAttendanceRate}
+                <span className="text-lg text-secondary">%</span>
+              </p>
+              <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
                 <div
-                  className="absolute inset-y-0 left-0 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full transition-all duration-1000 shadow-lg shadow-cyan-400/50"
-                  style={{
-                    width: `${stats.election.workingTotal > 0 ? (stats.election.attendingWorking / stats.election.workingTotal) * 100 : 0}%`,
-                  }}
+                  className="h-full bg-gradient-to-r from-primary to-primary-light rounded-full transition-all duration-1000"
+                  style={{ width: `${workingAttendanceRate}%` }}
                 ></div>
               </div>
-              <p className="text-[10px] text-blue-200 font-bold">
-                {stats.election.workingTotal > 0
-                  ? `${Math.round((stats.election.attendingWorking / stats.election.workingTotal) * 100)}% نسبة الحضور`
-                  : 'لا يوجد بيانات'}
-              </p>
             </div>
 
-            <div className="lg:col-span-1 bg-gradient-to-br from-purple-500/10 to-pink-500/5 backdrop-blur-md rounded-2xl p-5 border border-purple-400/20">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-lg">👴</span>
-                <p className="text-xs font-black text-purple-200 uppercase tracking-wide">
-                  بالمعاش
-                </p>
-              </div>
-              <div className="flex items-baseline gap-2 mb-3">
-                <p className="text-3xl font-black text-white">
-                  {stats.election.attendingRetired}
-                </p>
-                <span className="text-sm text-purple-300 font-bold">
-                  / {stats.election.retiredTotal}
+            <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-xs font-black text-gray-500 uppercase">👴 بالمعاش</p>
+                <span className="text-xs font-black text-primary">
+                  {stats.election.attendingRetired}/{stats.election.retiredTotal}
                 </span>
               </div>
-              <div className="relative w-full h-2 bg-white/10 rounded-full overflow-hidden mb-2">
+              <p className="text-3xl font-black text-primary mb-2">
+                {retiredAttendanceRate}
+                <span className="text-lg text-secondary">%</span>
+              </p>
+              <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
                 <div
-                  className="absolute inset-y-0 left-0 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full transition-all duration-1000 shadow-lg shadow-pink-400/50"
-                  style={{
-                    width: `${stats.election.retiredTotal > 0 ? (stats.election.attendingRetired / stats.election.retiredTotal) * 100 : 0}%`,
-                  }}
+                  className="h-full bg-gradient-to-r from-secondary to-yellow-400 rounded-full transition-all duration-1000"
+                  style={{ width: `${retiredAttendanceRate}%` }}
                 ></div>
               </div>
-              <p className="text-[10px] text-purple-200 font-bold">
-                {stats.election.retiredTotal > 0
-                  ? `${Math.round((stats.election.attendingRetired / stats.election.retiredTotal) * 100)}% نسبة الحضور`
-                  : 'لا يوجد بيانات'}
-              </p>
             </div>
           </div>
 
           {stats.election.registered > 0 && (
-            <div className="mt-5 pt-5 border-t border-white/10 flex flex-wrap items-center justify-between gap-3">
-              <div className="flex flex-wrap gap-3 text-xs">
-                <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full">
-                  <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
-                  <span className="text-emerald-200 font-bold">معدل التفاعل جيد</span>
-                </div>
-                <div className="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full">
-                  <FaChartBar className="text-cyan-300" />
-                  <span className="text-indigo-200 font-bold">
-                    {stats.election.registered} من {stats.election.totalMembers} عضو
-                  </span>
-                </div>
+            <div className="mt-5 pt-5 border-t border-gray-100 flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-2 text-xs text-gray-500">
+                <FaCheckCircle className="text-green-500" />
+                <span>
+                  <strong className="text-primary">{stats.election.registered}</strong> عضو سجّل حتى الآن
+                </span>
               </div>
               <Link
                 to="/admin/elections"
-                className="text-cyan-300 hover:text-cyan-200 font-bold text-sm flex items-center gap-2 transition group"
+                className="text-primary hover:text-secondary font-bold text-sm flex items-center gap-1 transition"
               >
-                عرض التفاصيل الكاملة
-                <FaChevronLeft className="group-hover:-translate-x-1 transition" />
+                عرض التفاصيل <FaChevronLeft className="text-xs" />
               </Link>
             </div>
           )}
@@ -604,7 +485,7 @@ const Dashboard = () => {
           <Link to="/admin/matches/create" className="bg-primary-dark text-white px-6 py-3 rounded-lg font-bold hover:bg-primary transition flex items-center gap-2">
             <FaPlus /> مباراة جديدة
           </Link>
-          <Link to="/admin/elections" className="bg-indigo-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-indigo-700 transition flex items-center gap-2">
+          <Link to="/admin/elections" className="bg-primary/10 text-primary px-6 py-3 rounded-lg font-bold hover:bg-primary/20 transition flex items-center gap-2 border border-primary/20">
             <FaVoteYea /> إدارة الانتخابات
           </Link>
           <Link to="/admin/messages" className="bg-primary-light text-white px-6 py-3 rounded-lg font-bold hover:bg-primary transition flex items-center gap-2 relative">
