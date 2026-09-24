@@ -2,9 +2,11 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaSave, FaTimes, FaImage, FaUserPlus } from 'react-icons/fa';
 import { playerAPI } from '../../services/api';
+import { useToast } from '../../context/ToastContext';
 
 const CreatePlayer = () => {
   const navigate = useNavigate();
+  const toast = useToast();
   const [formData, setFormData] = useState({
     name: '',
     number: '',
@@ -22,8 +24,8 @@ const CreatePlayer = () => {
     assists: 0,
     yellowCards: 0,
     redCards: 0,
-    image: null,
   });
+  const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -37,10 +39,20 @@ const CreatePlayer = () => {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      setFormData({ ...formData, image: file });
-      setPreview(URL.createObjectURL(file));
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('يرجى اختيار صورة صحيحة');
+      return;
     }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('حجم الصورة كبير جداً (الحد الأقصى 5MB)');
+      return;
+    }
+
+    setImage(file);
+    setPreview(URL.createObjectURL(file));
   };
 
   const handleSubmit = async (e) => {
@@ -67,7 +79,6 @@ const CreatePlayer = () => {
       data.append('isActive', formData.isActive);
       data.append('order', formData.order);
 
-      // إحصائيات
       data.append('stats', JSON.stringify({
         appearances: Number(formData.appearances) || 0,
         goals: Number(formData.goals) || 0,
@@ -76,12 +87,15 @@ const CreatePlayer = () => {
         redCards: Number(formData.redCards) || 0,
       }));
 
-      if (formData.image) data.append('image', formData.image);
+      if (image) data.append('image', image);
 
       await playerAPI.create(data);
+      toast.success('تم إضافة اللاعب بنجاح');
       navigate('/admin/players');
     } catch (err) {
-      setError(err.response?.data?.message || 'حدث خطأ أثناء إضافة اللاعب');
+      const msg = err.response?.data?.message || 'حدث خطأ أثناء إضافة اللاعب';
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
@@ -323,7 +337,7 @@ const CreatePlayer = () => {
                     type="button"
                     onClick={() => {
                       setPreview(null);
-                      setFormData({ ...formData, image: null });
+                      setImage(null);
                     }}
                     className="absolute -top-2 -right-2 bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-red-600"
                   >

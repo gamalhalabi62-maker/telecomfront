@@ -18,7 +18,7 @@ const EditNews = () => {
     category: 'general',
     isFeatured: false,
   });
-  const [imageBase64, setImageBase64] = useState('');
+  const [image, setImage] = useState(null);
   const [currentImage, setCurrentImage] = useState('');
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -54,45 +54,7 @@ const EditNews = () => {
     fetchNews();
   }, [id]);
 
-  const compressImage = (file, maxWidth = 800, maxHeight = 600, quality = 0.7) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = (event) => {
-        const img = new Image();
-        img.src = event.target.result;
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          let width = img.width;
-          let height = img.height;
-
-          if (width > height) {
-            if (width > maxWidth) {
-              height = Math.round((height * maxWidth) / width);
-              width = maxWidth;
-            }
-          } else {
-            if (height > maxHeight) {
-              width = Math.round((width * maxHeight) / height);
-              height = maxHeight;
-            }
-          }
-
-          canvas.width = width;
-          canvas.height = height;
-
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, width, height);
-
-          resolve(canvas.toDataURL('image/jpeg', quality));
-        };
-        img.onerror = reject;
-      };
-      reader.onerror = reject;
-    });
-  };
-
-  const handleImageChange = async (e) => {
+  const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -101,13 +63,13 @@ const EditNews = () => {
       return;
     }
 
-    try {
-      const compressed = await compressImage(file);
-      setImageBase64(compressed);
-      setPreview(compressed);
-    } catch (err) {
-      toast.error('فشل معالجة الصورة');
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('حجم الصورة كبير جداً (الحد الأقصى 5MB)');
+      return;
     }
+
+    setImage(file);
+    setPreview(URL.createObjectURL(file));
   };
 
   const handleSubmit = async (e) => {
@@ -116,17 +78,13 @@ const EditNews = () => {
     setSaving(true);
 
     try {
-      const data = {
-        title: formData.title,
-        content: formData.content,
-        excerpt: formData.excerpt,
-        category: formData.category,
-        isFeatured: formData.isFeatured,
-      };
-
-      if (imageBase64) {
-        data.imageUrl = imageBase64;
-      }
+      const data = new FormData();
+      data.append('title', formData.title);
+      data.append('content', formData.content);
+      if (formData.excerpt) data.append('excerpt', formData.excerpt);
+      data.append('category', formData.category);
+      data.append('isFeatured', formData.isFeatured);
+      if (image) data.append('image', image);
 
       await newsAPI.update(id, data);
       toast.success('تم حفظ التعديلات');

@@ -24,22 +24,18 @@ export const formatRelativeTime = (dateString) => {
 
 export const getImageUrl = (imageUrl) => {
   if (!imageUrl) {
-    return 'https://via.placeholder.com/800x600/4A148C/FFFFFF?text=Telecom+Egypt';
+    return 'https://placehold.co/800x600/4A148C/FFFFFF?text=Telecom+Egypt';
   }
-
-  if (imageUrl.startsWith('data:')) {
-    return imageUrl;
-  }
-
   if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
     return imageUrl;
   }
-
-  const API_BASE = import.meta.env.VITE_API_URL
-    ? import.meta.env.VITE_API_URL.replace(/\/api\/?$/, '')
-    : 'http://localhost:3000';
-
-  return `${API_BASE}${imageUrl.startsWith('/') ? imageUrl : '/' + imageUrl}`;
+  if (imageUrl.startsWith('/')) {
+    const API_BASE = import.meta.env.VITE_API_URL
+      ? import.meta.env.VITE_API_URL.replace(/\/api\/?$/, '')
+      : 'http://localhost:3000';
+    return `${API_BASE}${imageUrl}`;
+  }
+  return imageUrl;
 };
 
 export const getCategoryName = (category) => {

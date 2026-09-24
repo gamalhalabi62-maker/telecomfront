@@ -14,7 +14,7 @@ const CreateNews = () => {
     category: 'general',
     isFeatured: false,
   });
-  const [imageBase64, setImageBase64] = useState('');
+  const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -27,46 +27,7 @@ const CreateNews = () => {
     { value: 'elections', label: 'الانتخابات' },
   ];
 
-  const compressImage = (file, maxWidth = 800, maxHeight = 600, quality = 0.7) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = (event) => {
-        const img = new Image();
-        img.src = event.target.result;
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          let width = img.width;
-          let height = img.height;
-
-          if (width > height) {
-            if (width > maxWidth) {
-              height = Math.round((height * maxWidth) / width);
-              width = maxWidth;
-            }
-          } else {
-            if (height > maxHeight) {
-              width = Math.round((width * maxHeight) / height);
-              height = maxHeight;
-            }
-          }
-
-          canvas.width = width;
-          canvas.height = height;
-
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, width, height);
-
-          const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
-          resolve(compressedBase64);
-        };
-        img.onerror = reject;
-      };
-      reader.onerror = reject;
-    });
-  };
-
-  const handleImageChange = async (e) => {
+  const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -75,25 +36,13 @@ const CreateNews = () => {
       return;
     }
 
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error('حجم الصورة كبير جداً (الحد الأقصى 10MB)');
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('حجم الصورة كبير جداً (الحد الأقصى 5MB)');
       return;
     }
 
-    try {
-      const compressed = await compressImage(file);
-      const sizeKB = Math.round((compressed.length * 3) / 4 / 1024);
-
-      if (sizeKB > 900) {
-        toast.warning(`الصورة كبيرة (${sizeKB}KB)`);
-      }
-
-      setImageBase64(compressed);
-      setPreview(compressed);
-    } catch (err) {
-      toast.error('فشل معالجة الصورة');
-      console.error(err);
-    }
+    setImage(file);
+    setPreview(URL.createObjectURL(file));
   };
 
   const handleSubmit = async (e) => {
@@ -102,14 +51,13 @@ const CreateNews = () => {
     setLoading(true);
 
     try {
-      const data = {
-        title: formData.title,
-        content: formData.content,
-        excerpt: formData.excerpt,
-        category: formData.category,
-        isFeatured: formData.isFeatured,
-        imageUrl: imageBase64,
-      };
+      const data = new FormData();
+      data.append('title', formData.title);
+      data.append('content', formData.content);
+      if (formData.excerpt) data.append('excerpt', formData.excerpt);
+      data.append('category', formData.category);
+      data.append('isFeatured', formData.isFeatured);
+      if (image) data.append('image', image);
 
       await newsAPI.create(data);
       toast.success('تم إضافة الخبر بنجاح');
@@ -199,7 +147,7 @@ const CreateNews = () => {
           <div>
             <label className="block font-bold text-gray-700 mb-2">صورة الخبر</label>
             <p className="text-xs text-gray-500 mb-2">
-              💡 سيتم ضغط الصورة تلقائياً إلى 800×600 بكسل
+              💡 الحد الأقصى 5MB - يتم الرفع إلى Cloudinary تلقائياً
             </p>
             <div className="flex flex-col md:flex-row gap-4 items-start">
               <label className="cursor-pointer bg-primary text-white px-6 py-3 rounded-lg font-bold hover:bg-primary-dark transition flex items-center gap-2">
@@ -220,7 +168,7 @@ const CreateNews = () => {
                   />
                   <button
                     type="button"
-                    onClick={() => { setPreview(null); setImageBase64(''); }}
+                    onClick={() => { setPreview(null); setImage(null); }}
                     className="absolute -top-2 -left-2 bg-red-500 text-white w-7 h-7 rounded-full flex items-center justify-center shadow-lg hover:bg-red-600"
                   >
                     <FaTimes size={12} />
