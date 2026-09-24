@@ -6,7 +6,7 @@ import {
 } from 'react-icons/fa';
 import { matchAPI } from '../../services/api';
 import Loading from '../../components/Loading';
-import { formatDate } from '../../utils/formatDate';
+import { formatDate, getImageUrl } from '../../utils/formatDate';
 
 const competitionNames = {
   league: 'الدوري',
@@ -205,7 +205,7 @@ const ManageMatches = () => {
                         <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
                           {match.opponentLogo ? (
                             <img
-                              src={match.opponentLogo.startsWith('http') ? match.opponentLogo : `http://localhost:3000${match.opponentLogo}`}
+                              src={getImageUrl(match.opponentLogo)}
                               alt={match.opponent}
                               className="w-full h-full object-cover"
                               onError={(e) => { e.target.style.display = 'none'; }}
