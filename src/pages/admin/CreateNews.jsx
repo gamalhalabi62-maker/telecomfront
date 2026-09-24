@@ -16,6 +16,7 @@ const CreateNews = () => {
     isFeatured: false,
   });
 
+  // ✅ state منفصل للملف
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -31,7 +32,10 @@ const CreateNews = () => {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    console.log('File selected:', file);
+    console.log('🖼️ File selected:', file);
+    console.log('   - name:', file?.name);
+    console.log('   - size:', file?.size);
+    console.log('   - type:', file?.type);
 
     if (!file) return;
 
@@ -47,7 +51,7 @@ const CreateNews = () => {
 
     setImage(file);
     setPreview(URL.createObjectURL(file));
-    console.log('Image state set:', file.name, file.size);
+    console.log('✅ Image state set');
   };
 
   const handleSubmit = async (e) => {
@@ -63,16 +67,18 @@ const CreateNews = () => {
       data.append('category', formData.category);
       data.append('isFeatured', formData.isFeatured);
 
+      // ✅ إرسال الملف نفسه
       if (image) {
         data.append('image', image);
-        console.log('Appended image:', image.name);
+        console.log('📤 Appending image file:', image.name);
       } else {
-        console.log('No image to append');
+        console.log('⚠️ No image to append');
       }
 
-      console.log('FormData entries:');
+      // عرض محتويات FormData
+      console.log('📋 FormData contents:');
       for (let pair of data.entries()) {
-        console.log(pair[0], pair[1]);
+        console.log('   ', pair[0], '=', pair[1] instanceof File ? `File(${pair[1].name})` : pair[1]);
       }
 
       await newsAPI.create(data);

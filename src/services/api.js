@@ -4,7 +4,6 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 const api = axios.create({
   baseURL: API_URL,
-  headers: { 'Content-Type': 'application/json' },
   maxContentLength: 50 * 1024 * 1024,
   maxBodyLength: 50 * 1024 * 1024,
 });
@@ -48,8 +47,12 @@ export const newsAPI = {
   getFeatured: (limit = 5) => api.get('/news/featured', { params: { limit } }),
   getPopular: (limit = 5) => api.get('/news/popular', { params: { limit } }),
   getStats: () => api.get('/news/stats'),
-  create: (data) => api.post('/news', data),
-  update: (id, data) => api.put(`/news/${id}`, data),
+  create: (data) => api.post('/news', data, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }),
+  update: (id, data) => api.put(`/news/${id}`, data, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }),
   delete: (id) => api.delete(`/news/${id}`),
 };
 
@@ -71,8 +74,12 @@ export const playerAPI = {
   getById: (id) => api.get(`/players/${id}`),
   getByPosition: () => api.get('/players/by-position'),
   getStats: () => api.get('/players/stats'),
-  create: (data) => api.post('/players', data),
-  update: (id, data) => api.put(`/players/${id}`, data),
+  create: (data) => api.post('/players', data, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }),
+  update: (id, data) => api.put(`/players/${id}`, data, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }),
   delete: (id) => api.delete(`/players/${id}`),
 };
 
