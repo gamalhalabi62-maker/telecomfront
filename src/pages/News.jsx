@@ -4,14 +4,12 @@ import { FaRegCalendarAlt, FaEye } from 'react-icons/fa';
 const NewsCard = ({ news }) => {
   return (
     <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col h-full group">
-      {/* صورة الخبر (تدعم Base64 والروابط العادية بكفاءة عالية) */}
       <div className="relative h-52 overflow-hidden bg-gray-100">
         <img
           src={news.imageUrl || '/default-news.jpg'} 
           alt={news.title}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           onError={(e) => {
-            // صورة احتياطية في حال حدث أي خطأ في تحميل البيانات
             e.target.src = 'https://via.placeholder.com/600x400?text=No+Image';
           }}
         />
@@ -22,7 +20,6 @@ const NewsCard = ({ news }) => {
         )}
       </div>
 
-      {/* محتوى الخبر */}
       <div className="p-6 flex flex-col flex-1 justify-between">
         <div>
           <h3 className="font-black text-lg text-gray-800 mb-3 line-clamp-2 group-hover:text-primary transition-colors">
@@ -33,7 +30,6 @@ const NewsCard = ({ news }) => {
           </p>
         </div>
 
-        {/* تذيل الكارت (التاريخ والمشاهدات) */}
         <div className="pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-400 font-medium">
           <div className="flex items-center gap-1.5">
             <FaRegCalendarAlt className="text-primary" />
@@ -46,7 +42,6 @@ const NewsCard = ({ news }) => {
           </div>
         </div>
 
-        {/* زر قراءة المزيد */}
         <div className="mt-4">
           <Link
             to={`/news/${news._id}`}

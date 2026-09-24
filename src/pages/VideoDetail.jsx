@@ -38,10 +38,8 @@ const VideoDetail = () => {
     fetchVideo();
   }, [id]);
 
-  // محاولة التشغيل التلقائي بعد تحميل البيانات
   useEffect(() => {
     if (video && videoRef.current) {
-      // تأخير بسيط لضمان تحميل الفيديو
       const timer = setTimeout(() => {
         videoRef.current?.play()
           .then(() => {
@@ -49,7 +47,6 @@ const VideoDetail = () => {
             setHasStarted(true);
           })
           .catch((err) => {
-            // المتصفح منع التشغيل التلقائي - سنعرض زر Play كبير
             console.log('Autoplay prevented:', err.message);
             setIsPlaying(false);
           });
@@ -79,7 +76,6 @@ const VideoDetail = () => {
     return types[ext] || 'video/mp4';
   };
 
-  // زر Play الكبير
   const handleBigPlay = () => {
     if (videoRef.current) {
       videoRef.current.play()
@@ -136,7 +132,6 @@ const VideoDetail = () => {
 
   return (
     <article className="bg-gray-50 min-h-screen">
-      {/* Breadcrumb Bar */}
       <div className="bg-white border-b border-gray-200">
         <div className="container-custom py-4">
           <nav className="flex items-center gap-2 text-sm text-gray-500 flex-wrap">
@@ -151,9 +146,7 @@ const VideoDetail = () => {
 
       <div className="container-custom py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Video Player - الخرافي */}
             <div className="bg-black rounded-2xl overflow-hidden shadow-2xl relative group">
               {videoError ? (
                 <div className="aspect-video flex flex-col items-center justify-center text-white p-6 text-center bg-gradient-to-br from-red-900/30 to-black">
@@ -203,7 +196,6 @@ const VideoDetail = () => {
                     متصفحك لا يدعم عرض الفيديو
                   </video>
 
-                  {/* Big Play Button Overlay - يظهر قبل التشغيل */}
                   {!hasStarted && (
                     <div
                       onClick={handleBigPlay}
@@ -219,7 +211,6 @@ const VideoDetail = () => {
                     </div>
                   )}
 
-                  {/* Video Badge */}
                   <div className="absolute top-4 right-4 flex gap-2 z-20">
                     {video.isFeatured && (
                       <span className="bg-yellow-500 text-white px-3 py-1 rounded-full text-xs font-black shadow-lg">
@@ -231,9 +222,7 @@ const VideoDetail = () => {
               )}
             </div>
 
-            {/* Video Info Card */}
             <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8">
-              {/* Category + Duration */}
               <div className="flex flex-wrap items-center gap-3 mb-4">
                 <span className="bg-primary text-white px-4 py-1.5 rounded-full text-sm font-bold flex items-center gap-2">
                   <FaFolder /> {getCategoryName(video.category)}
@@ -248,12 +237,10 @@ const VideoDetail = () => {
                 </span>
               </div>
 
-              {/* Title */}
               <h1 className="text-2xl md:text-4xl font-black text-primary mb-6 leading-tight">
                 {video.title}
               </h1>
 
-              {/* Meta Info */}
               <div className="flex flex-wrap gap-4 md:gap-6 pb-6 mb-6 border-b-2 border-gray-100">
                 <div className="flex items-center gap-2 text-gray-600">
                   <div className="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center">
@@ -276,7 +263,6 @@ const VideoDetail = () => {
                 </div>
               </div>
 
-              {/* Description */}
               {video.description && (
                 <div className="mb-6">
                   <h2 className="text-lg font-black text-primary mb-3 flex items-center gap-2">
@@ -291,12 +277,10 @@ const VideoDetail = () => {
                 </div>
               )}
 
-              {/* Share */}
               <div className="pt-6 border-t">
                 <ShareButtons title={video.title} url={window.location.href} />
               </div>
 
-              {/* Back */}
               <div className="mt-6 text-center">
                 <Link
                   to="/videos"
@@ -307,7 +291,6 @@ const VideoDetail = () => {
               </div>
             </div>
 
-            {/* Related Videos */}
             {video.related && video.related.length > 0 && (
               <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8">
                 <div className="flex items-center gap-3 mb-6">
@@ -325,7 +308,6 @@ const VideoDetail = () => {
             )}
           </div>
 
-          {/* Sidebar - More Videos */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-24">
               <div className="flex items-center gap-3 mb-5 pb-4 border-b-2 border-secondary">
@@ -363,7 +345,6 @@ const VideoDetail = () => {
                               {formatDuration(item.duration)}
                             </span>
                           )}
-                          {/* Play Overlay */}
                           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition bg-black/40">
                             <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center">
                               <FaPlay className="text-primary text-xs mr-[-2px]" />

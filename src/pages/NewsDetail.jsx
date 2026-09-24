@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { FaCalendar, FaEye, FaUser, FaArrowRight, FaClock, FaFolder } from 'react-icons/fa';
+import { FaCalendar, FaEye, FaUser, FaArrowRight, FaClock, FaFolder, FaVideo } from 'react-icons/fa';
 import { newsAPI } from '../services/api';
 import Loading from '../components/Loading';
 import ReadingProgress from '../components/ReadingProgress';
@@ -51,16 +51,19 @@ const NewsDetail = () => {
     );
   }
 
+  const mediaType = news.mediaType || (news.imageUrl ? 'image' : 'none');
+  const hasImage = mediaType === 'image' || mediaType === 'both';
+  const hasVideo = mediaType === 'video' || mediaType === 'both';
+
   return (
     <>
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
       <ReadingProgress />
 
       <article className="bg-gray-50 min-h-screen">
-        {/* Breadcrumb Bar */}
         <div className="bg-white border-b border-gray-200">
           <div className="container-custom py-4">
-            <nav className="flex items-center gap-2 text-sm text-gray-500">
+            <nav className="flex items-center gap-2 text-sm text-gray-500 flex-wrap">
               <Link to="/" className="hover:text-primary transition">الرئيسية</Link>
               <span>›</span>
               <Link to="/news" className="hover:text-primary transition">الأخبار</Link>
@@ -70,12 +73,9 @@ const NewsDetail = () => {
           </div>
         </div>
 
-        {/* Main Content */}
         <div className="container-custom py-8 md:py-12">
           <div className="max-w-4xl mx-auto">
-            {/* Article Card */}
             <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-              {/* Category + Date Bar */}
               <div className="p-6 md:p-8 border-b border-gray-100">
                 <div className="flex items-center gap-4 flex-wrap text-sm">
                   <span className="flex items-center gap-2 text-primary font-bold">
@@ -87,31 +87,55 @@ const NewsDetail = () => {
                     <FaCalendar />
                     {formatDate(news.createdAt)}
                   </span>
+                  {hasVideo && (
+                    <>
+                      <span className="text-gray-300">|</span>
+                      <span className="flex items-center gap-2 bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-bold">
+                        <FaVideo /> فيديو
+                      </span>
+                    </>
+                  )}
                 </div>
               </div>
 
-              {/* Title */}
               <div className="px-6 md:px-8 pt-6 md:pt-8">
                 <h1 className="text-2xl md:text-4xl lg:text-5xl font-black text-gray-900 leading-tight mb-6">
                   {news.title}
                 </h1>
               </div>
 
-              {/* Image */}
-              <div className="px-6 md:px-8 pb-6">
-                <div className="rounded-lg overflow-hidden shadow-md">
-                  <img
-                    src={getImageUrl(news.imageUrl)}
-                    alt={news.title}
-                    className="w-full h-auto object-cover"
-                    onError={(e) => {
-                      e.target.src = 'https://via.placeholder.com/1200x600/4A148C/FFFFFF?text=Telecom+Egypt';
-                    }}
-                  />
+              {hasImage && news.imageUrl && (
+                <div className="px-6 md:px-8 pb-6">
+                  <div className="rounded-lg overflow-hidden shadow-md">
+                    <img
+                      src={getImageUrl(news.imageUrl)}
+                      alt={news.title}
+                      className="w-full h-auto object-cover"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = 'https://via.placeholder.com/1200x600/4A148C/FFFFFF?text=Telecom+Egypt';
+                      }}
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
 
-              {/* Meta Info Bar */}
+              {hasVideo && news.videoUrl && (
+                <div className="px-6 md:px-8 pb-6">
+                  <div className="relative w-full aspect-video rounded-lg overflow-hidden shadow-lg bg-black">
+                    <video
+                      src={news.videoUrl}
+                      poster={news.videoThumbnail || undefined}
+                      controls
+                      preload="metadata"
+                      className="absolute inset-0 w-full h-full"
+                    >
+                      متصفحك لا يدعم عرض الفيديو
+                    </video>
+                  </div>
+                </div>
+              )}
+
               <div className="px-6 md:px-8 py-4 border-y border-gray-100 bg-gray-50">
                 <div className="flex flex-wrap items-center gap-6 text-sm">
                   <span className="flex items-center gap-2 text-gray-700">
@@ -133,9 +157,7 @@ const NewsDetail = () => {
                 </div>
               </div>
 
-              {/* Content */}
               <div className="p-6 md:p-8">
-                {/* Excerpt */}
                 {news.excerpt && (
                   <div className="mb-8 p-5 bg-primary/5 border-r-4 border-primary rounded-lg">
                     <p className="text-lg font-bold text-gray-800 leading-relaxed">
@@ -144,12 +166,10 @@ const NewsDetail = () => {
                   </div>
                 )}
 
-                {/* Main Text */}
-                <div className="news-content text-gray-800">
+                <div className="news-content text-gray-800 whitespace-pre-line leading-relaxed">
                   {news.content}
                 </div>
 
-                {/* Share */}
                 <div className="mt-10 pt-6 border-t border-gray-200">
                   <p className="font-bold text-gray-700 mb-4">شارك الخبر:</p>
                   <ShareButtons title={news.title} url={window.location.href} />
@@ -157,7 +177,6 @@ const NewsDetail = () => {
               </div>
             </div>
 
-            {/* Back to News */}
             <div className="mt-8 text-center">
               <Link
                 to="/news"
@@ -167,7 +186,6 @@ const NewsDetail = () => {
               </Link>
             </div>
 
-            {/* Related News */}
             {news.related && news.related.length > 0 && (
               <div className="mt-12">
                 <div className="flex items-center gap-3 mb-6">

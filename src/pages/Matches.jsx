@@ -62,7 +62,6 @@ const Matches = () => {
     else if (activeTab === 'finished') list = finished;
     else if (activeTab === 'live') list = live;
 
-    // فلترة إضافية
     if (filter === 'home') list = list.filter(m => m.venue === 'home');
     if (filter === 'away') list = list.filter(m => m.venue === 'away');
 
@@ -73,7 +72,6 @@ const Matches = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      {/* Hero Header */}
       <section className="bg-gradient-to-l from-primary via-primary-light to-primary-dark text-white py-20 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 right-0 w-96 h-96 bg-secondary rounded-full blur-3xl animate-float"></div>
@@ -89,7 +87,6 @@ const Matches = () => {
           </h1>
           <p className="text-gray-200 text-lg">تابع جميع مباريات الفريق لحظة بلحظة</p>
 
-          {/* Stats */}
           {stats && (
             <div className="flex justify-center gap-6 md:gap-10 mt-8 flex-wrap">
               <div className="text-center">
@@ -116,7 +113,6 @@ const Matches = () => {
         </div>
       </section>
 
-      {/* Live Matches Section */}
       {live.length > 0 && (
         <section className="container-custom -mt-8 relative z-20">
           <div className="bg-white rounded-3xl shadow-2xl p-6 md:p-8 border-2 border-red-500">
@@ -140,10 +136,8 @@ const Matches = () => {
         </section>
       )}
 
-      {/* Tabs & Filter */}
       <section className="container-custom py-12">
         <div className="bg-white rounded-2xl shadow-md sticky top-24 z-20 p-4 mb-8">
-          {/* Tabs */}
           <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-3 border-b">
             {tabs.map((tab) => (
               <button
@@ -166,7 +160,6 @@ const Matches = () => {
             ))}
           </div>
 
-          {/* Filter */}
           <div className="flex gap-2 mt-3">
             <button
               onClick={() => setFilter('all')}
@@ -195,7 +188,6 @@ const Matches = () => {
           </div>
         </div>
 
-        {/* Matches Grid */}
         {getDisplayedMatches().length === 0 ? (
           <div className="text-center py-20 bg-white rounded-2xl shadow-md">
             <FaFutbol className="text-6xl text-gray-300 mx-auto mb-4" />

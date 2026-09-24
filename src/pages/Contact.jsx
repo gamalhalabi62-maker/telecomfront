@@ -69,7 +69,6 @@ const Contact = () => {
 
   return (
     <div>
-      {/* Header */}
       <section className="bg-gradient-to-l from-primary via-primary-light to-primary-dark text-white py-16 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 right-0 w-96 h-96 bg-secondary rounded-full blur-3xl animate-float"></div>
@@ -87,7 +86,6 @@ const Contact = () => {
 
       <div className="container-custom py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Contact Info */}
           <div className="space-y-6">
             {[
               { icon: <FaMapMarkerAlt />, title: 'العنوان', value: 'مدينة نصر، القاهرة، مصر' },
@@ -105,7 +103,6 @@ const Contact = () => {
               </div>
             ))}
 
-            {/* WhatsApp Note */}
             <div className="bg-green-50 border-2 border-green-200 rounded-xl p-6">
               <div className="flex items-center gap-3 mb-3">
                 <FaWhatsapp className="text-green-600 text-3xl" />
@@ -117,7 +114,6 @@ const Contact = () => {
             </div>
           </div>
 
-          {/* Form or Login Prompt */}
           <div className="lg:col-span-2">
             {user ? (
               <div className="bg-white p-8 rounded-2xl shadow-lg">
@@ -132,7 +128,6 @@ const Contact = () => {
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-5">
-                  {/* Subject */}
                   <div>
                     <label className="block font-bold text-gray-700 mb-2">الموضوع *</label>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
@@ -155,7 +150,6 @@ const Contact = () => {
                     {errors.subject && <p className="text-red-500 text-xs mt-1">⚠️ {errors.subject}</p>}
                   </div>
 
-                  {/* Subject Text */}
                   <div>
                     <label className="block font-bold text-gray-700 mb-2">
                       عنوان مختصر <span className="text-gray-400 font-normal">(اختياري)</span>
@@ -170,7 +164,6 @@ const Contact = () => {
                     />
                   </div>
 
-                  {/* Phone */}
                   <div>
                     <label className="block font-bold text-gray-700 mb-2">
                       رقم الواتساب <span className="text-gray-400 font-normal">(للرد عليك)</span>
@@ -191,7 +184,6 @@ const Contact = () => {
                     </div>
                   </div>
 
-                  {/* Content */}
                   <div>
                     <label className="block font-bold text-gray-700 mb-2">الرسالة *</label>
                     <textarea
@@ -211,7 +203,6 @@ const Contact = () => {
                     </div>
                   </div>
 
-                  {/* Submit */}
                   <button
                     type="submit"
                     disabled={loading}
@@ -231,7 +222,6 @@ const Contact = () => {
                 </form>
               </div>
             ) : (
-              // Login Prompt
               <div className="bg-white p-8 md:p-12 rounded-2xl shadow-lg text-center">
                 <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
                   <FaLock className="text-primary text-4xl" />

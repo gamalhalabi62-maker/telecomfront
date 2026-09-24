@@ -77,7 +77,6 @@ const MatchDetail = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      {/* Breadcrumb */}
       <div className="bg-white border-b">
         <div className="container-custom py-4">
           <nav className="flex items-center gap-2 text-sm text-gray-500">
@@ -111,9 +110,7 @@ const MatchDetail = () => {
             </div>
           </div>
 
-          {/* Teams & Score */}
           <div className="grid grid-cols-3 gap-4 md:gap-8 items-center max-w-4xl mx-auto">
-         {/* Our Team */}
 <div className="text-center">
   <div className="w-24 h-24 md:w-32 md:h-32 mx-auto flex items-center justify-center mb-4">
     <img
@@ -125,7 +122,6 @@ const MatchDetail = () => {
   <p className="font-black text-base md:text-xl"> Telecom</p>
 </div>
 
-            {/* Score */}
             <div className="text-center">
               {isFinished || isLive ? (
                 <div>
@@ -159,7 +155,6 @@ const MatchDetail = () => {
               )}
             </div>
 
-            {/* Opponent */}
             <div className="text-center">
               <div className="w-24 h-24 md:w-32 md:h-32 mx-auto bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center overflow-hidden border-4 border-white/30 shadow-2xl mb-4">
                 {match.opponentLogo ? (
@@ -177,7 +172,6 @@ const MatchDetail = () => {
             </div>
           </div>
 
-          {/* Info */}
           <div className="flex flex-wrap gap-4 justify-center mt-10 text-sm">
             <span className="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full">
               <FaCalendar /> {formatDate(match.date)}
@@ -195,12 +189,9 @@ const MatchDetail = () => {
         </div>
       </section>
 
-      {/* Content */}
       <div className="container-custom py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Events */}
             {match.events && match.events.length > 0 && (
               <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8">
                 <h2 className="text-2xl font-black text-primary mb-6 flex items-center gap-3">
@@ -237,7 +228,6 @@ const MatchDetail = () => {
               </div>
             )}
 
-            {/* Notes */}
             {match.notes && (
               <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8">
                 <h2 className="text-2xl font-black text-primary mb-4 flex items-center gap-3">
@@ -250,7 +240,6 @@ const MatchDetail = () => {
               </div>
             )}
 
-            {/* Lineup */}
             {match.lineup && (
               <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8">
                 <h2 className="text-2xl font-black text-primary mb-4 flex items-center gap-3">
@@ -264,7 +253,6 @@ const MatchDetail = () => {
             )}
           </div>
 
-          {/* Sidebar */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-24">
               <h3 className="text-xl font-black text-primary mb-4 pb-3 border-b-2 border-secondary">
@@ -307,7 +295,6 @@ const MatchDetail = () => {
           </div>
         </div>
 
-        {/* Back */}
         <div className="text-center mt-12">
           <Link
             to="/matches"

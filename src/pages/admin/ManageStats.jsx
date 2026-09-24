@@ -141,7 +141,6 @@ const ManageStats = () => {
 
   return (
     <div className="container-custom py-8">
-      {/* Header */}
       <div className="bg-gradient-to-l from-primary to-primary-dark text-white p-6 md:p-8 rounded-2xl mb-8">
         <div className="flex flex-wrap justify-between items-center gap-4">
           <div className="flex items-center gap-3">
@@ -166,7 +165,6 @@ const ManageStats = () => {
         </div>
       </div>
 
-      {/* Form */}
       {showForm && (
         <div className="bg-white rounded-xl shadow-md p-6 md:p-8 mb-8 border-2 border-primary">
           <div className="flex justify-between items-center mb-6">
@@ -233,7 +231,6 @@ const ManageStats = () => {
               </div>
             </div>
 
-            {/* Icon Picker */}
             <div>
               <label className="block font-bold text-gray-700 mb-2">الأيقونة</label>
               <div className="grid grid-cols-5 md:grid-cols-10 gap-2">
@@ -256,7 +253,6 @@ const ManageStats = () => {
               </div>
             </div>
 
-            {/* Color Picker */}
             <div>
               <label className="block font-bold text-gray-700 mb-2">اللون</label>
               <div className="flex flex-wrap gap-2">
@@ -275,7 +271,6 @@ const ManageStats = () => {
               </div>
             </div>
 
-            {/* Active */}
             <label className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg cursor-pointer">
               <input
                 type="checkbox"
@@ -286,7 +281,6 @@ const ManageStats = () => {
               <span className="font-bold text-gray-700">✅ نشطة (تظهر في الموقع)</span>
             </label>
 
-            {/* Preview */}
             <div className="p-4 bg-gray-50 rounded-lg">
               <p className="text-sm font-bold text-gray-600 mb-3">👁️ معاينة:</p>
               <div className="w-48 bg-gradient-to-br from-primary to-primary-dark rounded-2xl p-6 text-center">
@@ -300,7 +294,6 @@ const ManageStats = () => {
               </div>
             </div>
 
-            {/* Actions */}
             <div className="flex gap-3 pt-4 border-t">
               <button
                 type="submit"
@@ -321,7 +314,6 @@ const ManageStats = () => {
         </div>
       )}
 
-      {/* Stats List */}
       {stats.length === 0 ? (
         <div className="text-center py-20 bg-white rounded-2xl shadow-md">
           <FaTrophy className="text-6xl text-gray-300 mx-auto mb-4" />

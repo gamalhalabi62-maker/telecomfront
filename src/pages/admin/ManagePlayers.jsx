@@ -69,7 +69,6 @@ const ManagePlayers = () => {
 
   return (
     <div className="container-custom py-8">
-      {/* Header */}
       <div className="bg-gradient-to-l from-primary to-primary-dark text-white p-6 md:p-8 rounded-2xl mb-8">
         <div className="flex flex-wrap justify-between items-center gap-4">
           <div className="flex items-center gap-3">
@@ -92,10 +91,8 @@ const ManagePlayers = () => {
         </div>
       </div>
 
-      {/* Search & Filter */}
       <div className="bg-white rounded-xl shadow-md p-6 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Search */}
           <div className="md:col-span-2 relative">
             <FaSearch className="absolute top-1/2 -translate-y-1/2 right-4 text-gray-400" />
             <input
@@ -107,7 +104,6 @@ const ManagePlayers = () => {
             />
           </div>
 
-          {/* Position Filter */}
           <select
             value={positionFilter}
             onChange={(e) => setPositionFilter(e.target.value)}
@@ -121,7 +117,6 @@ const ManagePlayers = () => {
           </select>
         </div>
 
-        {/* Stats */}
         <div className="mt-4 pt-4 border-t flex flex-wrap gap-4 text-sm">
           <span className="text-gray-600">
             📊 النتائج: <strong className="text-primary">{filtered.length}</strong>
@@ -145,7 +140,6 @@ const ManagePlayers = () => {
         </div>
       </div>
 
-      {/* Players Table */}
       <div className="bg-white rounded-xl shadow-md overflow-hidden">
         {filtered.length === 0 ? (
           <div className="text-center py-16">

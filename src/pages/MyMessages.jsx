@@ -56,7 +56,6 @@ const MyMessages = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      {/* Header */}
       <section className="bg-gradient-to-l from-primary via-primary-light to-primary-dark text-white py-12 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 right-0 w-96 h-96 bg-secondary rounded-full blur-3xl animate-float"></div>
@@ -100,7 +99,6 @@ const MyMessages = () => {
       </section>
 
       <div className="container-custom py-12">
-        {/* Filter */}
         <div className="bg-white rounded-2xl shadow-md p-4 mb-8">
           <div className="flex gap-2 overflow-x-auto scrollbar-hide">
             {[
@@ -125,7 +123,6 @@ const MyMessages = () => {
           </div>
         </div>
 
-        {/* Messages */}
         {filtered.length === 0 ? (
           <div className="text-center py-20 bg-white rounded-2xl shadow-md">
             <FaEnvelope className="text-6xl text-gray-200 mx-auto mb-4" />
@@ -174,14 +171,12 @@ const MyMessages = () => {
                     </span>
                   </div>
 
-                  {/* Content */}
                   <div className="bg-gray-50 rounded-lg p-4 mb-4">
                     <p className="text-gray-700 leading-relaxed whitespace-pre-line line-clamp-3">
                       {msg.content}
                     </p>
                   </div>
 
-                  {/* Admin Notes */}
                   {msg.adminNotes && (
                     <div className="bg-green-50 border-r-4 border-green-500 rounded-lg p-4">
                       <p className="text-xs font-bold text-green-700 mb-1">📝 رد الإدارة:</p>
@@ -189,7 +184,6 @@ const MyMessages = () => {
                     </div>
                   )}
 
-                  {/* Footer */}
                   {msg.repliedAt && (
                     <p className="text-xs text-gray-400 mt-4 pt-4 border-t">
                       ✅ تم الرد بتاريخ {new Date(msg.repliedAt).toLocaleDateString('ar-EG')}

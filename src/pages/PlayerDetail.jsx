@@ -56,7 +56,6 @@ const PlayerDetail = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      {/* Breadcrumb */}
       <div className="bg-white border-b border-gray-200">
         <div className="container-custom py-4">
           <nav className="flex items-center gap-2 text-sm text-gray-500">
@@ -69,7 +68,6 @@ const PlayerDetail = () => {
         </div>
       </div>
 
-      {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-primary via-primary-light to-primary-dark text-white py-12 md:py-20 overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 right-0 w-96 h-96 bg-secondary rounded-full blur-3xl"></div>
@@ -78,7 +76,6 @@ const PlayerDetail = () => {
 
         <div className="container-custom relative z-10">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
-            {/* Player Image */}
             <div className="md:col-span-1 flex justify-center">
               <div className="relative">
                 <div className="w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden border-8 border-secondary shadow-2xl bg-white/10 backdrop-blur-md">
@@ -95,11 +92,9 @@ const PlayerDetail = () => {
                     </div>
                   )}
                 </div>
-                {/* Number Badge */}
                 <div className="absolute -bottom-4 right-1/2 translate-x-1/2 w-24 h-24 bg-secondary text-primary rounded-full flex items-center justify-center font-black text-4xl shadow-2xl border-4 border-white">
                   {player.number}
                 </div>
-                {/* Captain Badge */}
                 {player.isCaptain && (
                   <div className="absolute -top-2 -right-2 bg-yellow-500 text-white px-4 py-2 rounded-full font-black text-sm shadow-lg flex items-center gap-1">
                     <FaTrophy /> القائد
@@ -108,7 +103,6 @@ const PlayerDetail = () => {
               </div>
             </div>
 
-            {/* Info */}
             <div className="md:col-span-2 text-center md:text-right">
               <span className="bg-secondary text-primary px-4 py-1.5 rounded-full text-sm font-black inline-block mb-4">
                 {positionNames[player.position]}
@@ -147,7 +141,6 @@ const PlayerDetail = () => {
         </div>
       </section>
 
-      {/* Stats */}
       <section className="container-custom py-12">
         <div className="bg-white rounded-2xl shadow-lg p-8">
           <h2 className="text-2xl md:text-3xl font-black text-primary mb-6 flex items-center gap-3">
@@ -174,7 +167,6 @@ const PlayerDetail = () => {
         </div>
       </section>
 
-      {/* Related Players */}
       {player.related && player.related.length > 0 && (
         <section className="container-custom pb-12">
           <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8">
@@ -191,7 +183,6 @@ const PlayerDetail = () => {
         </section>
       )}
 
-      {/* Back */}
       <div className="container-custom pb-16 text-center">
         <Link
           to="/team"

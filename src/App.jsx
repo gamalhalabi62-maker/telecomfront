@@ -4,7 +4,6 @@ import { ToastProvider } from './context/ToastContext';
 import MainLayout from './layouts/MainLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 
-// Public Pages
 import Home from './pages/Home';
 import News from './pages/News';
 import NewsDetail from './pages/NewsDetail';
@@ -23,7 +22,6 @@ import Notifications from './pages/Notifications';
 import Profile from './pages/Profile';
 import NotFound from './pages/NotFound';
 
-// Admin Pages
 import Dashboard from './pages/admin/Dashboard';
 import ManageNews from './pages/admin/ManageNews';
 import CreateNews from './pages/admin/CreateNews';
@@ -46,7 +44,6 @@ function App() {
       <ToastProvider>
         <AuthProvider>
           <Routes>
-            {/* ============ Public Routes ============ */}
             <Route element={<MainLayout />}>
               <Route path="/" element={<Home />} />
               <Route path="/news" element={<News />} />
@@ -62,7 +59,6 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/verify-otp" element={<VerifyOTP />} />
 
-              {/* ============ User Protected Routes ============ */}
               <Route
                 path="/profile"
                 element={
@@ -89,7 +85,6 @@ function App() {
               />
             </Route>
 
-            {/* ============ Admin Routes ============ */}
             <Route
               element={
                 <ProtectedRoute adminOnly>
@@ -99,34 +94,27 @@ function App() {
             >
               <Route path="/admin" element={<Dashboard />} />
 
-              {/* News */}
               <Route path="/admin/news" element={<ManageNews />} />
               <Route path="/admin/news/create" element={<CreateNews />} />
               <Route path="/admin/news/edit/:id" element={<EditNews />} />
 
-              {/* Videos */}
               <Route path="/admin/videos" element={<ManageVideos />} />
               <Route path="/admin/videos/create" element={<CreateVideo />} />
               <Route path="/admin/videos/edit/:id" element={<EditVideo />} />
 
-              {/* Players */}
               <Route path="/admin/players" element={<ManagePlayers />} />
               <Route path="/admin/players/create" element={<CreatePlayer />} />
               <Route path="/admin/players/edit/:id" element={<EditPlayer />} />
 
-              {/* Matches */}
               <Route path="/admin/matches" element={<ManageMatches />} />
               <Route path="/admin/matches/create" element={<CreateMatch />} />
               <Route path="/admin/matches/edit/:id" element={<EditMatch />} />
 
-              {/* Statistics */}
               <Route path="/admin/statistics" element={<ManageStats />} />
 
-              {/* Messages */}
               <Route path="/admin/messages" element={<ManageMessages />} />
             </Route>
 
-            {/* ============ 404 ============ */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

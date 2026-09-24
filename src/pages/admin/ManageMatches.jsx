@@ -82,7 +82,6 @@ const ManageMatches = () => {
 
   return (
     <div className="container-custom py-8">
-      {/* Header */}
       <div className="bg-gradient-to-l from-primary to-primary-dark text-white p-6 md:p-8 rounded-2xl mb-8">
         <div className="flex flex-wrap justify-between items-center gap-4">
           <div className="flex items-center gap-3">
@@ -105,7 +104,6 @@ const ManageMatches = () => {
         </div>
       </div>
 
-      {/* Search & Filter */}
       <div className="bg-white rounded-xl shadow-md p-6 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="md:col-span-2 relative">
@@ -162,7 +160,6 @@ const ManageMatches = () => {
         </div>
       </div>
 
-      {/* Matches Table */}
       <div className="bg-white rounded-xl shadow-md overflow-hidden">
         {filtered.length === 0 ? (
           <div className="text-center py-16">

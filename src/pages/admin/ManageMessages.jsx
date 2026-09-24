@@ -60,7 +60,6 @@ const ManageMessages = () => {
     setSelectedMessage(message);
     setAdminNotes(message.adminNotes || '');
 
-    // تعليم كمقروء
     if (message.status === 'new') {
       try {
         await messageAPI.updateStatus(message._id, { status: 'read' });
@@ -140,7 +139,6 @@ const ManageMessages = () => {
 
   return (
     <div className="container-custom py-8">
-      {/* Header */}
       <div className="bg-gradient-to-l from-primary to-primary-dark text-white p-6 md:p-8 rounded-2xl mb-6">
         <div className="flex items-center gap-3">
           <div className="w-14 h-14 bg-secondary rounded-xl flex items-center justify-center text-primary text-2xl">
@@ -152,7 +150,6 @@ const ManageMessages = () => {
           </div>
         </div>
 
-        {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mt-6">
           <div className="bg-white/10 backdrop-blur-md rounded-xl p-3 text-center">
             <p className="text-2xl font-black text-white">{stats.total}</p>
@@ -177,7 +174,6 @@ const ManageMessages = () => {
         </div>
       </div>
 
-      {/* Filters */}
       <div className="bg-white rounded-xl shadow-md p-4 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div className="relative">
@@ -204,7 +200,6 @@ const ManageMessages = () => {
         </div>
       </div>
 
-      {/* Messages Grid */}
       {messages.length === 0 ? (
         <div className="text-center py-20 bg-white rounded-2xl shadow-md">
           <FaEnvelope className="text-6xl text-gray-200 mx-auto mb-4" />
@@ -226,7 +221,6 @@ const ManageMessages = () => {
                   'border-r-gray-300'
                 }`}
               >
-                {/* Header */}
                 <div className="flex justify-between items-start mb-3">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center font-black">
@@ -242,7 +236,6 @@ const ManageMessages = () => {
                   </span>
                 </div>
 
-                {/* Subject */}
                 <div className="mb-2">
                   <span className="text-xs font-bold text-secondary">
                     {subjectNames[msg.subject] || msg.subject}
@@ -252,12 +245,10 @@ const ManageMessages = () => {
                   )}
                 </div>
 
-                {/* Content */}
                 <p className="text-sm text-gray-700 line-clamp-2 mb-3">
                   {msg.content}
                 </p>
 
-                {/* Footer */}
                 <div className="flex justify-between items-center text-xs text-gray-400">
                   <span>{formatRelativeTime(msg.createdAt)}</span>
                   {msg.senderPhone && (
@@ -272,7 +263,6 @@ const ManageMessages = () => {
         </div>
       )}
 
-      {/* Detail Modal */}
       {selectedMessage && (
         <div
           className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[200] flex items-center justify-center p-4"
@@ -298,9 +288,7 @@ const ManageMessages = () => {
               </button>
             </div>
 
-            {/* Modal Body */}
             <div className="flex-1 overflow-y-auto p-6">
-              {/* Sender Info */}
               <div className="bg-gray-50 rounded-xl p-4 mb-4">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center font-black text-lg">
@@ -327,7 +315,6 @@ const ManageMessages = () => {
                 )}
               </div>
 
-              {/* Subject */}
               <div className="mb-4">
                 <p className="text-xs font-bold text-gray-500 mb-1">الموضوع:</p>
                 <p className="font-black text-primary text-lg">
@@ -336,7 +323,6 @@ const ManageMessages = () => {
                 </p>
               </div>
 
-              {/* Content */}
               <div className="bg-gray-50 rounded-xl p-4 mb-4">
                 <p className="text-xs font-bold text-gray-500 mb-2">الرسالة:</p>
                 <p className="text-gray-800 leading-relaxed whitespace-pre-line">
@@ -344,7 +330,6 @@ const ManageMessages = () => {
                 </p>
               </div>
 
-              {/* Admin Notes */}
               <div>
                 <label className="block text-xs font-bold text-gray-500 mb-2">
                   📝 ملاحظاتك (داخلية):
@@ -366,7 +351,6 @@ const ManageMessages = () => {
               </div>
             </div>
 
-            {/* Modal Footer */}
             <div className="bg-gray-50 p-4 border-t flex flex-wrap gap-2">
               {selectedMessage.status !== 'replied' && (
                 <button

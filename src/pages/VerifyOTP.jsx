@@ -111,7 +111,6 @@ const VerifyOTP = () => {
 
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-white">
-      {/* ============ Left - Branding ============ */}
       <div className="hidden lg:flex relative bg-gradient-to-br from-primary via-primary-light to-primary-dark overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-20 left-20 w-96 h-96 bg-secondary rounded-full blur-3xl animate-float"></div>
@@ -145,10 +144,8 @@ const VerifyOTP = () => {
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-primary-dark to-transparent"></div>
       </div>
 
-      {/* ============ Right - Form ============ */}
       <div className="flex items-center justify-center p-6 md:p-12 bg-gray-50">
         <div className="w-full max-w-md">
-          {/* Mobile Logo */}
           <div className="lg:hidden text-center mb-6">
             <img
               src="/logo.png"
@@ -159,7 +156,6 @@ const VerifyOTP = () => {
           </div>
 
           <div className="bg-white rounded-3xl shadow-xl p-8">
-            {/* Header */}
             <div className="text-center mb-6">
               <div className="relative inline-block mb-4">
                 <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary-dark rounded-full flex items-center justify-center shadow-2xl">
@@ -176,7 +172,6 @@ const VerifyOTP = () => {
               </p>
             </div>
 
-            {/* Progress */}
             <div className="flex items-center justify-center gap-3 mb-6">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center text-sm">✓</div>
@@ -189,14 +184,12 @@ const VerifyOTP = () => {
               </div>
             </div>
 
-            {/* Error */}
             {error && (
               <div className="bg-red-50 border-2 border-red-200 text-red-700 p-3 rounded-xl mb-5 text-sm text-center font-bold">
                 ⚠️ {error}
               </div>
             )}
 
-            {/* OTP Form */}
             <form onSubmit={handleSubmit}>
               <label className="block text-sm font-bold text-gray-700 mb-3 text-center">
                 أدخل الرمز

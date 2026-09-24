@@ -159,7 +159,6 @@ const EditPlayer = () => {
         )}
 
         <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-md p-6 md:p-8 space-y-6">
-          {/* Basic Info */}
           <div>
             <h2 className="text-lg font-black text-primary mb-4 pb-2 border-b-2 border-secondary flex items-center gap-2">
               <span className="w-1 h-6 bg-secondary rounded"></span>

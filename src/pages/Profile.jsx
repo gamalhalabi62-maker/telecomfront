@@ -34,7 +34,6 @@ const Profile = () => {
 
   const [errors, setErrors] = useState({});
 
-  // جلب الإحصائيات
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -153,18 +152,15 @@ const Profile = () => {
 
           <div className="relative z-10 p-6 md:p-10">
             <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
-              {/* Avatar */}
               <div className="relative flex-shrink-0">
                 <div className="w-28 h-28 md:w-32 md:h-32 rounded-full bg-gradient-to-br from-secondary to-yellow-400 flex items-center justify-center text-primary-dark font-black text-5xl md:text-6xl shadow-2xl border-4 border-white/30">
                   {user.name?.charAt(0).toUpperCase()}
                 </div>
-                {/* Online Dot */}
                 <span className="absolute bottom-2 right-2 w-6 h-6 bg-green-500 rounded-full border-4 border-white shadow-lg">
                   <span className="absolute inset-0 bg-green-400 rounded-full animate-ping opacity-75"></span>
                 </span>
               </div>
 
-              {/* Info */}
               <div className="flex-1 text-center md:text-right">
                 <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-3">
                   <h1 className="text-2xl md:text-4xl font-black text-white">
@@ -198,7 +194,6 @@ const Profile = () => {
                 )}
               </div>
 
-              {/* Logout */}
               <button
                 onClick={handleLogout}
                 className="bg-red-500 hover:bg-red-600 text-white px-5 py-3 rounded-xl font-bold transition flex items-center gap-2 shadow-lg flex-shrink-0"
@@ -209,7 +204,6 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* ============ Quick Stats ============ */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <Link
             to="/my-messages"
@@ -258,9 +252,7 @@ const Profile = () => {
           </Link>
         </div>
 
-        {/* ============ Profile Details ============ */}
         <div className="bg-white rounded-3xl shadow-lg overflow-hidden">
-          {/* Header */}
           <div className="bg-gradient-to-l from-primary/5 to-secondary/5 px-6 md:px-8 py-5 border-b-2 border-secondary/30 flex justify-between items-center">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-primary text-white rounded-xl flex items-center justify-center">
@@ -282,7 +274,6 @@ const Profile = () => {
             )}
           </div>
 
-          {/* Body */}
           <div className="p-6 md:p-8">
             {loadingData ? (
               <Loading />
@@ -310,7 +301,6 @@ const Profile = () => {
                   {errors.name && <p className="text-red-500 text-xs mt-1">⚠️ {errors.name}</p>}
                 </div>
 
-                {/* Email (غير قابل للتعديل) */}
                 <div>
                   <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
                     <FaEnvelope className="text-primary" />
@@ -327,7 +317,6 @@ const Profile = () => {
                   </div>
                 </div>
 
-                {/* Phone */}
                 <div>
                   <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
                     <FaWhatsapp className="text-green-600" />
@@ -354,7 +343,6 @@ const Profile = () => {
                   )}
                 </div>
 
-                {/* Notifications Toggle */}
                 <div>
                   <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
                     {formData.receiveNotifications ? (
@@ -404,7 +392,6 @@ const Profile = () => {
                   )}
                 </div>
 
-                {/* Actions */}
                 {isEditing && (
                   <div className="flex gap-3 pt-4 border-t">
                     <button
@@ -428,7 +415,6 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* ============ Danger Zone ============ */}
         <div className="bg-white rounded-3xl shadow-lg overflow-hidden mt-6 border-2 border-red-100">
         
 
@@ -450,7 +436,6 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* ============ Back to Home ============ */}
         <div className="text-center mt-8">
           <Link to="/" className="text-primary hover:text-secondary font-bold transition inline-flex items-center gap-2">
             ← العودة للصفحة الرئيسية

@@ -1,21 +1,26 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaSave, FaTimes, FaImage } from 'react-icons/fa';
+import { FaSave, FaTimes, FaImage, FaVideo, FaFileAlt, FaLayerGroup } from 'react-icons/fa';
 import { newsAPI } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
 
 const CreateNews = () => {
   const navigate = useNavigate();
   const toast = useToast();
+
   const [formData, setFormData] = useState({
     title: '',
     content: '',
     excerpt: '',
     category: 'general',
     isFeatured: false,
+    mediaType: 'none',
   });
+
   const [image, setImage] = useState(null);
-  const [preview, setPreview] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [video, setVideo] = useState(null);
+  const [videoPreview, setVideoPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -25,6 +30,13 @@ const CreateNews = () => {
     { value: 'club', label: 'أخبار النادي' },
     { value: 'academy', label: 'الأكاديمية' },
     { value: 'elections', label: 'الانتخابات' },
+  ];
+
+  const mediaTypes = [
+    { value: 'none', label: 'نصي', icon: <FaFileAlt />, desc: 'بدون وسائط' },
+    { value: 'image', label: 'صورة', icon: <FaImage />, desc: 'صورة فقط' },
+    { value: 'video', label: 'فيديو', icon: <FaVideo />, desc: 'فيديو فقط' },
+    { value: 'both', label: 'صورة + فيديو', icon: <FaLayerGroup />, desc: 'كلاهما' },
   ];
 
   const handleImageChange = (e) => {
@@ -42,12 +54,41 @@ const CreateNews = () => {
     }
 
     setImage(file);
-    setPreview(URL.createObjectURL(file));
+    setImagePreview(URL.createObjectURL(file));
+  };
+
+  const handleVideoChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('video/')) {
+      toast.error('يرجى اختيار فيديو صحيح');
+      return;
+    }
+
+    if (file.size > 100 * 1024 * 1024) {
+      toast.error('حجم الفيديو كبير جداً (الحد الأقصى 100MB)');
+      return;
+    }
+
+    setVideo(file);
+    setVideoPreview(URL.createObjectURL(file));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    if (formData.mediaType === 'image' && !image) {
+      return setError('يجب اختيار صورة');
+    }
+    if (formData.mediaType === 'video' && !video) {
+      return setError('يجب اختيار فيديو');
+    }
+    if (formData.mediaType === 'both' && (!image || !video)) {
+      return setError('يجب اختيار صورة وفيديو معاً');
+    }
+
     setLoading(true);
 
     try {
@@ -57,7 +98,9 @@ const CreateNews = () => {
       if (formData.excerpt) data.append('excerpt', formData.excerpt);
       data.append('category', formData.category);
       data.append('isFeatured', formData.isFeatured);
+      data.append('mediaType', formData.mediaType);
       if (image) data.append('image', image);
+      if (video) data.append('video', video);
 
       await newsAPI.create(data);
       toast.success('تم إضافة الخبر بنجاح');
@@ -122,6 +165,28 @@ const CreateNews = () => {
           </div>
 
           <div>
+            <label className="block font-bold text-gray-700 mb-3">نوع المحتوى *</label>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {mediaTypes.map((type) => (
+                <button
+                  key={type.value}
+                  type="button"
+                  onClick={() => setFormData({ ...formData, mediaType: type.value })}
+                  className={`p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${
+                    formData.mediaType === type.value
+                      ? 'border-primary bg-primary/10 text-primary shadow-lg scale-105'
+                      : 'border-gray-200 text-gray-500 hover:border-gray-300'
+                  }`}
+                >
+                  <span className="text-2xl">{type.icon}</span>
+                  <span className="font-bold text-sm">{type.label}</span>
+                  <span className="text-xs opacity-70">{type.desc}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
             <label className="block font-bold text-gray-700 mb-2">مقتطف</label>
             <textarea
               value={formData.excerpt}
@@ -142,37 +207,83 @@ const CreateNews = () => {
             ></textarea>
           </div>
 
-          <div>
-            <label className="block font-bold text-gray-700 mb-2">صورة الخبر</label>
-            <p className="text-xs text-gray-500 mb-2">💡 الحد الأقصى 5MB</p>
-            <div className="flex flex-col md:flex-row gap-4 items-start">
-              <label className="cursor-pointer bg-primary text-white px-6 py-3 rounded-lg font-bold hover:bg-primary-dark transition flex items-center gap-2">
-                <FaImage /> اختر صورة
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className="hidden"
-                />
+          {(formData.mediaType === 'image' || formData.mediaType === 'both') && (
+            <div className="bg-gray-50 rounded-xl p-5">
+              <label className="block font-bold text-gray-700 mb-3">
+                {formData.mediaType === 'both' ? 'صورة الغلاف *' : 'الصورة *'}
               </label>
-              {preview && (
-                <div className="relative">
-                  <img
-                    src={preview}
-                    alt="preview"
-                    className="w-40 h-32 object-cover rounded-lg shadow-md"
+              <p className="text-xs text-gray-500 mb-3">💡 الحد الأقصى 5MB — JPG, PNG, WEBP, GIF</p>
+              <div className="flex flex-col md:flex-row gap-4 items-start">
+                <label className="cursor-pointer bg-primary text-white px-6 py-3 rounded-lg font-bold hover:bg-primary-dark transition flex items-center gap-2">
+                  <FaImage /> اختر صورة
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="hidden"
                   />
-                  <button
-                    type="button"
-                    onClick={() => { setPreview(null); setImage(null); }}
-                    className="absolute -top-2 -left-2 bg-red-500 text-white w-7 h-7 rounded-full flex items-center justify-center shadow-lg hover:bg-red-600"
-                  >
-                    <FaTimes size={12} />
-                  </button>
-                </div>
+                </label>
+                {imagePreview && (
+                  <div className="relative">
+                    <img
+                      src={imagePreview}
+                      alt="preview"
+                      className="w-40 h-32 object-cover rounded-lg shadow-md"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => { setImagePreview(null); setImage(null); }}
+                      className="absolute -top-2 -left-2 bg-red-500 text-white w-7 h-7 rounded-full flex items-center justify-center shadow-lg hover:bg-red-600"
+                    >
+                      <FaTimes size={12} />
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {(formData.mediaType === 'video' || formData.mediaType === 'both') && (
+            <div className="bg-gray-50 rounded-xl p-5">
+              <label className="block font-bold text-gray-700 mb-3">
+                {formData.mediaType === 'both' ? 'الفيديو *' : 'ملف الفيديو *'}
+              </label>
+              <p className="text-xs text-gray-500 mb-3">💡 الحد الأقصى 100MB — MP4, WEBM, MOV</p>
+              <div className="flex flex-col md:flex-row gap-4 items-start">
+                <label className="cursor-pointer bg-primary text-white px-6 py-3 rounded-lg font-bold hover:bg-primary-dark transition flex items-center gap-2">
+                  <FaVideo /> اختر فيديو
+                  <input
+                    type="file"
+                    accept="video/*"
+                    onChange={handleVideoChange}
+                    className="hidden"
+                  />
+                </label>
+                {videoPreview && (
+                  <div className="relative flex-1 max-w-md">
+                    <video
+                      src={videoPreview}
+                      controls
+                      className="w-full rounded-lg shadow-md"
+                      style={{ maxHeight: '220px' }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => { setVideoPreview(null); setVideo(null); }}
+                      className="absolute -top-2 -left-2 bg-red-500 text-white w-7 h-7 rounded-full flex items-center justify-center shadow-lg hover:bg-red-600"
+                    >
+                      <FaTimes size={12} />
+                    </button>
+                  </div>
+                )}
+              </div>
+              {video && (
+                <p className="text-xs text-green-600 font-bold mt-3">
+                  ✅ {video.name} ({(video.size / 1024 / 1024).toFixed(2)} MB)
+                </p>
               )}
             </div>
-          </div>
+          )}
 
           <div className="flex gap-4 pt-4 border-t">
             <button

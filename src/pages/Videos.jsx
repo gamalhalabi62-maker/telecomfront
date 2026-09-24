@@ -88,7 +88,6 @@ const Videos = () => {
 
   return (
     <div>
-      {/* Header */}
       <section className="bg-gradient-to-l from-primary via-primary-light to-primary-dark text-white py-20 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 right-0 w-96 h-96 bg-secondary rounded-full blur-3xl animate-float"></div>
@@ -106,7 +105,6 @@ const Videos = () => {
       </section>
 
       <div className="container-custom py-12">
-        {/* Search & Filter */}
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 sticky top-24 z-20">
           <form onSubmit={handleSearch} className="flex gap-3 mb-4">
             <div className="relative flex-1">
@@ -179,7 +177,6 @@ const Videos = () => {
           )}
         </div>
 
-        {/* Videos Grid */}
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
@@ -231,7 +228,6 @@ const Videos = () => {
         )}
       </div>
 
-      {/* Video Modal */}
       {selectedVideo && (
         <VideoModal
           video={selectedVideo}

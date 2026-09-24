@@ -6,6 +6,7 @@ const api = axios.create({
   baseURL: API_URL,
   maxContentLength: 100 * 1024 * 1024,
   maxBodyLength: 100 * 1024 * 1024,
+  timeout: 600000,
 });
 
 api.interceptors.request.use(
@@ -13,8 +14,6 @@ api.interceptors.request.use(
     const token = localStorage.getItem('token');
     if (token) config.headers.Authorization = `Bearer ${token}`;
 
-    // ✅ إذا كانت البيانات FormData، احذف Content-Type نهائياً
-    // ليضبط axios الحدود (boundary) تلقائياً
     if (config.data instanceof FormData) {
       delete config.headers['Content-Type'];
     }
@@ -38,9 +37,6 @@ api.interceptors.response.use(
   }
 );
 
-/* ============================================================
- *  AUTH
- * ============================================================ */
 export const authAPI = {
   register: (data) => api.post('/auth/register', data),
   verifyOTP: (data) => api.post('/auth/verify-otp', data),
@@ -50,10 +46,6 @@ export const authAPI = {
   updateProfile: (data) => api.put('/auth/profile', data),
 };
 
-/* ============================================================
- *  NEWS
- *  ⚠️ لا تضبط Content-Type يدوياً مع FormData
- * ============================================================ */
 export const newsAPI = {
   getAll: (params) => api.get('/news', { params }),
   getById: (id) => api.get(`/news/${id}`),
@@ -67,9 +59,6 @@ export const newsAPI = {
   delete: (id) => api.delete(`/news/${id}`),
 };
 
-/* ============================================================
- *  VIDEOS
- * ============================================================ */
 export const videoAPI = {
   getAll: (params) => api.get('/videos', { params }),
   getById: (id) => api.get(`/videos/${id}`),
@@ -80,9 +69,6 @@ export const videoAPI = {
   delete: (id) => api.delete(`/videos/${id}`),
 };
 
-/* ============================================================
- *  PLAYERS
- * ============================================================ */
 export const playerAPI = {
   getAll: (params) => api.get('/players', { params }),
   getById: (id) => api.get(`/players/${id}`),
@@ -94,9 +80,6 @@ export const playerAPI = {
   delete: (id) => api.delete(`/players/${id}`),
 };
 
-/* ============================================================
- *  MATCHES  (JSON — لا FormData)
- * ============================================================ */
 export const matchAPI = {
   getAll: (params) => api.get('/matches', { params }),
   getById: (id) => api.get(`/matches/${id}`),
@@ -110,9 +93,6 @@ export const matchAPI = {
   delete: (id) => api.delete(`/matches/${id}`),
 };
 
-/* ============================================================
- *  STATISTICS
- * ============================================================ */
 export const statisticAPI = {
   getAll: (params) => api.get('/statistics', { params }),
   getById: (id) => api.get(`/statistics/${id}`),
@@ -121,9 +101,6 @@ export const statisticAPI = {
   delete: (id) => api.delete(`/statistics/${id}`),
 };
 
-/* ============================================================
- *  MESSAGES
- * ============================================================ */
 export const messageAPI = {
   create: (data) => api.post('/messages', data),
   getMy: () => api.get('/messages/my'),
@@ -133,9 +110,6 @@ export const messageAPI = {
   delete: (id) => api.delete(`/messages/${id}`),
 };
 
-/* ============================================================
- *  NOTIFICATIONS
- * ============================================================ */
 export const notificationAPI = {
   getAll: (params) => api.get('/notifications', { params }),
   getUnreadCount: () => api.get('/notifications/unread-count'),

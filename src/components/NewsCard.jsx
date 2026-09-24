@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
-import { FaCalendar, FaEye, FaArrowLeft, FaClock } from 'react-icons/fa';
+import { FaCalendar, FaEye, FaArrowLeft, FaClock, FaPlay, FaVideo } from 'react-icons/fa';
 import { formatRelativeTime, getCategoryName } from '../utils/formatDate';
+import { getMediaPreviewImage, formatDuration, isVideoNews } from '../utils/mediaHelpers';
 
 const getReadingTime = (content = '') => {
   const words = content.split(/\s+/).length;
@@ -12,31 +13,47 @@ const isNew = (date) => {
   return hours < 24;
 };
 
-// دالة ذكية للتعامل مع جميع أنواع الصور (Base64، روابط كاملة، روابط قديمة)
 const resolveImageUrl = (url) => {
   if (!url) return 'https://placehold.co/600x400/4A148C/FFFFFF?text=Telecom+Egypt';
-  // إذا كانت الصورة مخزنة كـ Base64 أو رابط خارجي (http / https) نعرضها مباشرة
   if (url.startsWith('data:') || url.startsWith('http://') || url.startsWith('https://')) {
     return url;
   }
-  // للروابط النسبية القديمة إن وجدت
   return url;
 };
 
 export const FeaturedCard = ({ news }) => {
   if (!news) return null;
+
+  const previewImage = getMediaPreviewImage(news);
+  const isVideo = isVideoNews(news);
+  const duration = formatDuration(news.videoDuration);
+
   return (
     <Link to={`/news/${news._id}`} className="block group animate-fade-in-up">
       <div className="relative overflow-hidden rounded-3xl shadow-2xl h-[400px] md:h-[600px]">
         <img
-          src={resolveImageUrl(news.imageUrl)}
+          src={resolveImageUrl(previewImage)}
           alt={news.title}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1.5s] ease-out"
           onError={(e) => { e.target.src = 'https://placehold.co/1200x600/4A148C/FFFFFF?text=Telecom+Egypt'; }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-primary-dark via-primary-dark/60 to-transparent"></div>
 
+        {isVideo && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="w-20 h-20 md:w-28 md:h-28 bg-white/95 rounded-full flex items-center justify-center shadow-2xl transform group-hover:scale-110 transition-transform">
+              <FaPlay className="text-primary text-2xl md:text-3xl mr-1" />
+            </div>
+          </div>
+        )}
+
         <div className="absolute top-6 right-6 flex gap-2 flex-wrap">
+          {isVideo && (
+            <span className="bg-red-600 text-white px-4 py-2 rounded-full text-xs font-black flex items-center gap-1.5 shadow-lg">
+              <FaVideo size={10} />
+              {duration ? `فيديو • ${duration}` : 'فيديو'}
+            </span>
+          )}
           {isNew(news.createdAt) && (
             <span className="badge-new relative bg-red-500 text-white px-4 py-2 rounded-full text-xs font-black z-10">🔥 جديد</span>
           )}
@@ -70,7 +87,7 @@ export const FeaturedCard = ({ news }) => {
           </p>
 
           <div className="inline-flex items-center gap-2 text-secondary font-bold text-lg group-hover:gap-4 transition-all">
-            اقرأ التفاصيل <FaArrowLeft />
+            {isVideo ? 'شاهد الآن' : 'اقرأ التفاصيل'} <FaArrowLeft />
           </div>
         </div>
       </div>
@@ -80,18 +97,37 @@ export const FeaturedCard = ({ news }) => {
 
 export const LargeCard = ({ news }) => {
   if (!news) return null;
+
+  const previewImage = getMediaPreviewImage(news);
+  const isVideo = isVideoNews(news);
+  const duration = formatDuration(news.videoDuration);
+
   return (
     <Link to={`/news/${news._id}`} className="block group animate-fade-in-up">
       <div className="relative overflow-hidden rounded-2xl shadow-xl h-[350px]">
         <img
-          src={resolveImageUrl(news.imageUrl)}
+          src={resolveImageUrl(previewImage)}
           alt={news.title}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
           onError={(e) => { e.target.src = 'https://placehold.co/800x400/4A148C/FFFFFF?text=News'; }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent"></div>
 
-        <div className="absolute top-4 right-4 flex gap-2">
+        {isVideo && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="w-14 h-14 bg-white/95 rounded-full flex items-center justify-center shadow-2xl transform group-hover:scale-110 transition-transform">
+              <FaPlay className="text-primary text-lg mr-1" />
+            </div>
+          </div>
+        )}
+
+        <div className="absolute top-4 right-4 flex gap-2 flex-wrap">
+          {isVideo && (
+            <span className="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-black flex items-center gap-1">
+              <FaVideo size={9} />
+              {duration || 'فيديو'}
+            </span>
+          )}
           {isNew(news.createdAt) && (
             <span className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-black">جديد</span>
           )}
@@ -127,17 +163,37 @@ const NewsCard = ({ news, variant = 'standard' }) => {
 
   if (!news) return null;
 
+  const previewImage = getMediaPreviewImage(news);
+  const isVideo = isVideoNews(news);
+  const duration = formatDuration(news.videoDuration);
+
   return (
     <Link to={`/news/${news._id}`} className="block group animate-fade-in-up">
       <article className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 h-full flex flex-col">
         <div className="relative overflow-hidden h-56 flex-shrink-0">
           <img
-            src={resolveImageUrl(news.imageUrl)}
+            src={resolveImageUrl(previewImage)}
             alt={news.title}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
             onError={(e) => { e.target.src = 'https://placehold.co/400x300/4A148C/FFFFFF?text=News'; }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-primary-dark/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+          {isVideo && (
+            <>
+              <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                <div className="w-14 h-14 bg-white/95 rounded-full flex items-center justify-center shadow-2xl transform group-hover:scale-110 transition-transform">
+                  <FaPlay className="text-primary text-lg mr-1" />
+                </div>
+              </div>
+
+              <div className="absolute bottom-4 right-4 bg-black/75 backdrop-blur-sm text-white text-xs font-black px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg">
+                <FaVideo size={9} />
+                {news.mediaType === 'both' ? 'فيديو + صورة' : 'فيديو'}
+                {duration && <span className="text-white/80">• {duration}</span>}
+              </div>
+            </>
+          )}
 
           <span className="absolute top-4 right-4 bg-primary text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg">
             {getCategoryName(news.category)}
@@ -184,7 +240,7 @@ const NewsCard = ({ news, variant = 'standard' }) => {
               </span>
             </div>
             <span className="flex items-center gap-1 text-primary font-bold group-hover:text-secondary group-hover:gap-2 transition-all">
-              اقرأ <FaArrowLeft />
+              {isVideo ? 'شاهد' : 'اقرأ'} <FaArrowLeft />
             </span>
           </div>
         </div>

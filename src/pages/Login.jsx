@@ -56,9 +56,7 @@ const Login = () => {
 
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-white">
-      {/* ============ Left Side - Branding (Desktop only) ============ */}
       <div className="hidden lg:flex relative bg-gradient-to-br from-primary via-primary-light to-primary-dark overflow-hidden">
-        {/* Decorations */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-20 left-20 w-96 h-96 bg-secondary rounded-full blur-3xl animate-float"></div>
           <div className="absolute bottom-20 right-20 w-96 h-96 bg-secondary rounded-full blur-3xl animate-float"></div>
@@ -72,7 +70,6 @@ const Login = () => {
           }}
         ></div>
 
-        {/* Content */}
         <div className="relative z-10 flex flex-col justify-center items-center w-full p-12 text-white text-center">
           <img
             src="/logo.png"
@@ -88,7 +85,6 @@ const Login = () => {
             TELECOM EGYPT CLUB
           </p>
 
-          {/* Features */}
           <div className="space-y-4 w-full max-w-sm">
             {[
               { icon: <FaTrophy />, text: 'تابع آخر الأخبار والبطولات' },
@@ -108,14 +104,11 @@ const Login = () => {
           </div>
         </div>
 
-        {/* Bottom gradient */}
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-primary-dark to-transparent"></div>
       </div>
 
-      {/* ============ Right Side - Form ============ */}
       <div className="flex items-center justify-center p-6 md:p-12 bg-gray-50">
         <div className="w-full max-w-md">
-          {/* Mobile Logo */}
           <div className="lg:hidden text-center mb-8">
             <img
               src="/logo.png"
@@ -127,16 +120,13 @@ const Login = () => {
             <p className="text-gray-500 text-sm">TELECOM EGYPT CLUB</p>
           </div>
 
-          {/* Card */}
           <div className="bg-white rounded-3xl shadow-xl p-8 md:p-10">
             <div className="text-center mb-8">
               <h1 className="text-3xl font-black text-primary mb-2">تسجيل الدخول</h1>
               <p className="text-gray-500 text-sm">أدخل بياناتك للمتابعة</p>
             </div>
 
-            {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Email */}
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-2">
                   البريد الإلكتروني
@@ -159,7 +149,6 @@ const Login = () => {
                 {errors.email && <p className="text-red-500 text-xs mt-1.5">⚠️ {errors.email}</p>}
               </div>
 
-              {/* Password */}
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-2">
                   كلمة المرور
@@ -190,7 +179,6 @@ const Login = () => {
                 {errors.password && <p className="text-red-500 text-xs mt-1.5">⚠️ {errors.password}</p>}
               </div>
 
-              {/* Submit */}
               <button
                 type="submit"
                 disabled={loading}
@@ -209,14 +197,12 @@ const Login = () => {
               </button>
             </form>
 
-            {/* Divider */}
             <div className="flex items-center gap-3 my-6">
               <div className="flex-1 h-px bg-gray-200"></div>
               <span className="text-gray-400 text-xs">أو</span>
               <div className="flex-1 h-px bg-gray-200"></div>
             </div>
 
-            {/* Register Link */}
             <Link
               to="/register"
               className="block w-full h-14 border-2 border-primary text-primary rounded-xl font-black text-lg hover:bg-primary hover:text-white transition-all duration-300 flex items-center justify-center gap-2"
@@ -224,7 +210,6 @@ const Login = () => {
               إنشاء حساب جديد
             </Link>
 
-            {/* Back to home */}
             <div className="text-center mt-6">
               <Link to="/" className="text-gray-500 text-sm hover:text-primary transition">
                 ← العودة للصفحة الرئيسية

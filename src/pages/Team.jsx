@@ -15,7 +15,6 @@ const positionNames = {
   forward: 'مهاجم',
 };
 
-// 🟣 ألوان بنفسجية لكل مركز مع تدرجات
 const positionColors = {
   goalkeeper: {
     from: '#FBC02D',
@@ -43,9 +42,7 @@ const positionColors = {
   },
 };
 
-// ==========================================
-// Player Card 3D - مع دوران 360° عند الضغط
-// ==========================================
+
 const PlayerSliderCard = ({ player }) => {
   const cardRef = useRef(null);
   const navigate = useNavigate();
@@ -81,7 +78,6 @@ const PlayerSliderCard = ({ player }) => {
     setIsHovered(false);
   };
 
-  // 🎬 دوران 360° عند الضغط
   const handleClick = (e) => {
     e.preventDefault();
     if (isSpinning) return;
@@ -89,7 +85,6 @@ const PlayerSliderCard = ({ player }) => {
     setIsSpinning(true);
     setTilt({ x: 0, y: 0 });
 
-    // animation دوران 360° لمدة 1.2 ثانية
     const duration = 1200;
     const startTime = Date.now();
 
@@ -97,7 +92,6 @@ const PlayerSliderCard = ({ player }) => {
       const elapsed = Date.now() - startTime;
       const progress = Math.min(elapsed / duration, 1);
 
-      // easeInOutCubic
       const eased = progress < 0.5
         ? 4 * progress * progress * progress
         : 1 - Math.pow(-2 * progress + 2, 3) / 2;
@@ -107,7 +101,6 @@ const PlayerSliderCard = ({ player }) => {
       if (progress < 1) {
         requestAnimationFrame(animate);
       } else {
-        // بعد الدوران، انتقل إلى صفحة اللاعب
         setTimeout(() => {
           navigate(`/team/${player._id}`);
         }, 100);
@@ -143,7 +136,6 @@ const PlayerSliderCard = ({ player }) => {
             : 'transform 0.3s ease-out, box-shadow 0.3s ease-out',
         }}
       >
-        {/* ============ طبقة 1: الخلفية المتوهجة ============ */}
         <div
           className="absolute inset-0 transition-opacity duration-300"
           style={{
@@ -153,7 +145,6 @@ const PlayerSliderCard = ({ player }) => {
           }}
         ></div>
 
-        {/* ============ طبقة 2: أنماط الخلفية ============ */}
         <div
           className="absolute inset-0 opacity-20 pointer-events-none"
           style={{ backfaceVisibility: 'hidden' }}
@@ -169,7 +160,6 @@ const PlayerSliderCard = ({ player }) => {
           ></div>
         </div>
 
-        {/* ============ طبقة 3: الرقم العملاق ============ */}
         <div
           className="absolute inset-0 flex items-center justify-center pointer-events-none select-none"
           style={{
@@ -188,7 +178,6 @@ const PlayerSliderCard = ({ player }) => {
           </span>
         </div>
 
-        {/* ============ طبقة 4: صورة اللاعب ============ */}
         <div
           className="absolute inset-0 flex items-end justify-center pt-24"
           style={{
@@ -219,7 +208,6 @@ const PlayerSliderCard = ({ player }) => {
           )}
         </div>
 
-        {/* ============ طبقة 5: Badge القائد ============ */}
         {player.isCaptain && (
           <div
             className="absolute top-5 left-5 bg-gradient-to-br from-yellow-300 to-yellow-500 text-yellow-900 px-3 py-2 rounded-full text-xs font-black shadow-xl flex items-center gap-1.5 z-30"
@@ -236,7 +224,6 @@ const PlayerSliderCard = ({ player }) => {
           </div>
         )}
 
-        {/* ============ طبقة 6: Badge المركز ============ */}
         <div
           className="absolute top-5 right-5 bg-white/25 backdrop-blur-lg text-white px-3 py-1.5 rounded-full text-xs font-bold border border-white/30 z-30"
           style={{
@@ -250,7 +237,6 @@ const PlayerSliderCard = ({ player }) => {
           {positionNames[player.position]}
         </div>
 
-        {/* ============ طبقة 7: الرقم الأمامي ============ */}
         <div
           className="absolute top-1/2 right-4 -translate-y-1/2 z-20"
           style={{
@@ -272,7 +258,6 @@ const PlayerSliderCard = ({ player }) => {
           </div>
         </div>
 
-        {/* ============ طبقة 8: معلومات اللاعب ============ */}
         <div
           className="absolute bottom-0 left-0 right-0 p-6 z-20"
           style={{
@@ -307,7 +292,6 @@ const PlayerSliderCard = ({ player }) => {
           </div>
         </div>
 
-        {/* ============ طبقة 9: الحدود المتوهجة ============ */}
         <div
           className="absolute inset-0 rounded-3xl pointer-events-none transition-opacity duration-300"
           style={{
@@ -318,7 +302,6 @@ const PlayerSliderCard = ({ player }) => {
           }}
         ></div>
 
-        {/* ============ Sparkle ============ */}
         {isHovered && !isSpinning && (
           <div
             className="absolute w-2 h-2 bg-white rounded-full pointer-events-none"
@@ -333,7 +316,6 @@ const PlayerSliderCard = ({ player }) => {
           ></div>
         )}
 
-        {/* ============ نص "اضغط للدخول" أثناء الدوران ============ */}
         {isSpinning && (
           <div className="absolute inset-0 flex items-center justify-center z-40">
             <div className="bg-white/20 backdrop-blur-lg px-6 py-3 rounded-full text-white font-black">
@@ -346,9 +328,7 @@ const PlayerSliderCard = ({ player }) => {
   );
 };
 
-// ==========================================
-// Player Section Slider
-// ==========================================
+
 const PlayerSectionSlider = ({ title, icon, players }) => {
   const scrollRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -393,7 +373,6 @@ const PlayerSectionSlider = ({ title, icon, players }) => {
 
   return (
     <div className="mb-16">
-      {/* Section Header */}
       <div className="flex justify-between items-center mb-8">
         <div className="flex items-center gap-3">
           <div className="w-14 h-14 bg-gradient-to-br from-primary to-primary-dark rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg">
@@ -472,9 +451,7 @@ const PlayerSectionSlider = ({ title, icon, players }) => {
   );
 };
 
-// ==========================================
-// Main Team Page
-// ==========================================
+
 const Team = () => {
   const [grouped, setGrouped] = useState({
     goalkeeper: [],
@@ -562,7 +539,6 @@ const Team = () => {
         </div>
       </section>
 
-      {/* Filter Sections */}
       <section className="bg-white shadow-md sticky top-20 z-20">
         <div className="container-custom py-4">
           <div className="flex gap-2 overflow-x-auto scrollbar-hide">
@@ -591,7 +567,6 @@ const Team = () => {
         </div>
       </section>
 
-      {/* Content */}
       <section className="container-custom py-12">
         {activeSection !== 'all' && (
           <PlayerSectionSlider
@@ -627,7 +602,6 @@ const Team = () => {
         )}
       </section>
 
-      {/* CTA */}
       <section className="container-custom pb-16">
         <div className="bg-gradient-to-br from-primary to-primary-dark rounded-3xl p-8 md:p-16 text-center text-white relative overflow-hidden">
           <div className="absolute top-0 left-0 w-64 h-64 bg-secondary rounded-full blur-3xl opacity-20"></div>

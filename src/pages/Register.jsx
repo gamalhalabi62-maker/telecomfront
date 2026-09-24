@@ -94,7 +94,6 @@ const Register = () => {
     } catch (err) {
       const errData = err.response?.data;
 
-      // ⚠️ الحل: لا نُحوّل تلقائياً — نعرض الخطأ فقط
       if (errData?.field === 'email') {
         setErrors({ ...errors, email: errData.message });
         toast.error(errData.message, 5000);
@@ -108,7 +107,6 @@ const Register = () => {
 
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-white">
-      {/* ============ Left Side - Branding ============ */}
       <div className="hidden lg:flex relative bg-gradient-to-br from-primary via-primary-light to-primary-dark overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-20 left-20 w-96 h-96 bg-secondary rounded-full blur-3xl animate-float"></div>
@@ -138,7 +136,6 @@ const Register = () => {
             كن جزءاً من نادي المصرية للاتصالات
           </p>
 
-          {/* Steps */}
           <div className="space-y-4 w-full max-w-sm">
             {[
               { num: '1', text: 'املأ بياناتك' },
@@ -161,10 +158,8 @@ const Register = () => {
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-primary-dark to-transparent"></div>
       </div>
 
-      {/* ============ Right Side - Form ============ */}
       <div className="flex items-center justify-center p-6 md:p-12 bg-gray-50">
         <div className="w-full max-w-md">
-          {/* Mobile Logo */}
           <div className="lg:hidden text-center mb-6">
             <img
               src="/logo.png"
@@ -175,9 +170,7 @@ const Register = () => {
             <h1 className="text-2xl font-black text-primary">إنشاء حساب</h1>
           </div>
 
-          {/* Card */}
           <div className="bg-white rounded-3xl shadow-xl p-8">
-            {/* Progress */}
             <div className="flex items-center justify-center gap-3 mb-6">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-black text-sm">1</div>
@@ -191,7 +184,6 @@ const Register = () => {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Name */}
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1.5">الاسم الكامل *</label>
                 <div className="relative">
@@ -212,7 +204,6 @@ const Register = () => {
                 {errors.name && <p className="text-red-500 text-xs mt-1">⚠️ {errors.name}</p>}
               </div>
 
-              {/* Email */}
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1.5">البريد الإلكتروني *</label>
                 <div className="relative">
@@ -238,7 +229,6 @@ const Register = () => {
                 )}
               </div>
 
-              {/* Phone */}
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1.5">
                   رقم الواتساب <span className="text-gray-400 font-normal">(اختياري)</span>
@@ -259,7 +249,6 @@ const Register = () => {
                 </div>
               </div>
 
-              {/* Password */}
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1.5">كلمة المرور *</label>
                 <div className="relative">
@@ -287,7 +276,6 @@ const Register = () => {
                   </button>
                 </div>
 
-                {/* Strength */}
                 {formData.password && (
                   <div className="mt-2">
                     <div className="flex gap-1 h-1.5">
@@ -308,7 +296,6 @@ const Register = () => {
                 {errors.password && <p className="text-red-500 text-xs mt-1">⚠️ {errors.password}</p>}
               </div>
 
-              {/* Confirm Password */}
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-1.5">تأكيد كلمة المرور *</label>
                 <div className="relative">
@@ -350,7 +337,6 @@ const Register = () => {
                 )}
               </div>
 
-              {/* Terms */}
               <label className="flex items-start gap-3 cursor-pointer p-3 bg-gradient-to-l from-primary/5 to-secondary/5 rounded-xl hover:from-primary/10 hover:to-secondary/10 transition border border-primary/10">
                 <input
                   type="checkbox"
@@ -368,7 +354,6 @@ const Register = () => {
               </label>
               {errors.agreeTerms && <p className="text-red-500 text-xs">⚠️ {errors.agreeTerms}</p>}
 
-              {/* Submit */}
               <button
                 type="submit"
                 disabled={loading}
@@ -387,7 +372,6 @@ const Register = () => {
               </button>
             </form>
 
-            {/* Divider */}
             <div className="flex items-center gap-3 my-5">
               <div className="flex-1 h-px bg-gray-200"></div>
               <span className="text-gray-400 text-xs">لديك حساب؟</span>

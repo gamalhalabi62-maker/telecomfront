@@ -85,7 +85,7 @@ const Notifications = () => {
     if (!notification.isRead) {
       try {
         await notificationAPI.markAsRead(notification._id);
-      } catch (error) { /* silent */ }
+      } catch (error) {  }
     }
     if (notification.link) navigate(notification.link);
   };
@@ -102,7 +102,6 @@ const Notifications = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      {/* Header */}
       <section className="bg-gradient-to-l from-primary via-primary-light to-primary-dark text-white py-12">
         <div className="container-custom">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
@@ -146,7 +145,6 @@ const Notifications = () => {
       </section>
 
       <div className="container-custom py-8">
-        {/* Filter */}
         {notifications.length > 0 && (
           <div className="bg-white rounded-2xl shadow-md p-4 mb-6">
             <div className="flex gap-2 overflow-x-auto scrollbar-hide">
@@ -171,7 +169,6 @@ const Notifications = () => {
           </div>
         )}
 
-        {/* List */}
         {filtered.length === 0 ? (
           <div className="text-center py-20 bg-white rounded-2xl shadow-md">
             <FaBell className="text-6xl text-gray-200 mx-auto mb-4" />
@@ -192,12 +189,10 @@ const Notifications = () => {
                     : 'bg-white border-gray-200 opacity-80'
                 }`}
               >
-                {/* Icon */}
                 <div className={`w-12 h-12 ${iconColors[notif.type] || iconColors.system} text-white rounded-xl flex items-center justify-center text-xl flex-shrink-0 shadow-md group-hover:scale-110 transition`}>
                   {iconMap[notif.type] || iconMap.system}
                 </div>
 
-                {/* Content */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <h3 className={`${!notif.isRead ? 'font-black text-primary' : 'font-bold text-gray-700'} text-base`}>
@@ -213,7 +208,6 @@ const Notifications = () => {
                   </p>
                 </div>
 
-                {/* Delete */}
                 <button
                   onClick={(e) => handleDelete(notif._id, e)}
                   className="w-8 h-8 bg-red-50 hover:bg-red-500 text-red-500 hover:text-white rounded-full flex items-center justify-center transition opacity-0 group-hover:opacity-100"

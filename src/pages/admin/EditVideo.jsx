@@ -93,7 +93,6 @@ const EditVideo = () => {
       if (formData.duration) data.append('duration', formData.duration);
       data.append('isFeatured', formData.isFeatured);
 
-      // رفع الفيديو فقط إذا تم تغييره
       if (formData.video) data.append('video', formData.video);
       if (formData.thumbnail) data.append('thumbnail', formData.thumbnail);
 
@@ -168,7 +167,6 @@ const EditVideo = () => {
             </div>
           </div>
 
-          {/* Description */}
           <div>
             <label className="block font-bold text-gray-700 mb-2">الوصف</label>
             <textarea
@@ -180,7 +178,6 @@ const EditVideo = () => {
             ></textarea>
           </div>
 
-          {/* Featured */}
           <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
             <input
               type="checkbox"
@@ -194,7 +191,6 @@ const EditVideo = () => {
             </label>
           </div>
 
-          {/* Current Video */}
           <div className="border-t pt-6">
             <label className="block font-bold text-gray-700 mb-3">الفيديو الحالي</label>
             {currentVideo && !videoPreview && (
@@ -223,7 +219,6 @@ const EditVideo = () => {
             )}
           </div>
 
-          {/* Change Video */}
           <div>
             <label className="block font-bold text-gray-700 mb-2">
               تغيير الفيديو (اتركه فارغاً للإبقاء على الحالي)
@@ -248,7 +243,6 @@ const EditVideo = () => {
             </div>
           </div>
 
-          {/* Current Thumbnail */}
           {currentThumbnail && (
             <div className="border-t pt-6">
               <label className="block font-bold text-gray-700 mb-3">الصورة المصغرة الحالية</label>
@@ -261,7 +255,6 @@ const EditVideo = () => {
             </div>
           )}
 
-          {/* Change Thumbnail */}
           <div>
             <label className="block font-bold text-gray-700 mb-2">
               تغيير الصورة المصغرة (اختياري)
@@ -286,7 +279,6 @@ const EditVideo = () => {
             </div>
           </div>
 
-          {/* Actions */}
           <div className="flex flex-wrap gap-4 pt-6 border-t">
             <button
               type="submit"

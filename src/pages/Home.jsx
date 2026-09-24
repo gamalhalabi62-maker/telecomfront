@@ -48,10 +48,8 @@ const Home = () => {
 
   return (
     <div>
-      {/* Breaking News Ticker */}
       <BreakingNewsTicker />
 
-      {/* Hero Section (القديم) */}
       <section className="relative bg-gradient-to-br from-primary via-primary-light to-primary-dark text-white py-20 md:py-32 overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 left-10 w-64 h-64 bg-secondary rounded-full blur-3xl"></div>
@@ -73,7 +71,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Featured Slider */}
       {featured.length > 0 && (
         <section className="container-custom py-12">
           <div className="flex items-center gap-3 mb-6">
@@ -86,10 +83,8 @@ const Home = () => {
         </section>
       )}
 
-      {/* Breaking Section */}
       <BreakingSection />
 
-      {/* Categories */}
       <section className="container-custom py-12">
         <div className="text-center mb-8">
           <h2 className="text-3xl md:text-4xl font-black text-primary mb-2">
@@ -111,10 +106,8 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Video Bar */}
       <VideoBar />
 
-      {/* Latest News + Sidebar */}
       <section className="container-custom py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
@@ -147,10 +140,8 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Stats */}
       <StatsSection />
 
-      {/* CTA */}
       <section className="container-custom py-16">
         <div className="bg-gradient-to-br from-primary to-primary-dark rounded-3xl p-8 md:p-16 text-center text-white relative overflow-hidden">
           <div className="absolute top-0 left-0 w-64 h-64 bg-secondary rounded-full blur-3xl opacity-20"></div>
