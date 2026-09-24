@@ -49,8 +49,8 @@ const Election = () => {
     }
 
     const cleaned = input.replace(/\D/g, '');
-    if (cleaned.length !== 9) {
-      setError('يجب إدخال 9 أرقام بالضبط (6 أرقام الشركة + 3 أرقام العضوية)');
+    if (cleaned.length < 1) {
+      setError('يرجى إدخال رقم الشركة');
       return;
     }
 
@@ -201,32 +201,32 @@ const Election = () => {
 
                 <div>
                   <label className="block font-bold text-gray-700 mb-2">
-                    رقم العضوية *
+                    رقم الشركة *
                   </label>
                   <p className="text-xs text-gray-500 mb-3">
-                    أدخل 9 أرقام: 6 أرقام الشركة + 3 أرقام العضوية (مثال: 000029001)
+                    أدخل رقم الشركة من 1 إلى 6 أرقام — مثال: 29 أو 000029
                   </p>
                   <input
                     type="text"
                     inputMode="numeric"
                     value={input}
-                    onChange={(e) => setInput(e.target.value.replace(/\D/g, '').slice(0, 9))}
-                    placeholder="000029001"
+                    onChange={(e) => setInput(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    placeholder="000029"
                     dir="ltr"
                     className="input-field text-center text-2xl font-black tracking-widest"
-                    maxLength={9}
+                    maxLength={6}
                   />
                   <div className="flex items-center justify-between mt-2 text-xs text-gray-500">
-                    <span>{input.length} / 9</span>
-                    {input.length === 9 && (
-                      <span className="text-green-600 font-bold">✅ الرقم مكتمل</span>
+                    <span>{input.length} / 6</span>
+                    {input.length >= 1 && (
+                      <span className="text-green-600 font-bold">✅ جاهز للبحث</span>
                     )}
                   </div>
                 </div>
 
                 <button
                   type="submit"
-                  disabled={loading || input.length !== 9 || !membershipType}
+                  disabled={loading || input.length < 1 || !membershipType}
                   className="w-full btn-primary flex items-center justify-center gap-2 disabled:opacity-50 py-4 text-lg"
                 >
                   {loading ? (
@@ -268,7 +268,7 @@ const Election = () => {
               <div className="bg-gray-50 rounded-2xl p-6 mb-6 space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <InfoRow icon={<FaUser />} label="الاسم" value={member.name} />
-                  <InfoRow icon={<FaHashtag />} label="رقم العضوية" value={member.fullMembershipNumber} ltr />
+                  <InfoRow icon={<FaHashtag />} label="رقم الشركة" value={member.companyNumber} ltr />
                   <InfoRow icon={<FaUsers />} label="نوع العضوية" value={member.membershipType === 'working' ? 'عامل' : 'بالمعاش'} />
                   <InfoRow icon={<FaPhone />} label="الهاتف" value={member.phone || 'غير مسجل'} ltr />
                   <InfoRow icon={<FaMapMarkerAlt />} label="مكان اللجنة" value={member.committeeName || 'لم يُحدد بعد'} />
