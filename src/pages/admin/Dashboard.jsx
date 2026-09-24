@@ -12,6 +12,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import Loading from '../../components/Loading';
+import { getImageUrl } from '../../utils/formatDate';  
 
 const Dashboard = () => {
   const { user } = useAuth();
