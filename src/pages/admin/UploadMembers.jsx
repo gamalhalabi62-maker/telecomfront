@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import {
   FaUpload, FaFileExcel, FaCheckCircle, FaTimesCircle,
   FaSpinner, FaTrash, FaInfoCircle, FaChartBar,
+  FaCloudUploadAlt, FaFile, FaUsers, FaPlusCircle,
+  FaSync, FaExclamationTriangle, FaArrowLeft,
 } from 'react-icons/fa';
 import { electionAPI } from '../../services/api';
 import { useToast } from '../../context/ToastContext';
@@ -15,25 +17,45 @@ const UploadMembers = () => {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
+  const [isDragging, setIsDragging] = useState(false);
 
-  const handleFileChange = (e) => {
-    const f = e.target.files[0];
-    if (!f) return;
-
+  const validateFile = (f) => {
     if (!/\.(xlsx|xls|csv)$/i.test(f.name)) {
-      toast.error('يُسمح بملفات Excel فقط');
-      return;
+      toast.error('يُسمح بملفات Excel فقط (.xlsx, .xls, .csv)');
+      return false;
     }
-
     if (f.size > 20 * 1024 * 1024) {
       toast.error('حجم الملف كبير جداً (الحد 20MB)');
-      return;
+      return false;
     }
+    return true;
+  };
 
+  const handleFile = (f) => {
+    if (!validateFile(f)) return;
     setFile(f);
     setResult(null);
     setError('');
   };
+
+  const handleFileChange = (e) => {
+    const f = e.target.files[0];
+    if (f) handleFile(f);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const f = e.dataTransfer.files[0];
+    if (f) handleFile(f);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => setIsDragging(false);
 
   const handleUpload = async () => {
     if (!file) return;
@@ -83,40 +105,81 @@ const UploadMembers = () => {
   };
 
   return (
-    <div className="container-custom py-8 max-w-4xl mx-auto">
-      <div className="flex items-center gap-3 mb-8">
-        <div className="w-14 h-14 bg-primary rounded-xl flex items-center justify-center text-white text-2xl">
-          <FaUpload />
+    <div className="container-custom py-8 max-w-5xl mx-auto">
+      <div className="bg-gradient-to-l from-primary via-primary-light to-primary-dark text-white p-6 md:p-8 rounded-2xl mb-6 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-secondary rounded-full blur-3xl"></div>
         </div>
-        <div>
-          <h1 className="text-3xl font-black text-primary">استيراد بيانات الأعضاء</h1>
-          <p className="text-gray-500">رفع ملف Excel لتحديث قاعدة بيانات الأعضاء</p>
+
+        <div className="relative z-10 flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-14 h-14 bg-secondary rounded-xl flex items-center justify-center text-primary text-2xl shadow-xl">
+              <FaCloudUploadAlt />
+            </div>
+            <div>
+              <h1 className="text-2xl md:text-3xl font-black">استيراد بيانات الأعضاء</h1>
+              <p className="text-gray-200 text-sm">رفع ملف Excel لتحديث قاعدة بيانات الأعضاء</p>
+            </div>
+          </div>
+          <Link
+            to="/admin/elections"
+            className="bg-white/10 hover:bg-white/20 backdrop-blur-md px-5 py-3 rounded-lg font-bold transition flex items-center gap-2"
+          >
+            <FaArrowLeft /> رجوع للوحة
+          </Link>
         </div>
       </div>
 
       <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-6">
-        <div className="flex items-start gap-3 p-4 bg-blue-50 border-r-4 border-blue-500 rounded-lg mb-6">
-          <FaInfoCircle className="text-blue-500 mt-0.5 flex-shrink-0" />
-          <div className="text-sm text-blue-800">
-            <p className="font-bold mb-2">📋 الأعمدة المطلوبة في ملف Excel:</p>
-            <ul className="list-disc list-inside space-y-1 mr-4">
-              <li><strong>رقم الشركة بالشيت</strong> — مثال: <code dir="ltr">000029</code></li>
-              <li><strong>رقم العضوية</strong> — مثال: <code dir="ltr">001</code></li>
-              <li><strong>النوع</strong> — عامل / بالمعاش</li>
-              <li><strong>الاسم</strong> — الاسم الكامل</li>
-              <li><strong>التليفون</strong> — رقم الهاتف</li>
-              <li><strong>العنوان</strong> — العنوان</li>
-            </ul>
-            <p className="mt-3">
-              ✅ الأعمدة الإضافية (مكان اللجنة، رقم اللجنة) اختيارية.
-            </p>
-            <p className="mt-1">
-              ✅ الأرقام المركبة: <code dir="ltr">00101 + 000029 + 001 = 00101000029001</code>
-            </p>
+        <div className="flex items-start gap-3 p-4 bg-gradient-to-l from-blue-50 to-indigo-50 border-r-4 border-blue-500 rounded-xl mb-6">
+          <FaInfoCircle className="text-blue-500 mt-0.5 flex-shrink-0 text-lg" />
+          <div className="text-sm text-blue-800 flex-1">
+            <p className="font-black mb-3 text-base">📋 الأعمدة المطلوبة في ملف Excel:</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+              <div className="flex items-center gap-2">
+                <FaCheckCircle className="text-green-500 flex-shrink-0" />
+                <span><strong>رقم العامل بالشركة</strong> — مثال: 000029</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <FaCheckCircle className="text-green-500 flex-shrink-0" />
+                <span><strong>رقم العضوية</strong> — مثال: 001</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <FaCheckCircle className="text-green-500 flex-shrink-0" />
+                <span><strong>الاسم</strong> — الاسم الكامل</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <FaCheckCircle className="text-green-500 flex-shrink-0" />
+                <span><strong>النوع</strong> — معاش / عامل</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <FaCheckCircle className="text-green-500 flex-shrink-0" />
+                <span><strong>التليفون</strong> — رقم الهاتف</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <FaCheckCircle className="text-green-500 flex-shrink-0" />
+                <span><strong>العنوان</strong> — العنوان</span>
+              </div>
+            </div>
+            <div className="mt-3 pt-3 border-t border-blue-200 text-xs space-y-1">
+              <p>✅ <strong>الأعمدة الإضافية</strong> (مكان اللجنة، رقم اللجنة) اختيارية</p>
+              <p>✅ <strong>الأرقام المركبة تلقائياً:</strong> <code dir="ltr" className="bg-blue-100 px-2 py-0.5 rounded">00101 + 000029 + 001</code></p>
+            </div>
           </div>
         </div>
 
-        <div className="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center hover:border-primary transition">
+        <div
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          className={`relative border-3 border-dashed rounded-2xl p-8 md:p-12 text-center transition-all duration-300 ${
+            isDragging
+              ? 'border-primary bg-primary/5 scale-[1.02] shadow-2xl'
+              : file
+              ? 'border-green-400 bg-green-50/50'
+              : 'border-gray-300 hover:border-primary/50 hover:bg-gray-50'
+          }`}
+        >
           <input
             ref={fileRef}
             type="file"
@@ -130,29 +193,40 @@ const UploadMembers = () => {
               onClick={() => fileRef.current?.click()}
               className="cursor-pointer"
             >
-              <FaFileExcel className="text-6xl text-green-500 mx-auto mb-4" />
-              <p className="text-xl font-black text-primary mb-2">اختر ملف Excel</p>
-              <p className="text-sm text-gray-500">.xlsx, .xls, .csv — الحد 20MB</p>
+              <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-green-500 to-emerald-600 rounded-3xl mb-6 shadow-2xl shadow-green-500/30 transform hover:scale-110 transition">
+                <FaFileExcel className="text-white text-5xl" />
+              </div>
+              <p className="text-2xl font-black text-primary mb-2">
+                {isDragging ? '✨ أفلت الملف هنا' : 'اختر ملف Excel'}
+              </p>
+              <p className="text-sm text-gray-500 mb-4">
+                أو اسحب وأفلت الملف هنا
+              </p>
+              <div className="inline-flex items-center gap-2 bg-gray-100 text-gray-600 px-4 py-2 rounded-lg text-xs font-bold">
+                <FaFile /> .xlsx, .xls, .csv — الحد 20MB
+              </div>
             </div>
           ) : (
             <div>
-              <FaFileExcel className="text-6xl text-green-500 mx-auto mb-4" />
-              <p className="text-lg font-black text-primary mb-1">{file.name}</p>
-              <p className="text-sm text-gray-500 mb-4">
+              <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl mb-4 shadow-xl">
+                <FaCheckCircle className="text-white text-4xl" />
+              </div>
+              <p className="text-xl font-black text-primary mb-1">{file.name}</p>
+              <p className="text-sm text-gray-500 mb-6">
                 {(file.size / 1024).toFixed(2)} KB
               </p>
-              <div className="flex gap-3 justify-center">
+              <div className="flex gap-3 justify-center flex-wrap">
                 <button
                   onClick={() => fileRef.current?.click()}
-                  className="bg-gray-100 text-gray-700 px-6 py-2 rounded-lg font-bold hover:bg-gray-200 transition"
+                  className="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-lg font-bold hover:bg-gray-200 transition flex items-center gap-2"
                 >
-                  تغيير الملف
+                  <FaSync /> تغيير الملف
                 </button>
                 <button
                   onClick={() => { setFile(null); setResult(null); }}
-                  className="bg-red-50 text-red-600 px-6 py-2 rounded-lg font-bold hover:bg-red-100 transition"
+                  className="bg-red-50 text-red-600 px-6 py-2.5 rounded-lg font-bold hover:bg-red-100 transition flex items-center gap-2"
                 >
-                  إزالة
+                  <FaTimesCircle /> إزالة
                 </button>
               </div>
             </div>
@@ -160,8 +234,9 @@ const UploadMembers = () => {
         </div>
 
         {error && (
-          <div className="mt-6 bg-red-50 border-r-4 border-red-500 text-red-700 p-4 rounded-lg">
-            {error}
+          <div className="mt-6 bg-red-50 border-r-4 border-red-500 text-red-700 p-4 rounded-xl flex items-start gap-3 animate-shake">
+            <FaExclamationTriangle className="mt-0.5 flex-shrink-0" />
+            <span className="font-medium">{error}</span>
           </div>
         )}
 
@@ -169,43 +244,60 @@ const UploadMembers = () => {
           <button
             onClick={handleUpload}
             disabled={loading}
-            className="mt-6 w-full btn-primary flex items-center justify-center gap-2 py-4 text-lg disabled:opacity-50"
+            className="group relative mt-6 w-full bg-gradient-to-l from-primary to-primary-dark text-white py-5 rounded-2xl font-black text-lg transition-all disabled:opacity-50 shadow-xl shadow-primary/20 hover:shadow-2xl hover:-translate-y-1 active:translate-y-0 overflow-hidden"
           >
-            {loading ? (
-              <>
-                <FaSpinner className="animate-spin" /> جاري الاستيراد...
-              </>
-            ) : (
-              <>
-                <FaUpload /> ابدأ الاستيراد
-              </>
-            )}
+            <span className="absolute inset-0 bg-gradient-to-l from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
+            <span className="relative flex items-center justify-center gap-3">
+              {loading ? (
+                <>
+                  <FaSpinner className="animate-spin" /> جاري الاستيراد...
+                </>
+              ) : (
+                <>
+                  <FaUpload /> ابدأ الاستيراد
+                </>
+              )}
+            </span>
           </button>
         )}
       </div>
 
       {result && (
-        <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-6">
+        <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-6 animate-fade-in-up">
           <div className="flex items-center gap-3 mb-6">
-            <FaCheckCircle className="text-green-500 text-3xl" />
-            <h2 className="text-2xl font-black text-primary">نتيجة الاستيراد</h2>
+            <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center text-white text-2xl">
+              <FaCheckCircle />
+            </div>
+            <div>
+              <h2 className="text-2xl font-black text-primary">تم الاستيراد بنجاح!</h2>
+              <p className="text-sm text-gray-500">ملخص النتائج</p>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <StatBox label="إجمالي الصفوف" value={result.summary.total} color="bg-gray-100 text-gray-700" />
-            <StatBox label="أعضاء جدد" value={result.summary.created} color="bg-green-100 text-green-700" />
-            <StatBox label="تم التحديث" value={result.summary.updated} color="bg-blue-100 text-blue-700" />
-            <StatBox label="تم التخطي" value={result.summary.skipped} color="bg-yellow-100 text-yellow-700" />
+            <ResultStat label="إجمالي الصفوف" value={result.summary.total} gradient="from-blue-500 to-indigo-600" icon={<FaFile />} />
+            <ResultStat label="أعضاء جدد" value={result.summary.created} gradient="from-green-500 to-emerald-600" icon={<FaPlusCircle />} />
+            <ResultStat label="تم التحديث" value={result.summary.updated} gradient="from-purple-500 to-pink-600" icon={<FaSync />} />
+            <ResultStat label="تم التخطي" value={result.summary.skipped} gradient="from-yellow-500 to-orange-600" icon={<FaTimesCircle />} />
           </div>
 
           {result.detectedColumns && (
-            <div className="bg-gray-50 rounded-xl p-4 mb-4">
-              <p className="font-bold text-sm text-gray-700 mb-2">🔍 الأعمدة المكتشفة:</p>
-              <div className="grid grid-cols-2 gap-2 text-xs">
+            <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-5 border border-gray-100 mb-4">
+              <p className="font-black text-sm text-gray-700 mb-3 flex items-center gap-2">
+                <FaInfoCircle className="text-primary" />
+                الأعمدة المكتشفة
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
                 {Object.entries(result.detectedColumns).map(([key, val]) => (
-                  <div key={key} className="flex justify-between">
-                    <span className="text-gray-500">{key}:</span>
-                    <span className="font-mono text-primary">{val || '❌ لم يُعثر'}</span>
+                  <div key={key} className="flex justify-between items-center p-2 bg-white rounded-lg">
+                    <span className="text-gray-500 font-bold">{key}:</span>
+                    {val ? (
+                      <span className="font-mono text-green-600 bg-green-50 px-2 py-0.5 rounded">
+                        {val}
+                      </span>
+                    ) : (
+                      <span className="text-red-500 font-bold">❌ لم يُعثر</span>
+                    )}
                   </div>
                 ))}
               </div>
@@ -213,11 +305,14 @@ const UploadMembers = () => {
           )}
 
           {result.errors && result.errors.length > 0 && (
-            <div className="bg-red-50 rounded-xl p-4">
-              <p className="font-bold text-red-700 mb-2">⚠️ أخطاء:</p>
-              <ul className="text-xs text-red-600 space-y-1">
+            <div className="bg-red-50 rounded-xl p-5 border-r-4 border-red-500">
+              <p className="font-black text-red-700 mb-3 flex items-center gap-2">
+                <FaExclamationTriangle />
+                أخطاء ({result.errors.length})
+              </p>
+              <ul className="text-xs text-red-600 space-y-1 max-h-40 overflow-y-auto">
                 {result.errors.map((e, i) => (
-                  <li key={i}>صف {e.row}: {e.error}</li>
+                  <li key={i} className="font-mono">صف {e.row}: {e.error}</li>
                 ))}
               </ul>
             </div>
@@ -225,37 +320,42 @@ const UploadMembers = () => {
         </div>
       )}
 
-      <div className="bg-white rounded-2xl shadow-lg p-6">
-        <h3 className="font-black text-primary mb-4">⚠️ عمليات خطرة</h3>
+      <div className="bg-gradient-to-br from-red-50 to-rose-50 rounded-2xl shadow-lg p-6 border-2 border-red-100">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 bg-red-500 rounded-xl flex items-center justify-center text-white">
+            <FaExclamationTriangle />
+          </div>
+          <div>
+            <h3 className="font-black text-red-700 text-lg">⚠️ عمليات خطرة</h3>
+            <p className="text-xs text-red-500">لا يمكن التراجع عن هذه الإجراءات</p>
+          </div>
+        </div>
         <div className="flex flex-wrap gap-3">
           <button
             onClick={handleResetAttendance}
-            className="bg-yellow-50 text-yellow-700 px-6 py-3 rounded-lg font-bold hover:bg-yellow-100 transition flex items-center gap-2"
+            className="bg-yellow-100 text-yellow-800 px-6 py-3 rounded-lg font-bold hover:bg-yellow-200 transition flex items-center gap-2 border-2 border-yellow-300"
           >
-            <FaTrash /> حذف كل تسجيلات الحضور
+            <FaTrash /> حذف تسجيلات الحضور
           </button>
           <button
             onClick={handleDeleteAll}
-            className="bg-red-50 text-red-600 px-6 py-3 rounded-lg font-bold hover:bg-red-100 transition flex items-center gap-2"
+            className="bg-red-100 text-red-700 px-6 py-3 rounded-lg font-bold hover:bg-red-200 transition flex items-center gap-2 border-2 border-red-300"
           >
             <FaTrash /> حذف كل الأعضاء
           </button>
         </div>
       </div>
-
-      <div className="flex gap-3 mt-6">
-        <Link to="/admin/elections" className="btn-primary flex items-center gap-2">
-          <FaChartBar /> الانتقال إلى إدارة الانتخابات
-        </Link>
-      </div>
     </div>
   );
 };
 
-const StatBox = ({ label, value, color }) => (
-  <div className={`${color} rounded-xl p-4 text-center`}>
-    <p className="text-3xl font-black">{value}</p>
-    <p className="text-xs font-bold mt-1">{label}</p>
+const ResultStat = ({ label, value, gradient, icon }) => (
+  <div className="relative overflow-hidden rounded-xl p-4 bg-white border-2 border-gray-100 hover:shadow-lg transition group">
+    <div className={`w-10 h-10 bg-gradient-to-br ${gradient} rounded-lg flex items-center justify-center text-white shadow-md mb-3 group-hover:scale-110 transition`}>
+      {icon}
+    </div>
+    <p className="text-3xl font-black text-primary">{value}</p>
+    <p className="text-xs text-gray-500 font-bold mt-1">{label}</p>
   </div>
 );
 

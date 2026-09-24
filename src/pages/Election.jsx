@@ -49,8 +49,8 @@ const Election = () => {
     }
 
     const cleaned = input.replace(/\D/g, '');
-    if (cleaned.length < 1) {
-      setError('يرجى إدخال رقم الشركة');
+    if (cleaned.length !== 6) {
+      setError('يجب إدخال 6 أرقام بالضبط — مثال: 000029');
       return;
     }
 
@@ -204,7 +204,7 @@ const Election = () => {
                     رقم الشركة *
                   </label>
                   <p className="text-xs text-gray-500 mb-3">
-                    أدخل رقم الشركة من 1 إلى 6 أرقام — مثال: 29 أو 000029
+                    أدخل 6 أرقام بالضبط — مثال: 000029
                   </p>
                   <input
                     type="text"
@@ -216,17 +216,20 @@ const Election = () => {
                     className="input-field text-center text-2xl font-black tracking-widest"
                     maxLength={6}
                   />
-                  <div className="flex items-center justify-between mt-2 text-xs text-gray-500">
-                    <span>{input.length} / 6</span>
-                    {input.length >= 1 && (
+                  <div className="flex items-center justify-between mt-2 text-xs">
+                    <span className="text-gray-500">{input.length} / 6</span>
+                    {input.length === 6 && (
                       <span className="text-green-600 font-bold">✅ جاهز للبحث</span>
+                    )}
+                    {input.length > 0 && input.length < 6 && (
+                      <span className="text-yellow-600 font-bold">⚠️ يجب إدخال 6 أرقام</span>
                     )}
                   </div>
                 </div>
 
                 <button
                   type="submit"
-                  disabled={loading || input.length < 1 || !membershipType}
+                  disabled={loading || input.length !== 6 || !membershipType}
                   className="w-full btn-primary flex items-center justify-center gap-2 disabled:opacity-50 py-4 text-lg"
                 >
                   {loading ? (
