@@ -320,31 +320,7 @@ const UploadMembers = () => {
         </div>
       )}
 
-      <div className="bg-gradient-to-br from-red-50 to-rose-50 rounded-2xl shadow-lg p-6 border-2 border-red-100">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 bg-red-500 rounded-xl flex items-center justify-center text-white">
-            <FaExclamationTriangle />
-          </div>
-          <div>
-            <h3 className="font-black text-red-700 text-lg">⚠️ عمليات خطرة</h3>
-            <p className="text-xs text-red-500">لا يمكن التراجع عن هذه الإجراءات</p>
-          </div>
-        </div>
-        <div className="flex flex-wrap gap-3">
-          <button
-            onClick={handleResetAttendance}
-            className="bg-yellow-100 text-yellow-800 px-6 py-3 rounded-lg font-bold hover:bg-yellow-200 transition flex items-center gap-2 border-2 border-yellow-300"
-          >
-            <FaTrash /> حذف تسجيلات الحضور
-          </button>
-          <button
-            onClick={handleDeleteAll}
-            className="bg-red-100 text-red-700 px-6 py-3 rounded-lg font-bold hover:bg-red-200 transition flex items-center gap-2 border-2 border-red-300"
-          >
-            <FaTrash /> حذف كل الأعضاء
-          </button>
-        </div>
-      </div>
+     
     </div>
   );
 };

@@ -201,7 +201,7 @@ const Election = () => {
 
                 <div>
                   <label className="block font-bold text-gray-700 mb-2">
-                    رقم الشركة *
+                    رقم العضوية *
                   </label>
                   <p className="text-xs text-gray-500 mb-3">
                     أدخل 6 أرقام بالضبط — مثال: 000029
@@ -271,7 +271,7 @@ const Election = () => {
               <div className="bg-gray-50 rounded-2xl p-6 mb-6 space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <InfoRow icon={<FaUser />} label="الاسم" value={member.name} />
-                  <InfoRow icon={<FaHashtag />} label="رقم الشركة" value={member.companyNumber} ltr />
+                  <InfoRow icon={<FaHashtag />} label="رقم العضوية" value={member.companyNumber} ltr />
                   <InfoRow icon={<FaUsers />} label="نوع العضوية" value={member.membershipType === 'working' ? 'عامل' : 'بالمعاش'} />
                   <InfoRow icon={<FaPhone />} label="الهاتف" value={member.phone || 'غير مسجل'} ltr />
                   <InfoRow icon={<FaMapMarkerAlt />} label="مكان اللجنة" value={member.committeeName || 'لم يُحدد بعد'} />
