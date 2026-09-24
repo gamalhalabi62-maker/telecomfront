@@ -2,17 +2,19 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaSave, FaTimes, FaImage } from 'react-icons/fa';
 import { newsAPI } from '../../services/api';
+import { useToast } from '../../context/ToastContext';
 
 const CreateNews = () => {
   const navigate = useNavigate();
+  const toast = useToast();
   const [formData, setFormData] = useState({
     title: '',
     content: '',
     excerpt: '',
     category: 'general',
     isFeatured: false,
-    image: null,
   });
+  const [imageBase64, setImageBase64] = useState('');
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -25,11 +27,72 @@ const CreateNews = () => {
     { value: 'elections', label: 'الانتخابات' },
   ];
 
-  const handleImageChange = (e) => {
+  const compressImage = (file, maxWidth = 800, maxHeight = 600, quality = 0.7) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > maxWidth) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width = Math.round((width * maxHeight) / height);
+              height = maxHeight;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
+          resolve(compressedBase64);
+        };
+        img.onerror = reject;
+      };
+      reader.onerror = reject;
+    });
+  };
+
+  const handleImageChange = async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      setFormData({ ...formData, image: file });
-      setPreview(URL.createObjectURL(file));
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('يرجى اختيار صورة صحيحة');
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('حجم الصورة كبير جداً (الحد الأقصى 10MB)');
+      return;
+    }
+
+    try {
+      const compressed = await compressImage(file);
+      const sizeKB = Math.round((compressed.length * 3) / 4 / 1024);
+
+      if (sizeKB > 900) {
+        toast.warning(`الصورة كبيرة (${sizeKB}KB)`);
+      }
+
+      setImageBase64(compressed);
+      setPreview(compressed);
+    } catch (err) {
+      toast.error('فشل معالجة الصورة');
+      console.error(err);
     }
   };
 
@@ -39,18 +102,22 @@ const CreateNews = () => {
     setLoading(true);
 
     try {
-      const data = new FormData();
-      data.append('title', formData.title);
-      data.append('content', formData.content);
-      if (formData.excerpt) data.append('excerpt', formData.excerpt);
-      data.append('category', formData.category);
-      data.append('isFeatured', formData.isFeatured);
-      if (formData.image) data.append('image', formData.image);
+      const data = {
+        title: formData.title,
+        content: formData.content,
+        excerpt: formData.excerpt,
+        category: formData.category,
+        isFeatured: formData.isFeatured,
+        imageUrl: imageBase64,
+      };
 
       await newsAPI.create(data);
+      toast.success('تم إضافة الخبر بنجاح');
       navigate('/admin/news');
     } catch (err) {
-      setError(err.response?.data?.message || 'حدث خطأ أثناء إضافة الخبر');
+      const msg = err.response?.data?.message || 'حدث خطأ أثناء إضافة الخبر';
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
@@ -131,19 +198,44 @@ const CreateNews = () => {
 
           <div>
             <label className="block font-bold text-gray-700 mb-2">صورة الخبر</label>
+            <p className="text-xs text-gray-500 mb-2">
+              💡 سيتم ضغط الصورة تلقائياً إلى 800×600 بكسل
+            </p>
             <div className="flex flex-col md:flex-row gap-4 items-start">
               <label className="cursor-pointer bg-primary text-white px-6 py-3 rounded-lg font-bold hover:bg-primary-dark transition flex items-center gap-2">
                 <FaImage /> اختر صورة
-                <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                />
               </label>
               {preview && (
-                <img src={preview} alt="preview" className="w-32 h-32 object-cover rounded-lg" />
+                <div className="relative">
+                  <img
+                    src={preview}
+                    alt="preview"
+                    className="w-40 h-32 object-cover rounded-lg shadow-md"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => { setPreview(null); setImageBase64(''); }}
+                    className="absolute -top-2 -left-2 bg-red-500 text-white w-7 h-7 rounded-full flex items-center justify-center shadow-lg hover:bg-red-600"
+                  >
+                    <FaTimes size={12} />
+                  </button>
+                </div>
               )}
             </div>
           </div>
 
           <div className="flex gap-4 pt-4 border-t">
-            <button type="submit" disabled={loading} className="btn-primary flex items-center gap-2 disabled:opacity-50">
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-primary flex items-center gap-2 disabled:opacity-50"
+            >
               <FaSave /> {loading ? 'جاري الحفظ...' : 'نشر الخبر'}
             </button>
             <button

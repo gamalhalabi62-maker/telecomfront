@@ -1,9 +1,12 @@
 import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+
 const api = axios.create({
   baseURL: API_URL,
   headers: { 'Content-Type': 'application/json' },
+  maxContentLength: 50 * 1024 * 1024,
+  maxBodyLength: 50 * 1024 * 1024,
 });
 
 api.interceptors.request.use(
@@ -29,7 +32,6 @@ api.interceptors.response.use(
   }
 );
 
-// ========== Auth API ==========
 export const authAPI = {
   register: (data) => api.post('/auth/register', data),
   verifyOTP: (data) => api.post('/auth/verify-otp', data),
@@ -39,7 +41,6 @@ export const authAPI = {
   updateProfile: (data) => api.put('/auth/profile', data),
 };
 
-// ========== News API ==========
 export const newsAPI = {
   getAll: (params) => api.get('/news', { params }),
   getById: (id) => api.get(`/news/${id}`),
@@ -47,16 +48,11 @@ export const newsAPI = {
   getFeatured: (limit = 5) => api.get('/news/featured', { params: { limit } }),
   getPopular: (limit = 5) => api.get('/news/popular', { params: { limit } }),
   getStats: () => api.get('/news/stats'),
-  create: (formData) => api.post('/news', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  }),
-  update: (id, formData) => api.put(`/news/${id}`, formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  }),
+  create: (data) => api.post('/news', data),
+  update: (id, data) => api.put(`/news/${id}`, data),
   delete: (id) => api.delete(`/news/${id}`),
 };
 
-// ========== Video API ==========
 export const videoAPI = {
   getAll: (params) => api.get('/videos', { params }),
   getById: (id) => api.get(`/videos/${id}`),
@@ -70,22 +66,16 @@ export const videoAPI = {
   delete: (id) => api.delete(`/videos/${id}`),
 };
 
-// ========== Player API ==========
 export const playerAPI = {
   getAll: (params) => api.get('/players', { params }),
   getById: (id) => api.get(`/players/${id}`),
   getByPosition: () => api.get('/players/by-position'),
   getStats: () => api.get('/players/stats'),
-  create: (formData) => api.post('/players', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  }),
-  update: (id, formData) => api.put(`/players/${id}`, formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  }),
+  create: (data) => api.post('/players', data),
+  update: (id, data) => api.put(`/players/${id}`, data),
   delete: (id) => api.delete(`/players/${id}`),
 };
 
-// ========== Match API ==========
 export const matchAPI = {
   getAll: (params) => api.get('/matches', { params }),
   getById: (id) => api.get(`/matches/${id}`),
@@ -99,7 +89,6 @@ export const matchAPI = {
   delete: (id) => api.delete(`/matches/${id}`),
 };
 
-// ========== Statistic API ==========
 export const statisticAPI = {
   getAll: (params) => api.get('/statistics', { params }),
   getById: (id) => api.get(`/statistics/${id}`),
@@ -108,7 +97,6 @@ export const statisticAPI = {
   delete: (id) => api.delete(`/statistics/${id}`),
 };
 
-// ========== Message API ==========
 export const messageAPI = {
   create: (data) => api.post('/messages', data),
   getMy: () => api.get('/messages/my'),
@@ -118,7 +106,6 @@ export const messageAPI = {
   delete: (id) => api.delete(`/messages/${id}`),
 };
 
-// ========== Notification API ==========
 export const notificationAPI = {
   getAll: (params) => api.get('/notifications', { params }),
   getUnreadCount: () => api.get('/notifications/unread-count'),

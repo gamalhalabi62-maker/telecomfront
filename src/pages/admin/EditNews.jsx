@@ -2,20 +2,23 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FaSave, FaTimes, FaImage } from 'react-icons/fa';
 import { newsAPI } from '../../services/api';
+import { useToast } from '../../context/ToastContext';
 import Loading from '../../components/Loading';
 import { getImageUrl } from '../../utils/formatDate';
 
 const EditNews = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const toast = useToast();
+
   const [formData, setFormData] = useState({
     title: '',
     content: '',
     excerpt: '',
     category: 'general',
     isFeatured: false,
-    image: null,
   });
+  const [imageBase64, setImageBase64] = useState('');
   const [currentImage, setCurrentImage] = useState('');
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -40,7 +43,6 @@ const EditNews = () => {
           excerpt: data.excerpt || '',
           category: data.category,
           isFeatured: data.isFeatured || false,
-          image: null,
         });
         setCurrentImage(data.imageUrl);
       } catch (err) {
@@ -52,11 +54,59 @@ const EditNews = () => {
     fetchNews();
   }, [id]);
 
-  const handleImageChange = (e) => {
+  const compressImage = (file, maxWidth = 800, maxHeight = 600, quality = 0.7) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > maxWidth) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width = Math.round((width * maxHeight) / height);
+              height = maxHeight;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.onerror = reject;
+      };
+      reader.onerror = reject;
+    });
+  };
+
+  const handleImageChange = async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      setFormData({ ...formData, image: file });
-      setPreview(URL.createObjectURL(file));
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('يرجى اختيار صورة صحيحة');
+      return;
+    }
+
+    try {
+      const compressed = await compressImage(file);
+      setImageBase64(compressed);
+      setPreview(compressed);
+    } catch (err) {
+      toast.error('فشل معالجة الصورة');
     }
   };
 
@@ -66,18 +116,25 @@ const EditNews = () => {
     setSaving(true);
 
     try {
-      const data = new FormData();
-      data.append('title', formData.title);
-      data.append('content', formData.content);
-      if (formData.excerpt) data.append('excerpt', formData.excerpt);
-      data.append('category', formData.category);
-      data.append('isFeatured', formData.isFeatured);
-      if (formData.image) data.append('image', formData.image);
+      const data = {
+        title: formData.title,
+        content: formData.content,
+        excerpt: formData.excerpt,
+        category: formData.category,
+        isFeatured: formData.isFeatured,
+      };
+
+      if (imageBase64) {
+        data.imageUrl = imageBase64;
+      }
 
       await newsAPI.update(id, data);
+      toast.success('تم حفظ التعديلات');
       navigate('/admin/news');
     } catch (err) {
-      setError(err.response?.data?.message || 'حدث خطأ أثناء التعديل');
+      const msg = err.response?.data?.message || 'حدث خطأ';
+      setError(msg);
+      toast.error(msg);
     } finally {
       setSaving(false);
     }
@@ -160,20 +217,29 @@ const EditNews = () => {
             <div className="flex flex-col md:flex-row gap-4 items-start">
               <label className="cursor-pointer bg-primary text-white px-6 py-3 rounded-lg font-bold hover:bg-primary-dark transition flex items-center gap-2">
                 <FaImage /> تغيير الصورة
-                <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                />
               </label>
               {(preview || currentImage) && (
                 <img
                   src={preview || getImageUrl(currentImage)}
                   alt="preview"
-                  className="w-32 h-32 object-cover rounded-lg"
+                  className="w-40 h-32 object-cover rounded-lg shadow-md"
                 />
               )}
             </div>
           </div>
 
           <div className="flex gap-4 pt-4 border-t">
-            <button type="submit" disabled={saving} className="btn-primary flex items-center gap-2 disabled:opacity-50">
+            <button
+              type="submit"
+              disabled={saving}
+              className="btn-primary flex items-center gap-2 disabled:opacity-50"
+            >
               <FaSave /> {saving ? 'جاري الحفظ...' : 'حفظ التعديلات'}
             </button>
             <button
