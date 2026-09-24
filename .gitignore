@@ -27,4 +27,4 @@ yarn-error.log*
 Thumbs.db
 
 # Vite
-.vite/
+.vite/package-lock.json
