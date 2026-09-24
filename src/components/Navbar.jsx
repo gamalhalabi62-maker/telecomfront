@@ -1,6 +1,6 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { FaBars, FaTimes, FaUser, FaSignOutAlt, FaEnvelope, FaBell } from 'react-icons/fa';
+import { FaBars, FaTimes, FaUser, FaSignOutAlt, FaEnvelope, FaBell, FaVoteYea } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import Logo from './Logo';
 import NotificationBell from './NotificationBell';
@@ -16,6 +16,7 @@ const Navbar = () => {
     { to: '/videos', label: 'الفيديوهات' },
     { to: '/team', label: 'الفريق' },
     { to: '/matches', label: 'المباريات' },
+    { to: '/elections', label: 'الانتخابات', icon: <FaVoteYea /> },
     { to: '/contact', label: 'اتصل بنا' },
   ];
 
@@ -36,11 +37,12 @@ const Navbar = () => {
                 key={link.to}
                 to={link.to}
                 className={({ isActive }) =>
-                  `font-bold transition-colors duration-300 hover:text-secondary ${
+                  `font-bold transition-colors duration-300 hover:text-secondary flex items-center gap-1.5 ${
                     isActive ? 'text-secondary border-b-2 border-secondary pb-1' : ''
                   }`
                 }
               >
+                {link.icon}
                 {link.label}
               </NavLink>
             ))}
@@ -124,11 +126,12 @@ const Navbar = () => {
                 to={link.to}
                 onClick={() => setIsOpen(false)}
                 className={({ isActive }) =>
-                  `block py-3 px-4 font-bold hover:bg-primary-light rounded-lg ${
+                  `flex items-center gap-2 py-3 px-4 font-bold hover:bg-primary-light rounded-lg ${
                     isActive ? 'bg-primary-light text-secondary' : ''
                   }`
                 }
               >
+                {link.icon}
                 {link.label}
               </NavLink>
             ))}

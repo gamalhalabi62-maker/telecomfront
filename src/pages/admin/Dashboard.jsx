@@ -3,11 +3,11 @@ import { Link } from 'react-router-dom';
 import {
   FaNewspaper, FaPlus, FaEye, FaEdit, FaVideo, FaUsers,
   FaFutbol, FaTrophy, FaChartBar, FaEnvelope, FaBell,
-  FaCheckCircle, FaExclamationTriangle,
+  FaCheckCircle, FaExclamationTriangle, FaVoteYea, FaUserCheck, FaUserTimes,
 } from 'react-icons/fa';
 import {
   newsAPI, videoAPI, playerAPI, matchAPI,
-  statisticAPI, messageAPI, notificationAPI,
+  statisticAPI, messageAPI, notificationAPI, electionAPI,
 } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -27,6 +27,17 @@ const Dashboard = () => {
     statsCount: 0,
     messagesCount: 0, newMessagesCount: 0, recentMessages: [],
     unreadNotifications: 0,
+    election: {
+      totalMembers: 0,
+      attending: 0,
+      notAttending: 0,
+      registered: 0,
+      pending: 0,
+      attendingWorking: 0,
+      attendingRetired: 0,
+      workingTotal: 0,
+      retiredTotal: 0,
+    },
   });
 
   const [loading, setLoading] = useState(true);
@@ -44,6 +55,7 @@ const Dashboard = () => {
           statisticsRes,
           messagesRes,
           notificationsRes,
+          electionRes,
         ] = await Promise.allSettled([
           newsAPI.getAll({ limit: 5 }),
           videoAPI.getAll({ limit: 5 }),
@@ -53,6 +65,7 @@ const Dashboard = () => {
           statisticAPI.getAll(),
           messageAPI.getAll({ limit: 5 }),
           notificationAPI.getUnreadCount(),
+          electionAPI.getStats(),
         ]);
 
         const newsData = newsRes.status === 'fulfilled' ? newsRes.value.data : { news: [], total: 0 };
@@ -63,6 +76,7 @@ const Dashboard = () => {
         const statisticsData = statisticsRes.status === 'fulfilled' ? statisticsRes.value.data : { statistics: [] };
         const messagesData = messagesRes.status === 'fulfilled' ? messagesRes.value.data : { messages: [], stats: {} };
         const notificationsData = notificationsRes.status === 'fulfilled' ? notificationsRes.value.data : { unreadCount: 0 };
+        const electionData = electionRes.status === 'fulfilled' ? electionRes.value.data : {};
 
         const errors = [newsRes, videosRes, playersRes, matchesRes, matchStatsRes, statisticsRes, messagesRes, notificationsRes]
           .filter(r => r.status === 'rejected');
@@ -75,13 +89,13 @@ const Dashboard = () => {
         const totalViews = newsData.news?.reduce((sum, n) => sum + (n.views || 0), 0) || 0;
 
         setStats({
-                total: newsData.total || 0,
+          total: newsData.total || 0,
           views: totalViews,
           recent: newsData.news || [],
-                videosCount: videosData.total || 0,
+          videosCount: videosData.total || 0,
           recentVideos: videosData.videos || [],
-                playersCount: playersData.players?.length || 0,
-                matchesCount: matchStatsData.total || 0,
+          playersCount: playersData.players?.length || 0,
+          matchesCount: matchStatsData.total || 0,
           upcomingCount: matchStatsData.upcoming || 0,
           liveCount: matchStatsData.live || 0,
           finishedCount: (matchStatsData.wins || 0) + (matchStatsData.draws || 0) + (matchStatsData.losses || 0),
@@ -89,11 +103,22 @@ const Dashboard = () => {
           draws: matchStatsData.draws || 0,
           losses: matchStatsData.losses || 0,
           recentMatches: matchesData.matches || [],
-                statsCount: statisticsData.statistics?.length || 0,
-                messagesCount: messagesData.stats?.total || 0,
+          statsCount: statisticsData.statistics?.length || 0,
+          messagesCount: messagesData.stats?.total || 0,
           newMessagesCount: messagesData.stats?.new || 0,
           recentMessages: messagesData.messages || [],
-                unreadNotifications: notificationsData.unreadCount || 0,
+          unreadNotifications: notificationsData.unreadCount || 0,
+          election: {
+            totalMembers: electionData.totalMembers || 0,
+            attending: electionData.attending || 0,
+            notAttending: electionData.notAttending || 0,
+            registered: electionData.registered || 0,
+            pending: electionData.pending || 0,
+            attendingWorking: electionData.attendingWorking || 0,
+            attendingRetired: electionData.attendingRetired || 0,
+            workingTotal: electionData.workingTotal || 0,
+            retiredTotal: electionData.retiredTotal || 0,
+          },
         });
       } catch (error) {
         console.error('Dashboard fetch error:', error);
@@ -132,6 +157,10 @@ const Dashboard = () => {
     sponsorship: 'رعاية',
     other: 'أخرى',
   };
+
+  const electionAttendanceRate = stats.election.totalMembers > 0
+    ? Math.round((stats.election.registered / stats.election.totalMembers) * 100)
+    : 0;
 
   return (
     <div className="container-custom py-8">
@@ -188,7 +217,7 @@ const Dashboard = () => {
           { icon: <FaTrophy />, label: 'الأرقام', value: stats.statsCount, color: 'bg-secondary', link: '/admin/statistics' },
           { icon: <FaEnvelope />, label: 'الرسائل', value: stats.messagesCount, color: 'bg-primary-light', link: '/admin/messages', badge: stats.newMessagesCount },
           { icon: <FaEye />, label: 'المشاهدات', value: stats.views, color: 'bg-primary', link: '#' },
-          { icon: <FaBell />, label: 'الإشعارات', value: stats.unreadNotifications, color: 'bg-secondary', link: '/notifications' },
+          { icon: <FaVoteYea />, label: 'مسجلي الانتخابات', value: stats.election.registered, color: 'bg-secondary', link: '/admin/elections', badge: stats.election.attending },
         ].map((stat, i) => (
           <Link
             key={i}
@@ -203,7 +232,6 @@ const Dashboard = () => {
               <p className="text-2xl font-black text-primary">{stat.value}</p>
             </div>
 
-            {/* Badge */}
             {stat.badge > 0 && (
               <span className="absolute top-2 right-2 bg-red-500 text-white text-xs font-black w-6 h-6 rounded-full flex items-center justify-center">
                 {stat.badge > 99 ? '99+' : stat.badge}
@@ -211,6 +239,95 @@ const Dashboard = () => {
             )}
           </Link>
         ))}
+      </div>
+
+      <div className="bg-gradient-to-l from-secondary via-yellow-400 to-secondary text-primary p-6 rounded-2xl mb-8 relative overflow-hidden shadow-xl">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 left-0 w-64 h-64 bg-primary rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 right-0 w-64 h-64 bg-primary rounded-full blur-3xl"></div>
+        </div>
+
+        <div className="relative z-10">
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-14 h-14 bg-primary rounded-xl flex items-center justify-center text-secondary text-2xl shadow-lg">
+                <FaVoteYea />
+              </div>
+              <div>
+                <h2 className="text-2xl font-black">انتخابات الجمعية العمومية</h2>
+                <p className="text-primary/70 text-sm font-bold">متابعة تسجيلات الحضور</p>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Link
+                to="/admin/elections"
+                className="bg-primary text-white px-5 py-2.5 rounded-lg font-bold hover:bg-primary-dark transition flex items-center gap-2 shadow-lg"
+              >
+                <FaChartBar /> إدارة الانتخابات
+              </Link>
+              <Link
+                to="/admin/elections/upload"
+                className="bg-white text-primary px-5 py-2.5 rounded-lg font-bold hover:bg-gray-100 transition flex items-center gap-2 shadow-lg"
+              >
+                <FaPlus /> رفع أعضاء
+              </Link>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+            <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 text-center border-2 border-white">
+              <p className="text-3xl font-black text-primary">{stats.election.totalMembers}</p>
+              <p className="text-xs text-primary/70 font-bold mt-1">إجمالي الأعضاء</p>
+            </div>
+            <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 text-center border-2 border-white">
+              <p className="text-3xl font-black text-green-600 flex items-center justify-center gap-1">
+                <FaUserCheck className="text-lg" /> {stats.election.attending}
+              </p>
+              <p className="text-xs text-primary/70 font-bold mt-1">سيحضر</p>
+            </div>
+            <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 text-center border-2 border-white">
+              <p className="text-3xl font-black text-red-600 flex items-center justify-center gap-1">
+                <FaUserTimes className="text-lg" /> {stats.election.notAttending}
+              </p>
+              <p className="text-xs text-primary/70 font-bold mt-1">لن يحضر</p>
+            </div>
+            <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 text-center border-2 border-white">
+              <p className="text-3xl font-black text-gray-600">{stats.election.pending}</p>
+              <p className="text-xs text-primary/70 font-bold mt-1">لم يسجل بعد</p>
+            </div>
+            <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 text-center border-2 border-white">
+              <p className="text-3xl font-black text-primary">{electionAttendanceRate}%</p>
+              <p className="text-xs text-primary/70 font-bold mt-1">نسبة التسجيل</p>
+            </div>
+          </div>
+
+          <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 border-2 border-white">
+              <div className="flex justify-between items-center mb-2">
+                <span className="font-black text-primary text-sm">👷 الحضور من العاملين</span>
+                <span className="font-black text-primary">{stats.election.attendingWorking} / {stats.election.workingTotal}</span>
+              </div>
+              <div className="w-full bg-white/50 rounded-full h-2.5">
+                <div
+                  className="bg-green-600 h-2.5 rounded-full transition-all"
+                  style={{ width: `${stats.election.workingTotal > 0 ? (stats.election.attendingWorking / stats.election.workingTotal) * 100 : 0}%` }}
+                ></div>
+              </div>
+            </div>
+            <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 border-2 border-white">
+              <div className="flex justify-between items-center mb-2">
+                <span className="font-black text-primary text-sm">👴 الحضور من المعاش</span>
+                <span className="font-black text-primary">{stats.election.attendingRetired} / {stats.election.retiredTotal}</span>
+              </div>
+              <div className="w-full bg-white/50 rounded-full h-2.5">
+                <div
+                  className="bg-purple-600 h-2.5 rounded-full transition-all"
+                  style={{ width: `${stats.election.retiredTotal > 0 ? (stats.election.attendingRetired / stats.election.retiredTotal) * 100 : 0}%` }}
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="bg-gradient-to-l from-primary to-primary-dark text-white p-6 rounded-2xl mb-8 relative overflow-hidden">
@@ -279,8 +396,8 @@ const Dashboard = () => {
           <Link to="/admin/matches/create" className="bg-primary-dark text-white px-6 py-3 rounded-lg font-bold hover:bg-primary transition flex items-center gap-2">
             <FaPlus /> مباراة جديدة
           </Link>
-          <Link to="/admin/statistics" className="bg-secondary text-primary px-6 py-3 rounded-lg font-bold hover:bg-secondary-light transition flex items-center gap-2">
-            <FaChartBar /> إدارة الأرقام
+          <Link to="/admin/elections" className="bg-secondary text-primary px-6 py-3 rounded-lg font-bold hover:bg-secondary-light transition flex items-center gap-2">
+            <FaVoteYea /> إدارة الانتخابات
           </Link>
           <Link to="/admin/messages" className="bg-primary-light text-white px-6 py-3 rounded-lg font-bold hover:bg-primary transition flex items-center gap-2 relative">
             <FaEnvelope /> الرسائل
@@ -390,7 +507,7 @@ const Dashboard = () => {
                             <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden">
                               {match.opponentLogo ? (
                                 <img
-                                  src={match.opponentLogo.startsWith('http') ? match.opponentLogo : `http://localhost:3000${match.opponentLogo}`}
+                                  src={getImageUrl(match.opponentLogo)}
                                   alt={match.opponent}
                                   className="w-full h-full object-cover"
                                   onError={(e) => { e.target.style.display = 'none'; }}

@@ -118,5 +118,18 @@ export const notificationAPI = {
   delete: (id) => api.delete(`/notifications/${id}`),
   deleteAll: () => api.delete('/notifications'),
 };
+export const electionAPI = {
+  searchMember: (data) => api.post('/elections/search', data),
+  register: (data) => api.post('/elections/register', data),
+  getPublicStats: () => api.get('/elections/public-stats'),
 
+  getList: (params) => api.get('/elections/admin/list', { params }),
+  getStats: () => api.get('/elections/admin/stats'),
+  export: (queryString) =>
+    api.get(`/elections/admin/export?${queryString}`, { responseType: 'blob' }),
+  importMembers: (formData) => api.post('/elections/admin/import', formData),
+  deleteAllMembers: () => api.delete('/elections/admin/members'),
+  resetAttendance: () => api.delete('/elections/admin/attendance'),
+  deleteAttendance: (id) => api.delete(`/elections/admin/attendance/${id}`),
+};
 export default api;

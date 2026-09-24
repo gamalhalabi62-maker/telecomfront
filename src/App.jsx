@@ -38,6 +38,10 @@ import EditMatch from './pages/admin/EditMatch';
 import ManageStats from './pages/admin/ManageStats';
 import ManageMessages from './pages/admin/ManageMessages';
 
+import Election from './pages/Election';
+import ManageElection from './pages/admin/ManageElection';
+import UploadMembers from './pages/admin/UploadMembers';
+
 function App() {
   return (
     <BrowserRouter>
@@ -54,6 +58,7 @@ function App() {
               <Route path="/team/:id" element={<PlayerDetail />} />
               <Route path="/matches" element={<Matches />} />
               <Route path="/matches/:id" element={<MatchDetail />} />
+              <Route path="/elections" element={<Election />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
@@ -113,6 +118,9 @@ function App() {
               <Route path="/admin/statistics" element={<ManageStats />} />
 
               <Route path="/admin/messages" element={<ManageMessages />} />
+
+              <Route path="/admin/elections" element={<ManageElection />} />
+              <Route path="/admin/elections/upload" element={<UploadMembers />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />
