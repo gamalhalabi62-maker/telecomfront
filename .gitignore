@@ -28,3 +28,4 @@ Thumbs.db
 
 # Vite
 .vite/package-lock.json
+node_modules/
