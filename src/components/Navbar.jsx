@@ -1,4 +1,4 @@
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import {
   FaBars, FaTimes, FaUser, FaSignOutAlt, FaEnvelope,
@@ -16,17 +16,18 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const { user, logout, isStaff } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const userMenuRef = useRef(null);
 
   const navLinks = [
     { to: '/', label: 'الرئيسية', icon: <FaHome /> },
-    { to: '/#news-section', label: 'الأخبار', icon: <FaNewspaper /> },
-    { to: '/second-division', label: ' دوري المحترفين', icon: <FaTrophy />, highlight: true },
+    { to: '/#news-section', label: 'الأخبار', icon: <FaNewspaper />, hash: 'news-section' },
+    { to: '/second-division', label: 'دوري المحترفين', icon: <FaTrophy />, highlight: true },
     { to: '/matches', label: 'المباريات', icon: <FaCalendarAlt /> },
     { to: '/videos', label: 'الفيديوهات', icon: <FaVideo /> },
     { to: '/team', label: 'الفريق', icon: <FaUsers /> },
     { to: '/elections', label: 'الانتخابات', icon: <FaVoteYea /> },
-    { to: '/contact', label: ' تواصل', icon: <FaHeadset /> },
+    { to: '/contact', label: 'تواصل', icon: <FaHeadset /> },
   ];
 
   useEffect(() => {
@@ -54,13 +55,44 @@ const Navbar = () => {
 
   useEffect(() => {
     setIsOpen(false);
-  }, [navigate]);
+  }, [location.pathname]);
 
   const handleLogout = () => {
     setUserMenuOpen(false);
     setIsOpen(false);
     logout();
     navigate('/');
+  };
+
+  const handleNavClick = (e, link) => {
+    if (link.hash) {
+      e.preventDefault();
+      const scrollToSection = () => {
+        const element = document.getElementById(link.hash);
+        if (element) {
+          const offset = 90;
+          const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+          window.scrollTo({
+            top: elementPosition - offset,
+            behavior: 'smooth',
+          });
+        }
+      };
+
+      if (location.pathname === '/') {
+        scrollToSection();
+      } else {
+        navigate('/');
+        setTimeout(scrollToSection, 350);
+      }
+      setIsOpen(false);
+    }
+  };
+
+  const isLinkActive = (link) => {
+    if (link.hash) return false;
+    if (link.to === '/') return location.pathname === '/';
+    return location.pathname === link.to;
   };
 
   return (
@@ -70,93 +102,92 @@ const Navbar = () => {
           scrolled ? 'shadow-2xl bg-primary/95 backdrop-blur-md' : ''
         }`}
       >
-        <div className="container-custom">
+        <div className="container-custom px-4">
           <div
-            className={`flex justify-between items-center transition-all duration-300 ${
+            className={`flex items-center justify-between gap-4 transition-all duration-300 ${
               scrolled ? 'h-16' : 'h-20'
             }`}
           >
-            <Link to="/" className="flex items-center gap-2 hover:opacity-90 transition">
+            <Link
+              to="/"
+              className="flex items-center flex-shrink-0 hover:opacity-90 transition py-2"
+            >
               <Logo size={scrolled ? 'sm' : 'md'} />
             </Link>
 
-            <div className="hidden lg:flex items-center gap-1">
-              {navLinks.map((link) => (
-                <NavLink
-                  key={link.to}
-                  to={link.to}
-                  className={({ isActive }) =>
-                    `relative px-3 xl:px-4 py-2 rounded-lg font-bold text-sm xl:text-base transition-all duration-200 flex items-center gap-2 ${
-                      isActive
+            <div className="hidden lg:flex items-center gap-0.5 flex-1 justify-center">
+              {navLinks.map((link) => {
+                const active = isLinkActive(link);
+                return (
+                  <Link
+                    key={link.to}
+                    to={link.to}
+                    onClick={(e) => handleNavClick(e, link)}
+                    className={`relative px-2 xl:px-3 py-2 rounded-lg font-bold text-xs xl:text-sm transition-all duration-200 flex items-center gap-1.5 whitespace-nowrap ${
+                      active
                         ? 'text-secondary bg-white/10'
                         : link.highlight
                         ? 'text-secondary/90 hover:text-secondary hover:bg-white/5'
                         : 'text-white/90 hover:text-secondary hover:bg-white/5'
-                    }`
-                  }
-                >
-                  {({ isActive }) => (
-                    <>
-                      <span className="text-xs xl:text-sm">{link.icon}</span>
-                      <span>{link.label}</span>
-                      {link.highlight && !isActive && (
-                        <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-secondary rounded-full animate-pulse" />
-                      )}
-                      {isActive && (
-                        <span className="absolute bottom-0 right-3 left-3 h-0.5 bg-secondary rounded-full" />
-                      )}
-                    </>
-                  )}
-                </NavLink>
-              ))}
+                    }`}
+                  >
+                    <span className="text-[10px] xl:text-xs">{link.icon}</span>
+                    <span>{link.label}</span>
+                    {link.highlight && !active && (
+                      <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-secondary rounded-full animate-pulse" />
+                    )}
+                    {active && (
+                      <span className="absolute bottom-0 right-2 left-2 h-0.5 bg-secondary rounded-full" />
+                    )}
+                  </Link>
+                );
+              })}
             </div>
 
-            <div className="hidden lg:flex items-center gap-3">
+            <div className="hidden lg:flex items-center gap-2 flex-shrink-0">
               {user ? (
                 <>
                   <NotificationBell />
 
                   <Link
                     to="/my-messages"
-                    className="relative w-10 h-10 bg-white/10 hover:bg-secondary hover:text-primary rounded-full flex items-center justify-center transition-all duration-200 group"
+                    className="w-9 h-9 bg-white/10 hover:bg-secondary hover:text-primary rounded-full flex items-center justify-center transition-all duration-200 group flex-shrink-0"
                     title="رسائلي"
                   >
-                    <FaEnvelope className="text-base group-hover:scale-110 transition" />
+                    <FaEnvelope className="text-sm group-hover:scale-110 transition" />
                   </Link>
 
                   {isStaff && (
                     <Link
                       to="/admin"
-                      className="bg-secondary text-primary px-4 py-2 rounded-lg font-bold hover:bg-secondary/90 hover:shadow-lg transition-all duration-200 text-sm flex items-center gap-2"
+                      className="bg-secondary text-primary px-3 py-2 rounded-lg font-bold hover:bg-secondary/90 hover:shadow-lg transition-all duration-200 text-xs flex items-center gap-1.5 flex-shrink-0"
                     >
-                      <FaShieldAlt className="text-xs" />
-                      لوحة التحكم
+                      <FaShieldAlt className="text-[10px]" />
+                      <span className="hidden xl:inline">لوحة التحكم</span>
+                      <span className="xl:hidden">الإدارة</span>
                     </Link>
                   )}
 
-                  <div className="relative" ref={userMenuRef}>
+                  <div className="relative flex-shrink-0" ref={userMenuRef}>
                     <button
                       onClick={() => setUserMenuOpen(!userMenuOpen)}
-                      className="flex items-center gap-2 hover:bg-white/10 px-2 py-1.5 rounded-lg transition-all duration-200"
+                      className="flex items-center gap-1.5 hover:bg-white/10 px-2 py-1.5 rounded-lg transition-all duration-200"
                     >
-                      <div className="w-9 h-9 bg-gradient-to-br from-secondary to-secondary/80 text-primary rounded-full flex items-center justify-center font-black text-sm shadow-md">
+                      <div className="w-8 h-8 bg-gradient-to-br from-secondary to-secondary/80 text-primary rounded-full flex items-center justify-center font-black text-xs shadow-md">
                         {user.name?.charAt(0).toUpperCase()}
                       </div>
-                      <span className="font-bold text-sm hidden xl:inline max-w-[100px] truncate">
-                        {user.name}
-                      </span>
                       <FaChevronDown
-                        className={`text-xs transition-transform duration-200 ${
+                        className={`text-[10px] transition-transform duration-200 ${
                           userMenuOpen ? 'rotate-180' : ''
                         }`}
                       />
                     </button>
 
                     {userMenuOpen && (
-                      <div className="absolute left-0 top-full mt-2 w-56 bg-white text-primary rounded-xl shadow-2xl overflow-hidden border border-gray-100 animate-fade-in">
+                      <div className="absolute left-0 top-full mt-2 w-56 bg-white text-primary rounded-xl shadow-2xl overflow-hidden border border-gray-100 animate-fade-in z-50">
                         <div className="p-4 bg-gradient-to-l from-primary to-primary-dark text-white">
                           <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 bg-secondary text-primary rounded-full flex items-center justify-center font-black text-lg">
+                            <div className="w-12 h-12 bg-secondary text-primary rounded-full flex items-center justify-center font-black text-lg flex-shrink-0">
                               {user.name?.charAt(0).toUpperCase()}
                             </div>
                             <div className="flex-1 min-w-0">
@@ -223,13 +254,13 @@ const Navbar = () => {
                 <>
                   <Link
                     to="/register"
-                    className="text-white hover:text-secondary transition font-bold text-sm px-3 py-2"
+                    className="text-white hover:text-secondary transition font-bold text-xs xl:text-sm px-2 py-2 whitespace-nowrap"
                   >
                     إنشاء حساب
                   </Link>
                   <Link
                     to="/login"
-                    className="bg-secondary text-primary px-5 py-2.5 rounded-lg font-bold hover:bg-secondary/90 hover:shadow-lg transition-all duration-200 text-sm"
+                    className="bg-secondary text-primary px-4 py-2 rounded-lg font-bold hover:bg-secondary/90 hover:shadow-lg transition-all duration-200 text-xs xl:text-sm whitespace-nowrap"
                   >
                     تسجيل الدخول
                   </Link>
@@ -237,7 +268,7 @@ const Navbar = () => {
               )}
             </div>
 
-            <div className="lg:hidden flex items-center gap-2">
+            <div className="lg:hidden flex items-center gap-2 flex-shrink-0">
               {user && <NotificationBell />}
               <button
                 onClick={() => setIsOpen(!isOpen)}
@@ -277,7 +308,7 @@ const Navbar = () => {
         {user && (
           <div className="p-4 bg-gradient-to-l from-primary-light to-primary">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-secondary text-primary rounded-full flex items-center justify-center font-black text-lg">
+              <div className="w-12 h-12 bg-secondary text-primary rounded-full flex items-center justify-center font-black text-lg flex-shrink-0">
                 {user.name?.charAt(0).toUpperCase()}
               </div>
               <div className="flex-1 min-w-0">
@@ -291,21 +322,22 @@ const Navbar = () => {
         <div className="p-4">
           <p className="text-xs font-black text-secondary mb-3 px-2">القائمة الرئيسية</p>
           <div className="space-y-1">
-            {navLinks.map((link) => (
-              <NavLink
-                key={link.to}
-                to={link.to}
-                onClick={() => setIsOpen(false)}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 py-3 px-3 rounded-lg font-bold transition-all duration-200 ${
-                    isActive ? 'bg-secondary text-primary' : 'hover:bg-white/10'
-                  }`
-                }
-              >
-                <span className="text-sm">{link.icon}</span>
-                <span>{link.label}</span>
-              </NavLink>
-            ))}
+            {navLinks.map((link) => {
+              const active = isLinkActive(link);
+              return (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  onClick={(e) => handleNavClick(e, link)}
+                  className={`flex items-center gap-3 py-3 px-3 rounded-lg font-bold transition-all duration-200 ${
+                    active ? 'bg-secondary text-primary' : 'hover:bg-white/10'
+                  }`}
+                >
+                  <span className="text-sm">{link.icon}</span>
+                  <span>{link.label}</span>
+                </Link>
+              );
+            })}
           </div>
 
           {user && (
