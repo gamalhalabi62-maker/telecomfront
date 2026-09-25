@@ -152,7 +152,7 @@ const Election = () => {
                     inputMode="numeric"
                     value={input}
                     onChange={(e) => setInput(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                    placeholder="000029"
+                    placeholder="يرجي ادخال رقم العضوية المكون من 6 ارقام"
                     dir="ltr"
                     className="input-field text-center text-2xl font-black tracking-widest"
                     maxLength={6}
