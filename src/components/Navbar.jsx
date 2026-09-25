@@ -1,6 +1,9 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { FaBars, FaTimes, FaUser, FaSignOutAlt, FaEnvelope, FaBell, FaVoteYea } from 'react-icons/fa';
+import {
+  FaBars, FaTimes, FaUser, FaSignOutAlt, FaEnvelope,
+  FaBell, FaVoteYea, FaTrophy,
+} from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import Logo from './Logo';
 import NotificationBell from './NotificationBell';
@@ -13,8 +16,7 @@ const Navbar = () => {
   const navLinks = [
     { to: '/', label: 'الرئيسية' },
     { to: '/news', label: 'الأخبار' },
-      { to: '/second-division', label: 'دوري القسم الثاني (ب) ', icon: <FaTrophy /> },
-
+    { to: '/second-division', label: 'الدوري الثاني', icon: <FaTrophy /> },
     { to: '/videos', label: 'الفيديوهات' },
     { to: '/team', label: 'الفريق' },
     { to: '/matches', label: 'المباريات' },
