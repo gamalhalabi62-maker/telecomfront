@@ -41,6 +41,7 @@ import ManageMessages from './pages/admin/ManageMessages';
 import Election from './pages/Election';
 import ManageElection from './pages/admin/ManageElection';
 import UploadMembers from './pages/admin/UploadMembers';
+import SecondDivision from './pages/SecondDivision';
 
 function App() {
   return (
@@ -63,6 +64,8 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/verify-otp" element={<VerifyOTP />} />
+              <Route path="/second-division" element={<SecondDivision />} />
+
 
               <Route
                 path="/profile"

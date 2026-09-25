@@ -13,6 +13,8 @@ const Navbar = () => {
   const navLinks = [
     { to: '/', label: 'الرئيسية' },
     { to: '/news', label: 'الأخبار' },
+      { to: '/second-division', label: 'دوري القسم الثاني (ب) ', icon: <FaTrophy /> },
+
     { to: '/videos', label: 'الفيديوهات' },
     { to: '/team', label: 'الفريق' },
     { to: '/matches', label: 'المباريات' },

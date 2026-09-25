@@ -132,4 +132,36 @@ export const electionAPI = {
   resetAttendance: () => api.delete('/elections/admin/attendance'),
   deleteAttendance: (id) => api.delete(`/elections/admin/attendance/${id}`),
 };
+
+export const egyptianLeagueAPI = {
+  getStandings: (params) => api.get('/egyptian-league/standings', { params }),
+  getOurTeam: () => api.get('/egyptian-league/our-team'),
+  getMatches: (params) => api.get('/egyptian-league/matches', { params }),
+  getUpcoming: (limit = 10) => api.get('/egyptian-league/matches/upcoming', { params: { limit } }),
+  getLive: () => api.get('/egyptian-league/matches/live'),
+  getFinished: (limit = 20) => api.get('/egyptian-league/matches/finished', { params: { limit } }),
+  getOurMatches: (limit = 10) => api.get('/egyptian-league/matches/our-team', { params: { limit } }),
+  getMatchById: (id) => api.get(`/egyptian-league/matches/${id}`),
+  getMatchDetails: (id) => api.get(`/egyptian-league/matches/${id}/details`),
+  getStats: () => api.get('/egyptian-league/stats'),
+
+  triggerSync: (type = 'full') => api.get(`/egyptian-league/admin/sync?type=${type}`),
+  getSyncLogs: (limit = 20) => api.get('/egyptian-league/admin/sync-logs', { params: { limit } }),
+  getApiStatus: () => api.get('/egyptian-league/admin/api-status'),
+  searchLeagues: (country = 'Egypt') => api.get('/egyptian-league/admin/search-leagues', { params: { country } }),
+};
+
+export const filgoalAPI = {
+  getStandings: (params) => api.get('/filgoal/standings', { params }),
+  getMatches: (params) => api.get('/filgoal/matches', { params }),
+  getUpcoming: (limit = 10) => api.get('/filgoal/matches/upcoming', { params: { limit } }),
+  getLive: () => api.get('/filgoal/matches/live'),
+  getFinished: (limit = 20) => api.get('/filgoal/matches/finished', { params: { limit } }),
+  getOurMatches: (limit = 10) => api.get('/filgoal/matches/our-team', { params: { limit } }),
+  getMatchById: (id) => api.get(`/filgoal/matches/${id}`),
+  getNews: (limit = 20) => api.get('/filgoal/news', { params: { limit } }),
+  getStats: () => api.get('/filgoal/stats'),
+  triggerSync: () => api.post('/filgoal/sync'),
+  getSyncLogs: () => api.get('/filgoal/sync-logs'),
+};
 export default api;
