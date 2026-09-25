@@ -21,12 +21,12 @@ const Navbar = () => {
   const navLinks = [
     { to: '/', label: 'الرئيسية', icon: <FaHome /> },
     { to: '/#news-section', label: 'الأخبار', icon: <FaNewspaper /> },
-    { to: '/second-division', label: 'الدوري الثاني', icon: <FaTrophy />, highlight: true },
+    { to: '/second-division', label: ' دوري المحترفين', icon: <FaTrophy />, highlight: true },
     { to: '/matches', label: 'المباريات', icon: <FaCalendarAlt /> },
     { to: '/videos', label: 'الفيديوهات', icon: <FaVideo /> },
     { to: '/team', label: 'الفريق', icon: <FaUsers /> },
     { to: '/elections', label: 'الانتخابات', icon: <FaVoteYea /> },
-    { to: '/contact', label: 'اتصل بنا', icon: <FaHeadset /> },
+    { to: '/contact', label: ' تواصل', icon: <FaHeadset /> },
   ];
 
   useEffect(() => {
