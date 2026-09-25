@@ -147,17 +147,17 @@ const Election = () => {
                   <p className="text-xs text-gray-500 mb-3">
                     أدخل 6 أرقام بالضبط — مثال: 000029
                   </p>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    value={input}
-                    onChange={(e) => setInput(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                    placeholder="يرجي ادخال رقم العضوية المكون من 6 ارقام"
-                    dir="ltr"
-                    className="input-field text-center text-2xl font-black tracking-widest"
-                    maxLength={6}
-                    autoFocus
-                  />
+                <input
+  type="text"
+  inputMode="numeric"
+  value={input}
+  onChange={(e) => setInput(e.target.value.replace(/\D/g, '').slice(0, 6))}
+  placeholder="أدخل رقم العضوية (6 أرقام)"
+  dir="ltr"
+  className="input-field text-center text-lg sm:text-xl md:text-2xl font-black tracking-wider sm:tracking-widest placeholder:text-sm sm:placeholder:text-base md:placeholder:text-lg placeholder:font-normal placeholder:tracking-normal"
+  maxLength={6}
+  autoFocus
+/>
                   <div className="flex items-center justify-between mt-2 text-xs">
                     <span className="text-gray-500">{input.length} / 6</span>
                     {input.length === 6 && (
