@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import {
   FaBars, FaTimes, FaUser, FaSignOutAlt, FaEnvelope,
   FaBell, FaVoteYea, FaTrophy, FaHome, FaNewspaper,
-  FaFutbol, FaVideo, FaUsers, FaCalendarAlt, FaHeadset,
+  FaVideo, FaUsers, FaCalendarAlt, FaHeadset,
   FaChevronDown, FaCog, FaShieldAlt,
 } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
@@ -14,7 +14,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { user, logout, isAdmin, isStaff } = useAuth();
+  const { user, logout, isStaff } = useAuth();
   const navigate = useNavigate();
   const userMenuRef = useRef(null);
 
@@ -52,6 +52,10 @@ const Navbar = () => {
     };
   }, [isOpen]);
 
+  useEffect(() => {
+    setIsOpen(false);
+  }, [navigate]);
+
   const handleLogout = () => {
     setUserMenuOpen(false);
     setIsOpen(false);
@@ -63,15 +67,18 @@ const Navbar = () => {
     <>
       <nav
         className={`bg-primary text-white shadow-lg sticky top-0 z-50 transition-all duration-300 ${
-          scrolled ? 'shadow-2xl backdrop-blur-md bg-primary/95' : ''
+          scrolled ? 'shadow-2xl bg-primary/95 backdrop-blur-md' : ''
         }`}
       >
         <div className="container-custom">
-          <div className={`flex justify-between items-center transition-all duration-300 ${
-            scrolled ? 'h-16' : 'h-20'
-          }`}>
-
-            <Logo size={scrolled ? 'sm' : 'md'} />
+          <div
+            className={`flex justify-between items-center transition-all duration-300 ${
+              scrolled ? 'h-16' : 'h-20'
+            }`}
+          >
+            <Link to="/" className="flex items-center gap-2 hover:opacity-90 transition">
+              <Logo size={scrolled ? 'sm' : 'md'} />
+            </Link>
 
             <div className="hidden lg:flex items-center gap-1">
               {navLinks.map((link) => (
@@ -79,7 +86,7 @@ const Navbar = () => {
                   key={link.to}
                   to={link.to}
                   className={({ isActive }) =>
-                    `relative group px-3 xl:px-4 py-2 rounded-lg font-bold text-sm xl:text-base transition-all duration-200 flex items-center gap-2 ${
+                    `relative px-3 xl:px-4 py-2 rounded-lg font-bold text-sm xl:text-base transition-all duration-200 flex items-center gap-2 ${
                       isActive
                         ? 'text-secondary bg-white/10'
                         : link.highlight
@@ -93,10 +100,10 @@ const Navbar = () => {
                       <span className="text-xs xl:text-sm">{link.icon}</span>
                       <span>{link.label}</span>
                       {link.highlight && !isActive && (
-                        <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-secondary rounded-full animate-pulse"></span>
+                        <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-secondary rounded-full animate-pulse" />
                       )}
                       {isActive && (
-                        <span className="absolute bottom-0 right-3 left-3 h-0.5 bg-secondary rounded-full"></span>
+                        <span className="absolute bottom-0 right-3 left-3 h-0.5 bg-secondary rounded-full" />
                       )}
                     </>
                   )}
@@ -146,7 +153,7 @@ const Navbar = () => {
                     </button>
 
                     {userMenuOpen && (
-                      <div className="absolute left-0 top-full mt-2 w-56 bg-white text-primary rounded-xl shadow-2xl overflow-hidden animate-fade-in border border-gray-100">
+                      <div className="absolute left-0 top-full mt-2 w-56 bg-white text-primary rounded-xl shadow-2xl overflow-hidden border border-gray-100 animate-fade-in">
                         <div className="p-4 bg-gradient-to-l from-primary to-primary-dark text-white">
                           <div className="flex items-center gap-3">
                             <div className="w-12 h-12 bg-secondary text-primary rounded-full flex items-center justify-center font-black text-lg">
@@ -248,7 +255,7 @@ const Navbar = () => {
         <div
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={() => setIsOpen(false)}
-        ></div>
+        />
       )}
 
       <div
@@ -291,9 +298,7 @@ const Navbar = () => {
                 onClick={() => setIsOpen(false)}
                 className={({ isActive }) =>
                   `flex items-center gap-3 py-3 px-3 rounded-lg font-bold transition-all duration-200 ${
-                    isActive
-                      ? 'bg-secondary text-primary'
-                      : 'hover:bg-white/10'
+                    isActive ? 'bg-secondary text-primary' : 'hover:bg-white/10'
                   }`
                 }
               >
