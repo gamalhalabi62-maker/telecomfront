@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   FaVoteYea, FaSearch, FaCheckCircle, FaTimesCircle,
   FaUser, FaPhone, FaMapMarkerAlt, FaHashtag, FaSpinner,
-  FaInfoCircle, FaUsers,
+  FaInfoCircle, FaUsers, FaExclamationTriangle, FaShieldAlt,
 } from 'react-icons/fa';
 import { electionAPI } from '../services/api';
 import { useToast } from '../context/ToastContext';
@@ -10,9 +10,7 @@ import { useToast } from '../context/ToastContext';
 const Election = () => {
   const toast = useToast();
 
-  const [stats, setStats] = useState(null);
   const [step, setStep] = useState('search');
-  const [membershipType, setMembershipType] = useState('');
   const [input, setInput] = useState('');
   const [member, setMember] = useState(null);
   const [alreadyRegistered, setAlreadyRegistered] = useState(false);
@@ -22,19 +20,6 @@ const Election = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    fetchStats();
-  }, []);
-
-  const fetchStats = async () => {
-    try {
-      const { data } = await electionAPI.getPublicStats();
-      setStats(data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   const handleSearch = async (e) => {
     e.preventDefault();
     setError('');
@@ -43,27 +28,21 @@ const Election = () => {
     setPreviousChoice(null);
     setWillAttend(null);
 
-    if (!membershipType) {
-      setError('يرجى اختيار نوع العضوية');
-      return;
-    }
-
     const cleaned = input.replace(/\D/g, '');
     if (cleaned.length !== 6) {
       setError('يجب إدخال 6 أرقام بالضبط — مثال: 000029');
+      toast.error('يجب إدخال 6 أرقام بالضبط');
       return;
     }
 
     setLoading(true);
     try {
-      const { data } = await electionAPI.searchMember({
-        membershipType,
-        input: cleaned,
-      });
+      const { data } = await electionAPI.searchMember({ input: cleaned });
       setMember(data.member);
       setAlreadyRegistered(data.alreadyRegistered);
       setPreviousChoice(data.previousChoice);
       setStep('confirm');
+      toast.success(`مرحباً ${data.member.name}`);
     } catch (err) {
       const msg = err.response?.data?.message || 'حدث خطأ';
       setError(msg);
@@ -76,6 +55,7 @@ const Election = () => {
   const handleRegister = async () => {
     if (willAttend === null) {
       setError('يرجى اختيار: سأحضر أم لن أحضر');
+      toast.warning('يرجى اختيار أحد الخيارين');
       return;
     }
 
@@ -88,7 +68,6 @@ const Election = () => {
       });
       toast.success(data.message);
       setStep('success');
-      fetchStats();
     } catch (err) {
       const msg = err.response?.data?.message || 'حدث خطأ';
       setError(msg);
@@ -100,7 +79,6 @@ const Election = () => {
 
   const resetForm = () => {
     setStep('search');
-    setMembershipType('');
     setInput('');
     setMember(null);
     setWillAttend(null);
@@ -127,23 +105,18 @@ const Election = () => {
               يرجى تسجيل مشاركتكم في انتخابات الجمعية العمومية لنادي المصرية للاتصالات
             </p>
           </div>
+        </div>
 
-          {stats && (
-            <div className="grid grid-cols-3 gap-3 md:gap-4 mt-8 relative z-10">
-              <div className="bg-white/10 backdrop-blur-md rounded-xl p-3 md:p-4 text-center">
-                <p className="text-2xl md:text-3xl font-black text-secondary">{stats.attending}</p>
-                <p className="text-xs md:text-sm text-gray-200">سيحضر</p>
-              </div>
-              <div className="bg-white/10 backdrop-blur-md rounded-xl p-3 md:p-4 text-center">
-                <p className="text-2xl md:text-3xl font-black text-gray-200">{stats.notAttending}</p>
-                <p className="text-xs md:text-sm text-gray-200">لن يحضر</p>
-              </div>
-              <div className="bg-white/10 backdrop-blur-md rounded-xl p-3 md:p-4 text-center">
-                <p className="text-2xl md:text-3xl font-black text-white">{stats.totalMembers}</p>
-                <p className="text-xs md:text-sm text-gray-200">إجمالي الأعضاء</p>
-              </div>
-            </div>
-          )}
+        <div className="bg-amber-50 border-2 border-amber-300 rounded-2xl p-5 mb-6 flex items-start gap-3">
+          <FaExclamationTriangle className="text-amber-600 text-2xl flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="font-black text-amber-800 mb-1">ملاحظة مهمة</p>
+            <p className="text-amber-700 text-sm leading-relaxed">
+              هذا التسجيل <strong>لتأكيد حضور الانتخابات فقط</strong> — لتحديد نقاط التجمع ومعرفة مكان اللجنة.
+              <br />
+              هذا <strong>ليس إجراء الانتخابات نفسها</strong>، بل خطوة تحضيرية لتنظيم الحضور.
+            </p>
+          </div>
         </div>
 
         <div className="bg-white rounded-3xl shadow-xl p-6 md:p-10">
@@ -155,7 +128,7 @@ const Election = () => {
                 </div>
                 <div>
                   <h2 className="text-xl md:text-2xl font-black text-primary">ابحث عن بياناتك</h2>
-                  <p className="text-sm text-gray-500">أدخل بياناتك للتحقق من عضويتك</p>
+                  <p className="text-sm text-gray-500">أدخل رقم الشركة للتحقق من عضويتك</p>
                 </div>
               </div>
 
@@ -168,40 +141,8 @@ const Election = () => {
 
               <form onSubmit={handleSearch} className="space-y-6">
                 <div>
-                  <label className="block font-bold text-gray-700 mb-3">
-يرجي اختيار نوع العضوية  * اجباري
-                  </label>
-                  <div className="grid grid-cols-2 gap-4">
-                    <button
-                      type="button"
-                      onClick={() => setMembershipType('working')}
-                      className={`p-5 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${
-                        membershipType === 'working'
-                          ? 'border-primary bg-primary/10 text-primary shadow-lg scale-105'
-                          : 'border-gray-200 text-gray-500 hover:border-gray-300'
-                      }`}
-                    >
-                      <FaUsers className="text-3xl" />
-                      <span className="font-black text-lg">عضو عامل</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setMembershipType('retired')}
-                      className={`p-5 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${
-                        membershipType === 'retired'
-                          ? 'border-primary bg-primary/10 text-primary shadow-lg scale-105'
-                          : 'border-gray-200 text-gray-500 hover:border-gray-300'
-                      }`}
-                    >
-                      <FaUsers className="text-3xl" />
-                      <span className="font-black text-lg">عضو بالمعاش</span>
-                    </button>
-                  </div>
-                </div>
-
-                <div>
                   <label className="block font-bold text-gray-700 mb-2">
-                    رقم العضوية *
+                    رقم الشركة *
                   </label>
                   <p className="text-xs text-gray-500 mb-3">
                     أدخل 6 أرقام بالضبط — مثال: 000029
@@ -215,6 +156,7 @@ const Election = () => {
                     dir="ltr"
                     className="input-field text-center text-2xl font-black tracking-widest"
                     maxLength={6}
+                    autoFocus
                   />
                   <div className="flex items-center justify-between mt-2 text-xs">
                     <span className="text-gray-500">{input.length} / 6</span>
@@ -229,7 +171,7 @@ const Election = () => {
 
                 <button
                   type="submit"
-                  disabled={loading || input.length !== 6 || !membershipType}
+                  disabled={loading || input.length !== 6}
                   className="w-full btn-primary flex items-center justify-center gap-2 disabled:opacity-50 py-4 text-lg"
                 >
                   {loading ? (
@@ -271,8 +213,12 @@ const Election = () => {
               <div className="bg-gray-50 rounded-2xl p-6 mb-6 space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <InfoRow icon={<FaUser />} label="الاسم" value={member.name} />
-                  <InfoRow icon={<FaHashtag />} label="رقم العضوية" value={member.companyNumber} ltr />
-                  <InfoRow icon={<FaUsers />} label="نوع العضوية" value={member.membershipType === 'working' ? 'عامل' : 'بالمعاش'} />
+                  <InfoRow icon={<FaHashtag />} label="رقم الشركة" value={member.companyNumber} ltr />
+                  <InfoRow
+                    icon={<FaUsers />}
+                    label="نوع العضوية"
+                    value={member.membershipType === 'working' ? '👷 عامل' : '👴 بالمعاش'}
+                  />
                   <InfoRow icon={<FaPhone />} label="الهاتف" value={member.phone || 'غير مسجل'} ltr />
                   <InfoRow icon={<FaMapMarkerAlt />} label="مكان اللجنة" value={member.committeeName || 'لم يُحدد بعد'} />
                   <InfoRow icon={<FaHashtag />} label="رقم اللجنة" value={member.committeeNumber || 'لم يُحدد بعد'} />
@@ -365,11 +311,29 @@ const Election = () => {
               <h2 className="text-3xl font-black text-primary mb-3">
                 تم التسجيل بنجاح!
               </h2>
-              <p className="text-gray-600 mb-8 max-w-md mx-auto">
+              <p className="text-gray-600 mb-6 max-w-md mx-auto">
                 {willAttend
                   ? 'شكراً لك. نتشرف بحضوركم في انتخابات الجمعية العمومية.'
                   : 'شكراً لك على إبلاغنا. نتفهم عدم تمكنك من الحضور.'}
               </p>
+
+              <div className="bg-red-50 border-2 border-red-300 rounded-2xl p-5 mb-8 max-w-2xl mx-auto text-right">
+                <div className="flex items-start gap-3">
+                  <FaExclamationTriangle className="text-red-600 text-xl flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-black text-red-700 mb-2">تنبيه مهم</p>
+                    <p className="text-red-600 text-sm leading-relaxed">
+                      هذا التسجيل <strong>لتأكيد حضور الانتخابات فقط</strong> — بهدف تحديد نقاط التجمع
+                      ومعرفة مكان اللجنة الخاصة بكم.
+                    </p>
+                    <p className="text-red-600 text-sm leading-relaxed mt-2">
+                      <strong>هذا ليس إجراء الانتخابات نفسها</strong>، بل خطوة تحضيرية لتنظيم الحضور.
+                      سيتم التواصل معكم لاحقاً بتفاصيل الموعد الرسمي للانتخابات.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               <button
                 onClick={resetForm}
                 className="btn-primary inline-flex items-center gap-2"
@@ -380,8 +344,14 @@ const Election = () => {
           )}
         </div>
 
-        <div className="text-center mt-8 text-gray-500 text-sm">
-          <p>© {new Date().getFullYear()} نادي المصرية للاتصالات - جميع الحقوق محفوظة</p>
+        <div className="text-center mt-8 space-y-2">
+          <div className="flex items-center justify-center gap-2 text-gray-500 text-sm">
+            <FaShieldAlt className="text-primary" />
+            <span>بياناتك محفوظة بأمان</span>
+          </div>
+          <p className="text-gray-400 text-xs">
+            © {new Date().getFullYear()} نادي المصرية للاتصالات - جميع الحقوق محفوظة
+          </p>
         </div>
       </div>
     </div>
