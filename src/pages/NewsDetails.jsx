@@ -7,6 +7,105 @@ import {
 import { filgoalAPI } from '../services/api';
 import Loading from '../components/Loading';
 
+const cleanContent = (html) => {
+  if (!html) return '';
+
+  const div = document.createElement('div');
+  div.innerHTML = html;
+
+  const unwantedSelectors = [
+    'script', 'style', 'noscript', 'iframe[src*="ads"]',
+    '.ads', '.ad', '.advertisement', '.ad-container',
+    '.sidebar', '.related', '.related-news', '.related_news',
+    '.most-read', '.most_watched', '.most-watched',
+    '.also-read', '.also_read', '.recommended',
+    '.matches', '.match-slider', '.match-list', '.match_block',
+    '.tags', '.tags-list',
+    '.share', '.share-buttons', '.social',
+    '.comments', '.comment', '.newsletter',
+    '.breaking', '.news-block', '.news_block',
+    '.grid-item', '.videos-card', '.gallery-card',
+    'nav', 'aside', 'footer',
+    '[class*="related"]', '[class*="share"]', '[class*="most"]',
+    '[class*="also"]', '[class*="recommend"]', '[class*="promo"]',
+    '[class*="match"]', '[class*="slider"]',
+    '[class*="advert"]', '[class*="sidebar"]',
+    '[class*="breaking"]', '[class*="news-block"]',
+    '[id*="ad-"]', '[id*="ads-"]',
+  ];
+
+  unwantedSelectors.forEach((sel) => {
+    div.querySelectorAll(sel).forEach((el) => el.remove());
+  });
+
+  const unwantedTextPatterns = [
+    /نرشح لكم/,
+    /أخبار ذات صلة/,
+    /الأكثر مشاهدة/,
+    /آخر الأخبار/,
+    /مباريات اليوم/,
+    /تابعنا على/,
+    /شارك الخبر/,
+    /اقرأ أيضا/,
+    /اقرأ أيضاً/,
+    /مواضيع ذات صلة/,
+  ];
+
+  div.querySelectorAll('h2, h3, h4, h5, p, div, span').forEach((el) => {
+    const text = el.textContent?.trim() || '';
+    if (text.length < 50 && unwantedTextPatterns.some((p) => p.test(text))) {
+      el.remove();
+    }
+  });
+
+  const keepTags = new Set(['P', 'H2', 'H3', 'H4', 'BLOCKQUOTE', 'UL', 'OL', 'LI', 'IMG', 'STRONG', 'B', 'EM', 'I', 'A', 'BR', 'FIGURE', 'FIGCAPTION']);
+
+  const cleanNode = (node) => {
+    if (node.nodeType === Node.TEXT_NODE) return;
+    if (node.nodeType !== Node.ELEMENT_NODE) return;
+
+    if (!keepTags.has(node.tagName)) {
+      const parent = node.parentNode;
+      while (node.firstChild) {
+        parent.insertBefore(node.firstChild, node);
+      }
+      parent.removeChild(node);
+      return;
+    }
+
+    const attrs = node.attributes;
+    for (let i = attrs.length - 1; i >= 0; i--) {
+      const name = attrs[i].name;
+      if (name === 'src' || name === 'alt' || name === 'href' || name === 'title') continue;
+      if (node.tagName === 'IMG' && name === 'data-src') continue;
+      node.removeAttribute(name);
+    }
+
+    if (node.tagName === 'IMG') {
+      const realSrc = node.getAttribute('data-src') || node.getAttribute('src') || '';
+      if (realSrc && realSrc.startsWith('//')) {
+        node.setAttribute('src', `https:${realSrc}`);
+      } else if (realSrc) {
+        node.setAttribute('src', realSrc);
+      }
+      node.removeAttribute('data-src');
+      node.setAttribute('loading', 'lazy');
+    }
+
+    [...node.childNodes].forEach(cleanNode);
+  };
+
+  [...div.childNodes].forEach(cleanNode);
+
+  div.querySelectorAll('p').forEach((p) => {
+    if (!p.textContent.trim() && !p.querySelector('img')) {
+      p.remove();
+    }
+  });
+
+  return div.innerHTML;
+};
+
 const NewsDetails = () => {
   const { id } = useParams();
   const [news, setNews] = useState(null);
@@ -23,7 +122,7 @@ const NewsDetails = () => {
         const cachedRes = await filgoalAPI.getNewsById(id);
         const cached = cachedRes.data.news;
 
-        if (cached?.content && cached.content.length > 100 && cached.content.length < 20000) {
+        if (cached?.content && cached.content.length > 100) {
           setNews(cached);
           setLoading(false);
         } else {
@@ -162,7 +261,7 @@ const NewsDetails = () => {
                 {news.content ? (
                   <div
                     className="news-content"
-                    dangerouslySetInnerHTML={{ __html: news.content }}
+                    dangerouslySetInnerHTML={{ __html: cleanContent(news.content) }}
                   />
                 ) : (
                   <div className="text-center py-8">
