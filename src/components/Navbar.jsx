@@ -20,7 +20,7 @@ const Navbar = () => {
 
   const navLinks = [
     { to: '/', label: 'الرئيسية', icon: <FaHome /> },
-    { to: '/news', label: 'الأخبار', icon: <FaNewspaper /> },
+    { to: '/#news-section', label: 'الأخبار', icon: <FaNewspaper /> },
     { to: '/second-division', label: 'الدوري الثاني', icon: <FaTrophy />, highlight: true },
     { to: '/matches', label: 'المباريات', icon: <FaCalendarAlt /> },
     { to: '/videos', label: 'الفيديوهات', icon: <FaVideo /> },
