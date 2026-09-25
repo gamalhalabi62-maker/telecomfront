@@ -256,17 +256,8 @@ const SecondDivisionSection = () => {
                           </span>
                         </td>
 
-                        <td className="p-3 text-right">
-                          <div className="flex items-center gap-2 justify-end">
-                            <span
-                              className={`text-sm truncate max-w-[180px] ${
-                                team.isOurTeam
-                                  ? 'text-primary font-black'
-                                  : 'text-gray-700 font-bold'
-                              }`}
-                            >
-                              {team.teamName}
-                            </span>
+                        <td className="p-3">
+                          <div className="flex items-center gap-2">
                             {team.teamLogo && (
                               <img
                                 src={team.teamLogo}
@@ -277,6 +268,15 @@ const SecondDivisionSection = () => {
                                 }}
                               />
                             )}
+                            <span
+                              className={`text-sm truncate max-w-[180px] ${
+                                team.isOurTeam
+                                  ? 'text-primary font-black'
+                                  : 'text-gray-700 font-bold'
+                              }`}
+                            >
+                              {team.teamName}
+                            </span>
                             {team.isOurTeam && (
                               <span className="w-2 h-2 bg-secondary rounded-full animate-pulse flex-shrink-0"></span>
                             )}
@@ -454,7 +454,7 @@ const HomeMatchCard = ({ match }) => {
 
 const NewsCard = ({ item }) => (
   <Link
-    to={`/news/${item.filgoalArticleId}`}
+    to={`/second-division/news/${item.filgoalArticleId}`}
     className="group bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col"
   >
     {item.imageUrl ? (
