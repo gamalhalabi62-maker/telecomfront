@@ -10,7 +10,7 @@ import FeaturedSlider from '../components/FeaturedSlider';
 import BreakingSection from '../components/BreakingSection';
 import VideoBar from '../components/VideoBar';
 import Loading from '../components/Loading';
-import { getCategoryName } from '../utils/formatDate';
+import SecondDivisionSection from '../components/SecondDivisionSection';
 
 const Home = () => {
   const [latestNews, setLatestNews] = useState([]);
@@ -139,6 +139,8 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      <SecondDivisionSection />
 
       <StatsSection />
 

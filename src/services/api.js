@@ -118,6 +118,7 @@ export const notificationAPI = {
   delete: (id) => api.delete(`/notifications/${id}`),
   deleteAll: () => api.delete('/notifications'),
 };
+
 export const electionAPI = {
   searchMember: (data) => api.post('/elections/search', data),
   register: (data) => api.post('/elections/register', data),
@@ -164,4 +165,5 @@ export const filgoalAPI = {
   triggerSync: () => api.post('/filgoal/sync'),
   getSyncLogs: () => api.get('/filgoal/sync-logs'),
 };
+
 export default api;
