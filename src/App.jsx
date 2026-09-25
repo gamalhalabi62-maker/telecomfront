@@ -42,6 +42,7 @@ import Election from './pages/Election';
 import ManageElection from './pages/admin/ManageElection';
 import UploadMembers from './pages/admin/UploadMembers';
 import SecondDivision from './pages/SecondDivision';
+import NewsDetails from './pages/NewsDetails';
 
 function App() {
   return (
@@ -53,6 +54,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/news" element={<News />} />
               <Route path="/news/:id" element={<NewsDetail />} />
+              <Route path="/news/:id/details" element={<NewsDetails />} />
               <Route path="/videos" element={<Videos />} />
               <Route path="/videos/:id" element={<VideoDetail />} />
               <Route path="/team" element={<Team />} />
@@ -65,7 +67,7 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/verify-otp" element={<VerifyOTP />} />
               <Route path="/second-division" element={<SecondDivision />} />
-
+              <Route path="/second-division/news/:id" element={<NewsDetails />} />
 
               <Route
                 path="/profile"

@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   FaTrophy, FaFutbol, FaNewspaper, FaCircle,
   FaCalendarAlt, FaClock, FaCheckCircle, FaHourglassHalf,
-  FaMedal, FaChartLine, FaExclamationTriangle,
+  FaMedal,
 } from 'react-icons/fa';
 import { filgoalAPI } from '../services/api';
 import Loading from '../components/Loading';
@@ -99,9 +100,6 @@ const SecondDivision = () => {
   );
 };
 
-/* ═══════════════════════════════════════════════════════════
- *  HERO SECTION
- * ═══════════════════════════════════════════════════════════ */
 const HeroSection = ({ stats }) => (
   <div className="bg-gradient-to-l from-primary via-primary-light to-primary-dark text-white py-12 md:py-20 relative overflow-hidden">
     <div className="absolute inset-0 opacity-10">
@@ -135,9 +133,6 @@ const HeroSection = ({ stats }) => (
   </div>
 );
 
-/* ═══════════════════════════════════════════════════════════
- *  OUR TEAM CARD
- * ═══════════════════════════════════════════════════════════ */
 const OurTeamCard = ({ team }) => (
   <div className="bg-white rounded-2xl shadow-md p-6 mb-6 border-r-4 border-secondary">
     <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
@@ -191,9 +186,6 @@ const OurTeamCard = ({ team }) => (
   </div>
 );
 
-/* ═══════════════════════════════════════════════════════════
- *  LIVE MATCHES SECTION
- * ═══════════════════════════════════════════════════════════ */
 const LiveMatchesSection = ({ matches }) => (
   <div className="bg-white rounded-2xl shadow-md p-5 mb-6 border-r-4 border-red-500">
     <h2 className="text-lg font-black text-red-600 mb-4 flex items-center gap-2">
@@ -208,9 +200,6 @@ const LiveMatchesSection = ({ matches }) => (
   </div>
 );
 
-/* ═══════════════════════════════════════════════════════════
- *  STANDINGS SECTION
- * ═══════════════════════════════════════════════════════════ */
 const StandingsSection = ({ standings, groups }) => {
   if (groups.length === 0) return null;
 
@@ -357,16 +346,12 @@ const StandingsLegend = () => (
   </div>
 );
 
-/* ═══════════════════════════════════════════════════════════
- *  MATCHES SECTION — Tabs + Filter
- * ═══════════════════════════════════════════════════════════ */
 const MatchesSection = ({
   upcoming, finished, activeTab, setActiveTab,
   championships, selectedChampionship, setSelectedChampionship,
 }) => {
   const currentList = activeTab === 'upcoming' ? upcoming : finished;
 
-  // فلترة حسب البطولة المختارة
   const filtered = selectedChampionship === 'all'
     ? currentList
     : currentList.filter((m) => m.championshipId === Number(selectedChampionship));
@@ -379,7 +364,6 @@ const MatchesSection = ({
           <h2 className="text-2xl font-black text-primary">المباريات</h2>
         </div>
 
-        {/* فلترة حسب البطولة */}
         {championships.length > 1 && (
           <select
             value={selectedChampionship}
@@ -439,9 +423,6 @@ const MatchesSection = ({
   );
 };
 
-/* ═══════════════════════════════════════════════════════════
- *  SCORERS SECTION (جديد)
- * ═══════════════════════════════════════════════════════════ */
 const ScorersSection = ({ scorers }) => (
   <div className="mb-8">
     <div className="flex items-center gap-3 mb-5">
@@ -494,9 +475,6 @@ const ScorersSection = ({ scorers }) => (
   </div>
 );
 
-/* ═══════════════════════════════════════════════════════════
- *  OUR UPCOMING MATCHES
- * ═══════════════════════════════════════════════════════════ */
 const OurUpcomingMatches = ({ matches }) => (
   <div className="mb-8">
     <div className="flex items-center gap-3 mb-5">
@@ -514,9 +492,6 @@ const OurUpcomingMatches = ({ matches }) => (
   </div>
 );
 
-/* ═══════════════════════════════════════════════════════════
- *  NEWS SECTION
- * ═══════════════════════════════════════════════════════════ */
 const NewsSection = ({ news }) => (
   <div className="bg-white rounded-2xl shadow-md p-6">
     <h2 className="text-xl font-black text-primary mb-6 flex items-center gap-3">
@@ -541,10 +516,8 @@ const NewsSection = ({ news }) => (
 );
 
 const NewsCard = ({ item }) => (
-  <a
-    href={item.url}
-    target="_blank"
-    rel="noopener noreferrer"
+  <Link
+    to={`/second-division/news/${item.filgoalArticleId}`}
     className="group block bg-gray-50 rounded-xl overflow-hidden hover:shadow-lg transition"
   >
     {item.imageUrl && (
@@ -562,12 +535,9 @@ const NewsCard = ({ item }) => (
         {item.title}
       </h3>
     </div>
-  </a>
+  </Link>
 );
 
-/* ═══════════════════════════════════════════════════════════
- *  SHARED COMPONENTS
- * ═══════════════════════════════════════════════════════════ */
 const StatBox = ({ value, label, color, icon }) => (
   <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 text-center border border-white/20 hover:bg-white/20 transition">
     <div className={`flex items-center justify-center gap-2 ${color} mb-1`}>
@@ -654,9 +624,7 @@ const MatchCard = ({ match, variant }) => {
       <div className="grid grid-cols-3 items-center gap-2">
         <div className="flex items-center gap-1.5 justify-end">
           <span className={`text-xs font-bold truncate ${
-            isOurMatch && match.homeTeam?.includes('اتصالات')
-              ? 'text-primary'
-              : 'text-gray-700'
+            isOurTeam(match.homeTeam) ? 'text-primary' : 'text-gray-700'
           }`}>
             {match.homeTeam}
           </span>
@@ -688,9 +656,7 @@ const MatchCard = ({ match, variant }) => {
             />
           )}
           <span className={`text-xs font-bold truncate ${
-            isOurMatch && match.awayTeam?.includes('اتصالات')
-              ? 'text-primary'
-              : 'text-gray-700'
+            isOurTeam(match.awayTeam) ? 'text-primary' : 'text-gray-700'
           }`}>
             {match.awayTeam}
           </span>
@@ -712,7 +678,7 @@ const MatchCard = ({ match, variant }) => {
   );
 };
 
-const MatchMiniCard = ({ match, variant }) => {
+const MatchMiniCard = ({ match }) => {
   const isFinished = match.status === 'finished';
   const isLive = match.status === 'live';
   const isOurMatch = match.isOurTeam;
@@ -766,9 +732,7 @@ const MatchMiniCard = ({ match, variant }) => {
               />
             )}
             <span className={`text-xs font-bold truncate ${
-              isOurMatch && match.homeTeam?.includes('اتصالات')
-                ? 'text-primary'
-                : 'text-gray-700'
+              isOurTeam(match.homeTeam) ? 'text-primary' : 'text-gray-700'
             }`}>
               {match.homeTeam}
             </span>

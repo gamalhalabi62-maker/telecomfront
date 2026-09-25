@@ -49,9 +49,6 @@ const SecondDivisionSection = () => {
   return (
     <section className="py-12 bg-gray-50">
       <div className="container-custom space-y-8">
-        {/* ═══════════════════════════════════════════════════
-            Header
-        ═══════════════════════════════════════════════════ */}
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-dark rounded-xl flex items-center justify-center text-secondary text-xl shadow-lg">
@@ -76,16 +73,12 @@ const SecondDivisionSection = () => {
           </Link>
         </div>
 
-        {/* ═══════════════════════════════════════════════════
-            Our Team Card — Full Width
-        ═══════════════════════════════════════════════════ */}
         {ourTeam && (
           <div className="bg-gradient-to-l from-primary via-primary-light to-primary-dark text-white rounded-3xl p-6 md:p-8 shadow-xl relative overflow-hidden">
             <div className="absolute top-0 right-0 w-96 h-96 bg-secondary rounded-full blur-3xl opacity-20"></div>
             <div className="absolute bottom-0 left-0 w-72 h-72 bg-secondary rounded-full blur-3xl opacity-10"></div>
 
             <div className="relative z-10 flex flex-wrap items-center justify-between gap-6">
-              {/* الشعار + الاسم */}
               <div className="flex items-center gap-4">
                 {ourTeam.teamLogo ? (
                   <img
@@ -111,7 +104,6 @@ const SecondDivisionSection = () => {
                 </div>
               </div>
 
-              {/* إحصائيات */}
               <div className="flex flex-wrap gap-3">
                 <div className="bg-white/10 backdrop-blur-md rounded-2xl px-5 py-3 text-center min-w-[90px]">
                   <p className="text-3xl font-black text-secondary">
@@ -140,7 +132,6 @@ const SecondDivisionSection = () => {
               </div>
             </div>
 
-            {/* تفاصيل إضافية */}
             <div className="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-3 mt-6 pt-6 border-t border-white/20">
               <MiniStatDark label="تعادل" value={ourTeam.drawn} />
               <MiniStatDark label="خسارة" value={ourTeam.lost} />
@@ -150,9 +141,6 @@ const SecondDivisionSection = () => {
           </div>
         )}
 
-        {/* ═══════════════════════════════════════════════════
-            Live Matches
-        ═══════════════════════════════════════════════════ */}
         {live.length > 0 && (
           <div className="bg-white rounded-2xl shadow-md overflow-hidden border-r-4 border-red-500">
             <div className="p-4 border-b border-gray-100 flex items-center gap-2">
@@ -169,12 +157,8 @@ const SecondDivisionSection = () => {
           </div>
         )}
 
-        {/* ═══════════════════════════════════════════════════
-            Standings Table — Full Width
-        ═══════════════════════════════════════════════════ */}
         {sortedStandings.length > 0 && (
           <div className="bg-white rounded-2xl shadow-md overflow-hidden">
-            {/* Header */}
             <div className="bg-gradient-to-l from-primary to-primary-dark text-white p-5">
               <div className="flex items-center justify-between gap-3 flex-wrap">
                 <div className="flex items-center gap-3">
@@ -202,7 +186,6 @@ const SecondDivisionSection = () => {
               </div>
             </div>
 
-            {/* Table */}
             <div className="overflow-x-auto">
               <table className="w-full min-w-[700px]">
                 <thead className="bg-gray-50 border-b">
@@ -342,7 +325,6 @@ const SecondDivisionSection = () => {
               </table>
             </div>
 
-            {/* Legend */}
             <div className="bg-gray-50 p-4 flex flex-wrap gap-4 justify-center text-xs text-gray-600 border-t">
               <div className="flex items-center gap-2">
                 <span className="w-3 h-3 bg-green-500 rounded-full"></span>
@@ -360,12 +342,8 @@ const SecondDivisionSection = () => {
           </div>
         )}
 
-        {/* ═══════════════════════════════════════════════════
-            News Section — Full Width Grid
-        ═══════════════════════════════════════════════════ */}
         {news.length > 0 && (
           <div>
-            {/* Header */}
             <div className="flex items-center justify-between gap-4 mb-6">
               <div className="flex items-center gap-3">
                 <span className="w-1 h-8 bg-secondary rounded"></span>
@@ -384,7 +362,6 @@ const SecondDivisionSection = () => {
               </Link>
             </div>
 
-            {/* News Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
               {news.map((n) => (
                 <NewsCard key={n._id} item={n} />
@@ -397,10 +374,6 @@ const SecondDivisionSection = () => {
   );
 };
 
-/* ═══════════════════════════════════════════════════════════
- *  SHARED COMPONENTS
- * ═══════════════════════════════════════════════════════════ */
-
 const MiniStatDark = ({ label, value }) => (
   <div className="bg-white/5 backdrop-blur-md rounded-xl p-3 text-center">
     <p className="text-xl font-black text-white">{value}</p>
@@ -408,7 +381,6 @@ const MiniStatDark = ({ label, value }) => (
   </div>
 );
 
-/* كارد مباراة مبسّط */
 const HomeMatchCard = ({ match }) => {
   const isLive = match.status === 'live';
   const isFinished = match.status === 'finished';
@@ -480,17 +452,11 @@ const HomeMatchCard = ({ match }) => {
   );
 };
 
-/* ═══════════════════════════════════════════════════════════
- *  NEWS CARD — كارت واضح ومنظم
- * ═══════════════════════════════════════════════════════════ */
 const NewsCard = ({ item }) => (
-  <a
-    href={item.url}
-    target="_blank"
-    rel="noopener noreferrer"
+  <Link
+    to={`/news/${item.filgoalArticleId}`}
     className="group bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col"
   >
-    {/* Image */}
     {item.imageUrl ? (
       <div className="aspect-video overflow-hidden bg-gray-100 relative">
         <img
@@ -501,7 +467,6 @@ const NewsCard = ({ item }) => (
             e.target.style.display = 'none';
           }}
         />
-        {/* شريط علوي */}
         <div className="absolute top-3 right-3 bg-secondary text-primary text-[10px] font-black px-2 py-1 rounded-full">
           بطولة
         </div>
@@ -512,13 +477,11 @@ const NewsCard = ({ item }) => (
       </div>
     )}
 
-    {/* Content */}
     <div className="p-4 flex-1 flex flex-col">
       <h4 className="font-bold text-sm text-primary line-clamp-3 group-hover:text-secondary transition leading-relaxed">
         {item.title}
       </h4>
 
-      {/* Footer */}
       <div className="mt-auto pt-3 flex items-center justify-between border-t border-gray-100 mt-3">
         <span className="text-[10px] text-gray-400">
           {item.publishedAt
@@ -534,7 +497,7 @@ const NewsCard = ({ item }) => (
         </span>
       </div>
     </div>
-  </a>
+  </Link>
 );
 
 export default SecondDivisionSection;
