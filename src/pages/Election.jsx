@@ -169,7 +169,7 @@ const Election = () => {
               <form onSubmit={handleSearch} className="space-y-6">
                 <div>
                   <label className="block font-bold text-gray-700 mb-3">
-                    نوع العضوية *
+يرجي اختيار نوع العضوية  * اجباري
                   </label>
                   <div className="grid grid-cols-2 gap-4">
                     <button
