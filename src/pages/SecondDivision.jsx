@@ -2,9 +2,13 @@ import { useEffect, useState } from 'react';
 import {
   FaTrophy, FaFutbol, FaNewspaper, FaCircle,
   FaCalendarAlt, FaClock, FaCheckCircle, FaHourglassHalf,
+  FaMedal, FaChartLine, FaExclamationTriangle,
 } from 'react-icons/fa';
 import { filgoalAPI } from '../services/api';
 import Loading from '../components/Loading';
+
+const CHAMPIONSHIP_ID = 1668;
+const CHAMPIONSHIP_NAME = 'دوري المحترفين المصري';
 
 const SecondDivision = () => {
   const [stats, setStats] = useState(null);
@@ -14,21 +18,28 @@ const SecondDivision = () => {
   const [live, setLive] = useState([]);
   const [finished, setFinished] = useState([]);
   const [news, setNews] = useState([]);
+  const [scorers, setScorers] = useState([]);
+  const [championships, setChampionships] = useState([]);
+  const [selectedChampionship, setSelectedChampionship] = useState(CHAMPIONSHIP_ID);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('upcoming');
 
   useEffect(() => {
     const fetchAll = async () => {
       try {
-        const [statsRes, standingsRes, upRes, liveRes, finRes, newsRes] =
-          await Promise.allSettled([
-            filgoalAPI.getStats(),
-            filgoalAPI.getStandings(),
-            filgoalAPI.getUpcoming(30),
-            filgoalAPI.getLive(),
-            filgoalAPI.getFinished(30),
-            filgoalAPI.getNews(8),
-          ]);
+        const [
+          statsRes, standingsRes, upRes, liveRes, finRes,
+          newsRes, scorersRes, champsRes,
+        ] = await Promise.allSettled([
+          filgoalAPI.getStats({ championshipId: selectedChampionship }),
+          filgoalAPI.getStandings(),
+          filgoalAPI.getUpcoming(30),
+          filgoalAPI.getLive(),
+          filgoalAPI.getFinished(30),
+          filgoalAPI.getNews(8),
+          filgoalAPI.getScorers(20),
+          filgoalAPI.getChampionships(),
+        ]);
 
         if (statsRes.status === 'fulfilled') setStats(statsRes.value.data);
 
@@ -41,6 +52,8 @@ const SecondDivision = () => {
         if (liveRes.status === 'fulfilled') setLive(liveRes.value.data.matches || []);
         if (finRes.status === 'fulfilled') setFinished(finRes.value.data.matches || []);
         if (newsRes.status === 'fulfilled') setNews(newsRes.value.data.news || []);
+        if (scorersRes.status === 'fulfilled') setScorers(scorersRes.value.data.scorers || []);
+        if (champsRes.status === 'fulfilled') setChampionships(champsRes.value.data.championships || []);
       } catch (err) {
         console.error(err);
       } finally {
@@ -69,7 +82,12 @@ const SecondDivision = () => {
           finished={finished}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
+          championships={championships}
+          selectedChampionship={selectedChampionship}
+          setSelectedChampionship={setSelectedChampionship}
         />
+
+        {scorers.length > 0 && <ScorersSection scorers={scorers} />}
 
         {stats?.ourTeam && upcoming.filter((m) => m.isOurTeam).length > 0 && (
           <OurUpcomingMatches matches={upcoming.filter((m) => m.isOurTeam).slice(0, 5)} />
@@ -97,39 +115,20 @@ const HeroSection = ({ stats }) => (
           <FaTrophy className="text-primary text-4xl" />
         </div>
         <h1 className="text-3xl md:text-5xl font-black mb-3">
-          الدوري المصري الدرجة الثانية
+          {CHAMPIONSHIP_NAME}
         </h1>
         <p className="text-gray-200 text-base md:text-lg max-w-2xl mx-auto">
-          ترتيب المجموعات، نتائج المباريات، وأخبار الدوري
+          ترتيب الفرق، نتائج المباريات، الهدافون، وأخبار البطولة
         </p>
       </div>
 
       {stats && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
-          <StatBox
-            value={stats.totalMatches}
-            label="إجمالي المباريات"
-            color="text-white"
-            icon={<FaFutbol />}
-          />
-          <StatBox
-            value={stats.upcoming}
-            label="قادمة"
-            color="text-blue-200"
-            icon={<FaHourglassHalf />}
-          />
-          <StatBox
-            value={stats.live}
-            label="مباشرة"
-            color="text-red-300"
-            icon={<FaCircle size={10} />}
-          />
-          <StatBox
-            value={stats.finished}
-            label="منتهية"
-            color="text-green-300"
-            icon={<FaCheckCircle />}
-          />
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 max-w-4xl mx-auto">
+          <StatBox value={stats.totalMatches} label="إجمالي المباريات" color="text-white" icon={<FaFutbol />} />
+          <StatBox value={stats.upcoming} label="قادمة" color="text-blue-200" icon={<FaHourglassHalf />} />
+          <StatBox value={stats.live} label="مباشرة" color="text-red-300" icon={<FaCircle size={10} />} />
+          <StatBox value={stats.finished} label="منتهية" color="text-green-300" icon={<FaCheckCircle />} />
+          <StatBox value={stats.totalGoals || 0} label="أهداف" color="text-yellow-200" icon={<FaFutbol />} />
         </div>
       )}
     </div>
@@ -143,22 +142,41 @@ const OurTeamCard = ({ team }) => (
   <div className="bg-white rounded-2xl shadow-md p-6 mb-6 border-r-4 border-secondary">
     <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
       <div className="flex items-center gap-4">
-        <div className="w-14 h-14 bg-gradient-to-br from-primary to-primary-dark rounded-xl flex items-center justify-center text-white text-2xl shadow-lg">
-          <FaFutbol />
-        </div>
+        {team.teamLogo ? (
+          <img
+            src={team.teamLogo}
+            alt={team.teamName}
+            className="w-14 h-14 object-contain"
+            onError={(e) => { e.target.style.display = 'none'; }}
+          />
+        ) : (
+          <div className="w-14 h-14 bg-gradient-to-br from-primary to-primary-dark rounded-xl flex items-center justify-center text-white text-2xl shadow-lg">
+            <FaFutbol />
+          </div>
+        )}
         <div>
           <h2 className="text-xl font-black text-primary">{team.teamName}</h2>
-          <p className="text-xs text-gray-500">{team.group}</p>
+          <p className="text-xs text-gray-500">{team.group?.replace('ترتيب ', '')}</p>
         </div>
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex gap-2 flex-wrap">
         <span className="bg-green-50 text-green-700 px-3 py-1.5 rounded-lg text-xs font-bold">
           المركز {team.rank}
         </span>
         <span className="bg-primary/10 text-primary px-3 py-1.5 rounded-lg text-xs font-bold">
           {team.points} نقطة
         </span>
+        {team.yellowCards > 0 && (
+          <span className="bg-yellow-50 text-yellow-700 px-3 py-1.5 rounded-lg text-xs font-bold">
+            🟨 {team.yellowCards}
+          </span>
+        )}
+        {team.redCards > 0 && (
+          <span className="bg-red-50 text-red-700 px-3 py-1.5 rounded-lg text-xs font-bold">
+            🟥 {team.redCards}
+          </span>
+        )}
       </div>
     </div>
 
@@ -180,7 +198,7 @@ const LiveMatchesSection = ({ matches }) => (
   <div className="bg-white rounded-2xl shadow-md p-5 mb-6 border-r-4 border-red-500">
     <h2 className="text-lg font-black text-red-600 mb-4 flex items-center gap-2">
       <FaCircle className="text-red-500 animate-pulse" size={10} />
-      مباشر الآن
+      مباشر الآن ({matches.length})
     </h2>
     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
       {matches.map((m) => (
@@ -191,7 +209,7 @@ const LiveMatchesSection = ({ matches }) => (
 );
 
 /* ═══════════════════════════════════════════════════════════
- *  STANDINGS SECTION — الجدولان معاً (متجاوب)
+ *  STANDINGS SECTION
  * ═══════════════════════════════════════════════════════════ */
 const StandingsSection = ({ standings, groups }) => {
   if (groups.length === 0) return null;
@@ -200,10 +218,12 @@ const StandingsSection = ({ standings, groups }) => {
     <div className="mb-8">
       <div className="flex items-center gap-3 mb-5">
         <span className="w-1 h-8 bg-secondary rounded"></span>
-        <h2 className="text-2xl font-black text-primary">ترتيب المجموعات</h2>
+        <h2 className="text-2xl font-black text-primary">
+          ترتيب الفرق ({standings.length} فريق)
+        </h2>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6">
         {groups.map((groupName) => (
           <StandingsTable
             key={groupName}
@@ -277,15 +297,23 @@ const StandingsTable = ({ groupName, teams }) => (
                   </span>
                 </td>
                 <td className="p-2 text-right">
-                  <div className="flex items-center gap-1.5">
-                    {team.isOurTeam && (
-                      <span className="w-1.5 h-1.5 bg-secondary rounded-full animate-pulse"></span>
+                  <div className="flex items-center gap-2">
+                    {team.teamLogo && (
+                      <img
+                        src={team.teamLogo}
+                        alt=""
+                        className="w-5 h-5 object-contain flex-shrink-0"
+                        onError={(e) => { e.target.style.display = 'none'; }}
+                      />
                     )}
-                    <span className={`text-xs truncate max-w-[120px] ${
+                    <span className={`text-xs truncate max-w-[140px] ${
                       team.isOurTeam ? 'text-primary font-black' : 'text-gray-700 font-bold'
                     }`}>
                       {team.teamName}
                     </span>
+                    {team.isOurTeam && (
+                      <span className="w-1.5 h-1.5 bg-secondary rounded-full animate-pulse"></span>
+                    )}
                   </div>
                 </td>
                 <td className="p-2 text-center text-xs text-gray-700">{team.played}</td>
@@ -330,16 +358,45 @@ const StandingsLegend = () => (
 );
 
 /* ═══════════════════════════════════════════════════════════
- *  MATCHES SECTION — Tabs (قادمة / منتهية)
+ *  MATCHES SECTION — Tabs + Filter
  * ═══════════════════════════════════════════════════════════ */
-const MatchesSection = ({ upcoming, finished, activeTab, setActiveTab }) => {
+const MatchesSection = ({
+  upcoming, finished, activeTab, setActiveTab,
+  championships, selectedChampionship, setSelectedChampionship,
+}) => {
   const currentList = activeTab === 'upcoming' ? upcoming : finished;
+
+  // فلترة حسب البطولة المختارة
+  const filtered = selectedChampionship === 'all'
+    ? currentList
+    : currentList.filter((m) => m.championshipId === Number(selectedChampionship));
 
   return (
     <div className="mb-8">
-      <div className="flex items-center gap-3 mb-5">
-        <span className="w-1 h-8 bg-secondary rounded"></span>
-        <h2 className="text-2xl font-black text-primary">المباريات</h2>
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
+        <div className="flex items-center gap-3">
+          <span className="w-1 h-8 bg-secondary rounded"></span>
+          <h2 className="text-2xl font-black text-primary">المباريات</h2>
+        </div>
+
+        {/* فلترة حسب البطولة */}
+        {championships.length > 1 && (
+          <select
+            value={selectedChampionship}
+            onChange={(e) => setSelectedChampionship(e.target.value)}
+            className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-bold text-primary"
+          >
+            <option value={CHAMPIONSHIP_ID}>{CHAMPIONSHIP_NAME}</option>
+            <option value="all">كل البطولات ({currentList.length})</option>
+            {championships
+              .filter((c) => c._id !== CHAMPIONSHIP_ID && c._id)
+              .map((c) => (
+                <option key={c._id} value={c._id}>
+                  {c.name} ({c.count})
+                </option>
+              ))}
+          </select>
+        )}
       </div>
 
       <div className="bg-white rounded-2xl shadow-md overflow-hidden">
@@ -363,7 +420,7 @@ const MatchesSection = ({ upcoming, finished, activeTab, setActiveTab }) => {
         </div>
 
         <div className="p-4 md:p-6">
-          {currentList.length === 0 ? (
+          {filtered.length === 0 ? (
             <EmptyState
               icon={activeTab === 'upcoming' ? <FaCalendarAlt /> : <FaCheckCircle />}
               title={activeTab === 'upcoming' ? 'لا توجد مباريات قادمة' : 'لا توجد مباريات منتهية'}
@@ -371,7 +428,7 @@ const MatchesSection = ({ upcoming, finished, activeTab, setActiveTab }) => {
             />
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-              {currentList.map((m) => (
+              {filtered.map((m) => (
                 <MatchMiniCard key={m._id} match={m} variant={activeTab} />
               ))}
             </div>
@@ -383,7 +440,62 @@ const MatchesSection = ({ upcoming, finished, activeTab, setActiveTab }) => {
 };
 
 /* ═══════════════════════════════════════════════════════════
- *  OUR UPCOMING MATCHES — Sidebar-free section
+ *  SCORERS SECTION (جديد)
+ * ═══════════════════════════════════════════════════════════ */
+const ScorersSection = ({ scorers }) => (
+  <div className="mb-8">
+    <div className="flex items-center gap-3 mb-5">
+      <span className="w-1 h-8 bg-secondary rounded"></span>
+      <h2 className="text-2xl font-black text-primary flex items-center gap-2">
+        <FaMedal className="text-yellow-500" />
+        الهدافون
+      </h2>
+    </div>
+
+    <div className="bg-white rounded-2xl shadow-md overflow-hidden">
+      <table className="w-full">
+        <thead className="bg-gray-50">
+          <tr>
+            <th className="p-3 text-center text-xs font-bold text-gray-600">#</th>
+            <th className="p-3 text-right text-xs font-bold text-gray-600">اللاعب</th>
+            <th className="p-3 text-right text-xs font-bold text-gray-600">الفريق</th>
+            <th className="p-3 text-center text-xs font-bold text-gray-600">الأهداف</th>
+          </tr>
+        </thead>
+        <tbody>
+          {scorers.map((scorer, idx) => (
+            <tr key={scorer._id} className="border-b hover:bg-primary/5">
+              <td className="p-3 text-center">
+                <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-black ${
+                  idx === 0 ? 'bg-yellow-400 text-yellow-900' :
+                  idx === 1 ? 'bg-gray-300 text-gray-700' :
+                  idx === 2 ? 'bg-orange-400 text-orange-900' :
+                  'bg-gray-100 text-gray-600'
+                }`}>
+                  {idx + 1}
+                </span>
+              </td>
+              <td className="p-3 text-right text-sm font-bold text-gray-700">
+                {scorer.playerName}
+              </td>
+              <td className="p-3 text-right text-xs text-gray-500">
+                {scorer.teamName}
+              </td>
+              <td className="p-3 text-center">
+                <span className="inline-flex items-center justify-center min-w-[32px] h-7 bg-primary text-white rounded text-sm font-black">
+                  {scorer.goals}
+                </span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+);
+
+/* ═══════════════════════════════════════════════════════════
+ *  OUR UPCOMING MATCHES
  * ═══════════════════════════════════════════════════════════ */
 const OurUpcomingMatches = ({ matches }) => (
   <div className="mb-8">
@@ -409,7 +521,7 @@ const NewsSection = ({ news }) => (
   <div className="bg-white rounded-2xl shadow-md p-6">
     <h2 className="text-xl font-black text-primary mb-6 flex items-center gap-3">
       <span className="w-1 h-6 bg-secondary rounded"></span>
-      آخر أخبار الدوري
+      آخر أخبار البطولة
     </h2>
 
     {news.length === 0 ? (
@@ -456,7 +568,6 @@ const NewsCard = ({ item }) => (
 /* ═══════════════════════════════════════════════════════════
  *  SHARED COMPONENTS
  * ═══════════════════════════════════════════════════════════ */
-
 const StatBox = ({ value, label, color, icon }) => (
   <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 text-center border border-white/20 hover:bg-white/20 transition">
     <div className={`flex items-center justify-center gap-2 ${color} mb-1`}>
@@ -513,9 +624,6 @@ const EmptyState = ({ icon, title, subtitle }) => (
   </div>
 );
 
-/* ═══════════════════════════════════════════════════════════
- *  MATCH CARD — نمط FilGoal (للـ sidebar والعرض الأفقي)
- * ═══════════════════════════════════════════════════════════ */
 const MatchCard = ({ match, variant }) => {
   const isLive = variant === 'live' || match.status === 'live';
   const isFinished = variant === 'finished' || match.status === 'finished';
@@ -544,13 +652,23 @@ const MatchCard = ({ match, variant }) => {
       </div>
 
       <div className="grid grid-cols-3 items-center gap-2">
-        <span className={`text-xs font-bold truncate text-right ${
-          isOurMatch && match.homeTeam?.includes('اتصالات')
-            ? 'text-primary'
-            : 'text-gray-700'
-        }`}>
-          {match.homeTeam}
-        </span>
+        <div className="flex items-center gap-1.5 justify-end">
+          <span className={`text-xs font-bold truncate ${
+            isOurMatch && match.homeTeam?.includes('اتصالات')
+              ? 'text-primary'
+              : 'text-gray-700'
+          }`}>
+            {match.homeTeam}
+          </span>
+          {match.homeTeamLogo && (
+            <img
+              src={match.homeTeamLogo}
+              alt=""
+              className="w-5 h-5 object-contain flex-shrink-0"
+              onError={(e) => { e.target.style.display = 'none'; }}
+            />
+          )}
+        </div>
 
         <span className={`font-black px-2 py-1 rounded-lg text-sm text-center whitespace-nowrap ${
           isLive ? 'bg-red-500 text-white' :
@@ -560,13 +678,23 @@ const MatchCard = ({ match, variant }) => {
           {match.homeScore ?? '-'} : {match.awayScore ?? '-'}
         </span>
 
-        <span className={`text-xs font-bold truncate ${
-          isOurMatch && match.awayTeam?.includes('اتصالات')
-            ? 'text-primary'
-            : 'text-gray-700'
-        }`}>
-          {match.awayTeam}
-        </span>
+        <div className="flex items-center gap-1.5">
+          {match.awayTeamLogo && (
+            <img
+              src={match.awayTeamLogo}
+              alt=""
+              className="w-5 h-5 object-contain flex-shrink-0"
+              onError={(e) => { e.target.style.display = 'none'; }}
+            />
+          )}
+          <span className={`text-xs font-bold truncate ${
+            isOurMatch && match.awayTeam?.includes('اتصالات')
+              ? 'text-primary'
+              : 'text-gray-700'
+          }`}>
+            {match.awayTeam}
+          </span>
+        </div>
       </div>
 
       {!isFinished && !isLive && dateObj && (
@@ -584,9 +712,6 @@ const MatchCard = ({ match, variant }) => {
   );
 };
 
-/* ═══════════════════════════════════════════════════════════
- *  MATCH MINI CARD — نمط FilGoal المصغّر (شبكة 5 أعمدة)
- * ═══════════════════════════════════════════════════════════ */
 const MatchMiniCard = ({ match, variant }) => {
   const isFinished = match.status === 'finished';
   const isLive = match.status === 'live';
@@ -634,7 +759,7 @@ const MatchMiniCard = ({ match, variant }) => {
           <div className="flex items-center gap-2 min-w-0 flex-1">
             {match.homeTeamLogo && (
               <img
-                src={match.homeTeamLogo.startsWith('//') ? `https:${match.homeTeamLogo}` : match.homeTeamLogo}
+                src={match.homeTeamLogo}
                 alt=""
                 className="w-6 h-6 object-contain flex-shrink-0"
                 onError={(e) => { e.target.style.display = 'none'; }}
@@ -662,16 +787,14 @@ const MatchMiniCard = ({ match, variant }) => {
           <div className="flex items-center gap-2 min-w-0 flex-1">
             {match.awayTeamLogo && (
               <img
-                src={match.awayTeamLogo.startsWith('//') ? `https:${match.awayTeamLogo}` : match.awayTeamLogo}
+                src={match.awayTeamLogo}
                 alt=""
                 className="w-6 h-6 object-contain flex-shrink-0"
                 onError={(e) => { e.target.style.display = 'none'; }}
               />
             )}
             <span className={`text-xs font-bold truncate ${
-              isOurMatch && match.awayTeam?.includes('اتصالات')
-                ? 'text-primary'
-                : 'text-gray-700'
+              isOurTeam(match.awayTeam) ? 'text-primary' : 'text-gray-700'
             }`}>
               {match.awayTeam}
             </span>
@@ -693,6 +816,12 @@ const MatchMiniCard = ({ match, variant }) => {
       </div>
     </a>
   );
+};
+
+const isOurTeam = (teamName) => {
+  if (!teamName) return false;
+  const keywords = ['اتصالات', 'المصرية للاتصالات', 'we'];
+  return keywords.some((kw) => teamName.includes(kw));
 };
 
 export default SecondDivision;

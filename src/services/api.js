@@ -151,19 +151,38 @@ export const egyptianLeagueAPI = {
   getApiStatus: () => api.get('/egyptian-league/admin/api-status'),
   searchLeagues: (country = 'Egypt') => api.get('/egyptian-league/admin/search-leagues', { params: { country } }),
 };
-
 export const filgoalAPI = {
+  // Standings
   getStandings: (params) => api.get('/filgoal/standings', { params }),
+
+  // Matches
   getMatches: (params) => api.get('/filgoal/matches', { params }),
   getUpcoming: (limit = 10) => api.get('/filgoal/matches/upcoming', { params: { limit } }),
   getLive: () => api.get('/filgoal/matches/live'),
   getFinished: (limit = 20) => api.get('/filgoal/matches/finished', { params: { limit } }),
   getOurMatches: (limit = 10) => api.get('/filgoal/matches/our-team', { params: { limit } }),
   getMatchById: (id) => api.get(`/filgoal/matches/${id}`),
+
+  // ✅ Championships & specific
+  getChampionshipMatches: (params) => api.get('/filgoal/championship-matches', { params }),
+  getChampionships: () => api.get('/filgoal/championships'),
+
+  // ✅ Teams
+  getTeams: (params) => api.get('/filgoal/teams', { params }),
+  getOurTeam: () => api.get('/filgoal/teams/our-team'),
+  getTeamById: (teamId) => api.get(`/filgoal/teams/${teamId}`),
+
+  // ✅ Scorers
+  getScorers: (limit = 20) => api.get('/filgoal/scorers', { params: { limit } }),
+
+  // News
   getNews: (limit = 20) => api.get('/filgoal/news', { params: { limit } }),
-  getStats: () => api.get('/filgoal/stats'),
+
+  // Stats
+  getStats: (params) => api.get('/filgoal/stats', { params }),
+
+  // Sync
   triggerSync: () => api.post('/filgoal/sync'),
   getSyncLogs: () => api.get('/filgoal/sync-logs'),
 };
-
 export default api;
