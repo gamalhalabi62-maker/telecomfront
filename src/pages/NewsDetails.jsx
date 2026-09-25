@@ -21,8 +21,10 @@ const NewsDetails = () => {
 
       try {
         const cachedRes = await filgoalAPI.getNewsById(id);
-        if (cachedRes.data.news?.content?.length > 100) {
-          setNews(cachedRes.data.news);
+        const cached = cachedRes.data.news;
+
+        if (cached?.content && cached.content.length > 100 && cached.content.length < 20000) {
+          setNews(cached);
           setLoading(false);
         } else {
           const detailsRes = await filgoalAPI.getNewsDetails(id);
@@ -90,7 +92,7 @@ const NewsDetails = () => {
         </div>
 
         <div className="container-custom relative z-10 py-10">
-          <div className="flex items-center gap-2 text-xs text-gray-300 mb-6">
+          <div className="flex items-center gap-2 text-xs text-gray-300 mb-6 flex-wrap">
             <Link to="/" className="hover:text-secondary transition">
               الرئيسية
             </Link>
@@ -159,7 +161,7 @@ const NewsDetails = () => {
               <div className="p-6 md:p-8">
                 {news.content ? (
                   <div
-                    className="prose prose-lg max-w-none text-gray-700 leading-loose news-content"
+                    className="news-content"
                     dangerouslySetInnerHTML={{ __html: news.content }}
                   />
                 ) : (
@@ -272,7 +274,7 @@ const NewsDetails = () => {
                   {related.slice(0, 4).map((n) => (
                     <Link
                       key={n._id}
-                      to={`/news/${n.filgoalArticleId}`}
+                      to={`/second-division/news/${n.filgoalArticleId}`}
                       className="group flex gap-3 p-2 rounded-xl hover:bg-gray-50 transition"
                     >
                       {n.imageUrl && (
@@ -310,28 +312,62 @@ const NewsDetails = () => {
       </div>
 
       <style>{`
+        .news-content {
+          direction: rtl;
+          text-align: right;
+          color: #374151;
+        }
+        .news-content p {
+          margin-bottom: 1.25rem;
+          line-height: 2;
+          font-size: 1.0625rem;
+          color: #374151;
+        }
+        .news-content h2 {
+          font-weight: 900;
+          font-size: 1.5rem;
+          color: #1a1a1a;
+          margin: 2rem 0 1rem;
+          padding-right: 0.75rem;
+          border-right: 4px solid #c00020;
+        }
+        .news-content h3 {
+          font-weight: 800;
+          font-size: 1.25rem;
+          color: #1a1a1a;
+          margin: 1.5rem 0 0.75rem;
+        }
+        .news-content h4 {
+          font-weight: 700;
+          font-size: 1.125rem;
+          color: #1a1a1a;
+          margin: 1.25rem 0 0.5rem;
+        }
         .news-content img {
           max-width: 100%;
           height: auto;
           border-radius: 0.75rem;
+          margin: 1.5rem auto;
+          display: block;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .news-content iframe {
+          width: 100%;
+          aspect-ratio: 16/9;
+          border-radius: 0.75rem;
           margin: 1.5rem 0;
         }
-        .news-content p {
-          margin-bottom: 1rem;
-          line-height: 2;
-          font-size: 1.0625rem;
+        .news-content blockquote {
+          border-right: 4px solid #c00020;
+          padding: 1rem 1.25rem;
+          background: #f9f9f9;
+          margin: 1.5rem 0;
+          border-radius: 0.5rem;
+          font-style: italic;
+          color: #555;
         }
-        .news-content h2, .news-content h3 {
-          font-weight: 900;
-          color: #1a1a1a;
-          margin: 1.5rem 0 1rem;
-        }
-        .news-content a {
-          color: #c00020;
-          font-weight: 700;
-          text-decoration: underline;
-        }
-        .news-content ul, .news-content ol {
+        .news-content ul,
+        .news-content ol {
           padding-right: 1.5rem;
           margin-bottom: 1rem;
         }
@@ -339,18 +375,15 @@ const NewsDetails = () => {
           margin-bottom: 0.5rem;
           line-height: 1.8;
         }
-        .news-content blockquote {
-          border-right: 4px solid #c00020;
-          padding: 0.5rem 1rem;
-          background: #f9f9f9;
-          margin: 1rem 0;
-          border-radius: 0.5rem;
+        .news-content a {
+          color: #c00020;
+          font-weight: 700;
+          text-decoration: underline;
         }
-        .news-content iframe {
-          width: 100%;
-          aspect-ratio: 16/9;
-          border-radius: 0.75rem;
-          margin: 1.5rem 0;
+        .news-content strong,
+        .news-content b {
+          font-weight: 900;
+          color: #1a1a1a;
         }
       `}</style>
     </div>
