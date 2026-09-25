@@ -155,7 +155,7 @@ const NewsDetails = () => {
 
   if (error || !news) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center py-20">
+      <div className="bg-gray-50 flex items-center justify-center py-20">
         <div className="text-center bg-white rounded-2xl shadow-md p-12 max-w-md">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-red-50 rounded-full mb-4 text-red-500 text-3xl">
             <FaNewspaper />
@@ -183,15 +183,15 @@ const NewsDetails = () => {
     : null;
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-gray-50">
       <div className="relative bg-gradient-to-l from-primary via-primary-light to-primary-dark text-white overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 right-0 w-96 h-96 bg-secondary rounded-full blur-3xl"></div>
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-secondary rounded-full blur-3xl"></div>
         </div>
 
-        <div className="container-custom relative z-10 py-10">
-          <div className="flex items-center gap-2 text-xs text-gray-300 mb-6 flex-wrap">
+        <div className="container-custom relative z-10 py-8">
+          <div className="flex items-center gap-2 text-xs text-gray-300 mb-5 flex-wrap">
             <Link to="/" className="hover:text-secondary transition">
               الرئيسية
             </Link>
@@ -210,7 +210,7 @@ const NewsDetails = () => {
             بطولة
           </div>
 
-          <h1 className="text-2xl md:text-4xl font-black mb-6 leading-relaxed max-w-4xl">
+          <h1 className="text-2xl md:text-4xl font-black mb-5 leading-relaxed max-w-4xl">
             {news.title}
           </h1>
 
@@ -240,8 +240,8 @@ const NewsDetails = () => {
         </div>
       </div>
 
-      <div className="container-custom py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="container-custom pt-8 pb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
           <article className="lg:col-span-2">
             <div className="bg-white rounded-2xl shadow-md overflow-hidden">
               {news.imageUrl && (
@@ -346,7 +346,7 @@ const NewsDetails = () => {
               </div>
             </div>
 
-            <div className="mt-6">
+            <div className="mt-5">
               <Link
                 to="/second-division"
                 className="inline-flex items-center gap-2 bg-white text-primary px-5 py-3 rounded-xl font-bold shadow-md hover:shadow-lg transition"
@@ -358,7 +358,7 @@ const NewsDetails = () => {
           </article>
 
           <aside className="lg:col-span-1">
-            <div className="bg-white rounded-2xl shadow-md overflow-hidden sticky top-24">
+            <div className="bg-white rounded-2xl shadow-md overflow-hidden lg:sticky lg:top-24">
               <div className="p-4 border-b border-gray-100 flex items-center gap-3">
                 <span className="w-1 h-6 bg-secondary rounded"></span>
                 <h3 className="font-black text-primary">أخبار ذات صلة</h3>
