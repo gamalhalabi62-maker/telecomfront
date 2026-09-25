@@ -107,17 +107,17 @@ const Election = () => {
           </div>
         </div>
 
-        <div className="bg-amber-50 border-2 border-amber-300 rounded-2xl p-5 mb-6 flex items-start gap-3">
-          <FaExclamationTriangle className="text-amber-600 text-2xl flex-shrink-0 mt-0.5" />
-          <div>
-            <p className="font-black text-amber-800 mb-1">ملاحظة مهمة</p>
-            <p className="text-amber-700 text-sm leading-relaxed">
-              هذا التسجيل <strong>لتأكيد حضور الانتخابات فقط</strong> — لتحديد نقاط التجمع ومعرفة مكان اللجنة.
-              <br />
-              هذا <strong>ليس إجراء الانتخابات نفسها</strong>، بل خطوة تحضيرية لتنظيم الحضور.
-            </p>
-          </div>
-        </div>
+     <div className="bg-red-50 border-2 border-red-400 rounded-2xl p-5 mb-6 flex items-start gap-3 animate-pulse-slow">
+  <FaExclamationTriangle className="text-red-600 text-2xl flex-shrink-0 mt-0.5" />
+  <div>
+    <p className="font-black text-red-800 mb-1">⚠️ ملاحظة مهمة</p>
+    <p className="text-red-700 text-sm leading-relaxed font-bold">
+      هذا التسجيل <strong>لتأكيد حضور الانتخابات فقط</strong> — لتحديد نقاط التجمع ومعرفة مكان اللجنة.
+      <br />
+      هذا <strong>ليس إجراء الانتخابات نفسها</strong>، بل خطوة تحضيرية لتنظيم الحضور.
+    </p>
+  </div>
+</div>
 
         <div className="bg-white rounded-3xl shadow-xl p-6 md:p-10">
           {step === 'search' && (
