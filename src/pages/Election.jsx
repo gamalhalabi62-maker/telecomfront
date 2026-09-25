@@ -128,7 +128,7 @@ const Election = () => {
                 </div>
                 <div>
                   <h2 className="text-xl md:text-2xl font-black text-primary">ابحث عن بياناتك</h2>
-                  <p className="text-sm text-gray-500">أدخل رقم الشركة للتحقق من عضويتك</p>
+                  <p className="text-sm text-gray-500">أدخل رقم العضوية للتحقق من عضويتك</p>
                 </div>
               </div>
 
@@ -142,7 +142,7 @@ const Election = () => {
               <form onSubmit={handleSearch} className="space-y-6">
                 <div>
                   <label className="block font-bold text-gray-700 mb-2">
-                    رقم الشركة *
+                    رقم العضوية *
                   </label>
                   <p className="text-xs text-gray-500 mb-3">
                     أدخل 6 أرقام بالضبط — مثال: 000029
@@ -345,10 +345,7 @@ const Election = () => {
         </div>
 
         <div className="text-center mt-8 space-y-2">
-          <div className="flex items-center justify-center gap-2 text-gray-500 text-sm">
-            <FaShieldAlt className="text-primary" />
-            <span>بياناتك محفوظة بأمان</span>
-          </div>
+        
           <p className="text-gray-400 text-xs">
             © {new Date().getFullYear()} نادي المصرية للاتصالات - جميع الحقوق محفوظة
           </p>
