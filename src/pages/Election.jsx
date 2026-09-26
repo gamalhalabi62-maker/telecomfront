@@ -20,7 +20,6 @@ const Election = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  // 🔍 تحديد نوع البحث: رقم شركة (6 أرقام) أم اسم ثلاثي
   const trimmedInput = input.trim();
   const isNumericInput = /^\d+$/.test(trimmedInput);
   const isMembershipNumber = isNumericInput && trimmedInput.length === 6;
@@ -30,11 +29,9 @@ const Election = () => {
   const handleInputChange = (e) => {
     const val = e.target.value;
 
-    // إذا بدأ المستخدم بكتابة أرقام فقط، نحدّه بـ 6 أرقام
     if (/^\d+$/.test(val)) {
       setInput(val.slice(0, 6));
     } else {
-      // وإلا نسمح بالحروف والمسافات (للاسم)
       setInput(val);
     }
   };
@@ -47,7 +44,6 @@ const Election = () => {
     setPreviousChoice(null);
     setWillAttend(null);
 
-    // التحقق من صحة المدخلات
     if (isNumericInput) {
       if (trimmedInput.length !== 6) {
         setError('يجب إدخال 6 أرقام بالضبط — مثال: 000029');
@@ -64,7 +60,6 @@ const Election = () => {
 
     setLoading(true);
     try {
-      // نرسل المدخل كما هو — الباك إند يتعرف تلقائياً على النوع
       const { data } = await electionAPI.searchMember({ input: trimmedInput });
       setMember(data.member);
       setAlreadyRegistered(data.alreadyRegistered);
@@ -156,7 +151,7 @@ const Election = () => {
                 </div>
                 <div>
                   <h2 className="text-xl md:text-2xl font-black text-primary">ابحث عن بياناتك</h2>
-                  <p className="text-sm text-gray-500">ابحث برقم الشركة أو بالاسم الثلاثي</p>
+                  <p className="text-sm text-gray-500">ابحث برقم العضوية أو رقم العامل أو بالاسم الثلاثي</p>
                 </div>
               </div>
 
@@ -170,7 +165,7 @@ const Election = () => {
               <form onSubmit={handleSearch} className="space-y-6">
                 <div>
                   <label className="block font-bold text-gray-700 mb-2">
-                    رقم الشركة أو الاسم الثلاثي *
+                    رقم العضوية او رقم العامل  أو الاسم الثلاثي *
                   </label>
                   <p className="text-xs text-gray-500 mb-3">
                     أدخل 6 أرقام (مثال: 000029) <strong>أو</strong> الاسم الثلاثي كاملاً (مثال: أحمد محمد علي)
@@ -180,7 +175,7 @@ const Election = () => {
                     type="text"
                     value={input}
                     onChange={handleInputChange}
-                    placeholder="رقم الشركة (6 أرقام) أو الاسم الثلاثي"
+                    placeholder="رقم العضوية او رقم العامل (6 أرقام) أو الاسم الثلاثي"
                     dir={isNumericInput ? 'ltr' : 'rtl'}
                     className={`input-field text-center text-lg sm:text-xl md:text-2xl font-black tracking-wider sm:tracking-widest placeholder:text-sm sm:placeholder:text-base md:placeholder:text-lg placeholder:font-normal placeholder:tracking-normal ${
                       isNumericInput ? '' : 'text-right'
@@ -192,7 +187,7 @@ const Election = () => {
                   <div className="flex items-center justify-between mt-2 text-xs">
                     {trimmedInput.length === 0 ? (
                       <span className="text-gray-400">
-                        اكتب رقم الشركة أو الاسم الثلاثي
+                        اكتب رقم العضوية او رقم العامل أو الاسم الثلاثي
                       </span>
                     ) : isNumericInput ? (
                       <>
@@ -260,7 +255,7 @@ const Election = () => {
               <div className="bg-gray-50 rounded-2xl p-6 mb-6 space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <InfoRow icon={<FaUser />} label="الاسم" value={member.name} />
-                  <InfoRow icon={<FaHashtag />} label="رقم الشركة" value={member.companyNumber} ltr />
+                  <InfoRow icon={<FaHashtag />} label="رقم او رقم العامل او الاسم ثلاثي أو رقم العضوية" value={member.companyNumber} ltr />
                   <InfoRow
                     icon={<FaUsers />}
                     label="نوع العضوية"
