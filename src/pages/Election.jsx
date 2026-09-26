@@ -20,6 +20,13 @@ const Election = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
+  // 🔍 تحديد نوع البحث: رقم عضوية (6 أرقام) أم اسم ثلاثي
+  const isNumericInput = /^\d+$/.test(input.trim());
+  const isMembershipNumber = isNumericInput && input.trim().length === 6;
+  const isNameSearch =
+    !isNumericInput &&
+    input.trim().split(/\s+/).filter(Boolean).length >= 3;
+
   const handleSearch = async (e) => {
     e.preventDefault();
     setError('');
@@ -28,16 +35,29 @@ const Election = () => {
     setPreviousChoice(null);
     setWillAttend(null);
 
-    const cleaned = input.replace(/\D/g, '');
-    if (cleaned.length !== 6) {
-      setError('يجب إدخال 6 أرقام بالضبط — مثال: 000029');
-      toast.error('يجب إدخال 6 أرقام بالضبط');
-      return;
+    const trimmed = input.trim();
+
+    // التحقق من صحة المدخلات
+    if (isNumericInput) {
+      const cleaned = trimmed.replace(/\D/g, '');
+      if (cleaned.length !== 6) {
+        setError('يجب إدخال 6 أرقام بالضبط — مثال: 000029');
+        toast.error('يجب إدخال 6 أرقام بالضبط');
+        return;
+      }
+    } else {
+      const words = trimmed.split(/\s+/).filter(Boolean);
+      if (words.length < 3) {
+        setError('يجب إدخال الاسم الثلاثي كاملاً (3 كلمات على الأقل)');
+        toast.error('يجب إدخال الاسم الثلاثي كاملاً');
+        return;
+      }
     }
 
     setLoading(true);
     try {
-      const { data } = await electionAPI.searchMember({ input: cleaned });
+      // نرسل المدخل كما هو — الباك إند يتعرف تلقائياً على النوع
+      const { data } = await electionAPI.searchMember({ input: trimmed });
       setMember(data.member);
       setAlreadyRegistered(data.alreadyRegistered);
       setPreviousChoice(data.previousChoice);
@@ -107,17 +127,17 @@ const Election = () => {
           </div>
         </div>
 
-     <div className="bg-red-50 border-2 border-red-400 rounded-2xl p-5 mb-6 flex items-start gap-3 animate-pulse-slow">
-  <FaExclamationTriangle className="text-red-600 text-2xl flex-shrink-0 mt-0.5" />
-  <div>
-    <p className="font-black text-red-800 mb-1">⚠️ ملاحظة مهمة</p>
-    <p className="text-red-700 text-sm leading-relaxed font-bold">
-      هذا التسجيل <strong>لتأكيد حضور الانتخابات فقط</strong> — لتحديد نقاط التجمع ومعرفة مكان اللجنة.
-      <br />
-      هذا <strong>ليس إجراء الانتخابات نفسها</strong>، بل خطوة تحضيرية لتنظيم الحضور.
-    </p>
-  </div>
-</div>
+        <div className="bg-red-50 border-2 border-red-400 rounded-2xl p-5 mb-6 flex items-start gap-3 animate-pulse-slow">
+          <FaExclamationTriangle className="text-red-600 text-2xl flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="font-black text-red-800 mb-1">⚠️ ملاحظة مهمة</p>
+            <p className="text-red-700 text-sm leading-relaxed font-bold">
+              هذا التسجيل <strong>لتأكيد حضور الانتخابات فقط</strong> — لتحديد نقاط التجمع ومعرفة مكان اللجنة.
+              <br />
+              هذا <strong>ليس إجراء الانتخابات نفسها</strong>، بل خطوة تحضيرية لتنظيم الحضور.
+            </p>
+          </div>
+        </div>
 
         <div className="bg-white rounded-3xl shadow-xl p-6 md:p-10">
           {step === 'search' && (
@@ -128,7 +148,7 @@ const Election = () => {
                 </div>
                 <div>
                   <h2 className="text-xl md:text-2xl font-black text-primary">ابحث عن بياناتك</h2>
-                  <p className="text-sm text-gray-500">أدخل رقم العضوية للتحقق من عضويتك</p>
+                  <p className="text-sm text-gray-500">ابحث برقم العضوية أو بالاسم الثلاثي</p>
                 </div>
               </div>
 
@@ -142,36 +162,64 @@ const Election = () => {
               <form onSubmit={handleSearch} className="space-y-6">
                 <div>
                   <label className="block font-bold text-gray-700 mb-2">
-                    رقم العضوية *
+                    رقم العضوية أو الاسم الثلاثي *
                   </label>
                   <p className="text-xs text-gray-500 mb-3">
-                    أدخل 6 أرقام بالضبط — مثال: 000029
+                    أدخل 6 أرقام (مثال: 000029) <strong>أو</strong> الاسم الثلاثي كاملاً (مثال: أحمد محمد علي)
                   </p>
-                <input
-  type="text"
-  inputMode="numeric"
-  value={input}
-  onChange={(e) => setInput(e.target.value.replace(/\D/g, '').slice(0, 6))}
-  placeholder="أدخل رقم العضوية (6 أرقام)"
-  dir="ltr"
-  className="input-field text-center text-lg sm:text-xl md:text-2xl font-black tracking-wider sm:tracking-widest placeholder:text-sm sm:placeholder:text-base md:placeholder:text-lg placeholder:font-normal placeholder:tracking-normal"
-  maxLength={6}
-  autoFocus
-/>
+
+                  <input
+                    type="text"
+                    inputMode={isNumericInput ? 'numeric' : 'text'}
+                    value={input}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      // إذا كان رقمياً، نسمح بـ 6 أرقام فقط
+                      if (/^\d*$/.test(val)) {
+                        setInput(val.slice(0, 6));
+                      } else {
+                        setInput(val);
+                      }
+                    }}
+                    placeholder="رقم العضوية (6 أرقام) أو الاسم الثلاثي"
+                    dir={isNumericInput ? 'ltr' : 'rtl'}
+                    className={`input-field text-center text-lg sm:text-xl md:text-2xl font-black tracking-wider sm:tracking-widest placeholder:text-sm sm:placeholder:text-base md:placeholder:text-lg placeholder:font-normal placeholder:tracking-normal ${
+                      isNumericInput ? '' : 'text-right'
+                    }`}
+                    maxLength={isNumericInput ? 6 : 60}
+                    autoFocus
+                  />
+
                   <div className="flex items-center justify-between mt-2 text-xs">
-                    <span className="text-gray-500">{input.length} / 6</span>
-                    {input.length === 6 && (
-                      <span className="text-green-600 font-bold">✅ جاهز للبحث</span>
-                    )}
-                    {input.length > 0 && input.length < 6 && (
-                      <span className="text-yellow-600 font-bold">⚠️ يجب إدخال 6 أرقام</span>
+                    {isNumericInput ? (
+                      <>
+                        <span className="text-gray-500">{input.length} / 6</span>
+                        {input.length === 6 && (
+                          <span className="text-green-600 font-bold">✅ جاهز للبحث</span>
+                        )}
+                        {input.length > 0 && input.length < 6 && (
+                          <span className="text-yellow-600 font-bold">⚠️ يجب إدخال 6 أرقام</span>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-gray-500">
+                          {input.trim().split(/\s+/).filter(Boolean).length} كلمات
+                        </span>
+                        {isNameSearch && (
+                          <span className="text-green-600 font-bold">✅ جاهز للبحث</span>
+                        )}
+                        {input.trim().length > 0 && !isNameSearch && (
+                          <span className="text-yellow-600 font-bold">⚠️ يجب إدخال الاسم الثلاثي كاملاً</span>
+                        )}
+                      </>
                     )}
                   </div>
                 </div>
 
                 <button
                   type="submit"
-                  disabled={loading || input.length !== 6}
+                  disabled={loading || (!isMembershipNumber && !isNameSearch)}
                   className="w-full btn-primary flex items-center justify-center gap-2 disabled:opacity-50 py-4 text-lg"
                 >
                   {loading ? (
@@ -345,7 +393,6 @@ const Election = () => {
         </div>
 
         <div className="text-center mt-8 space-y-2">
-        
           <p className="text-gray-400 text-xs">
             © {new Date().getFullYear()} نادي المصرية للاتصالات - جميع الحقوق محفوظة
           </p>
