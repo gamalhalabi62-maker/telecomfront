@@ -7,20 +7,21 @@ const ROWS = [
   { point: 'الديوان العام', supervisor: 'مصطفى عدلي', phone: '01065277756' },
   { point: 'الديوان العام', supervisor: 'محمد صادق', phone: '01061141200' },
   { point: 'القرية الذكية', supervisor: 'احمد عافية', phone: '01060044880' },
-  { point:'القرية الذكية', supervisor: 'محمد عفيفي', phone: '01090198886' },
-  { point:'القرية الذكية', supervisor: 'محمد حمدى', phone: '01551066673' },
-  { point:'القرية الذكية', supervisor: 'محمد صبرى', phone: '01555155597' },
-  { point: 'الديوان العام', supervisor: 'وليد عز', phone: '01555951194' },
-  { point: 'الديوان العام', supervisor: 'محمد عابد', phone: '01555647075' },
-  { point: 'الدقى', supervisor: '', phone: '01024632333' },
-  { point: 'الدقى', supervisor: 'محمود شوقى', phone: '01000001401' },
-  { point: 'الدقى', supervisor: 'محمد لطفى', phone: '01550002595' },
+  { point: 'القرية الذكية', supervisor: 'محمد عفيفي', phone: '01090198886' },
+  { point: 'القرية الذكية', supervisor: 'محمد حمدى', phone: '01551066673' },
+  { point: 'القرية الذكية', supervisor: 'محمد صبرى', phone: '01555155597' },
+  { point: 'محطة مترو أرض المعارض', supervisor: 'وليد عز', phone: '01555951194' },
+  { point: 'الورش', supervisor: 'محمد عابد', phone: '01555647075' },
+  { point: 'الدقى', supervisor: 'محمود شوقي', phone: '01024632333' },
+  { point: 'المهندسين', supervisor: 'محمود شوقى', phone: '01000001401' },
+  { point: 'الجيزة', supervisor: 'محمود شوقي', phone: '01550002595' },
   { point: 'نصر 1', supervisor: 'إبراهيم السيسى', phone: '01551354888' },
   { point: 'نصر 2', supervisor: 'إبراهيم السيسى', phone: '01551354888' },
   { point: 'نصر 3', supervisor: 'إبراهيم السيسى', phone: '01551354888' },
   { point: 'نصر 4', supervisor: 'إبراهيم السيسى', phone: '01551354888' },
-  { point: 'السالم', supervisor: 'إبراهيم العاصى', phone: '01068195235' },
-  { point: 'النزهه', supervisor: 'إبراهيم العاصى', phone: '01068195235' },
+  { point: 'السلام', supervisor: 'إبراهيم العاصى', phone: '01068195235' },
+  { point: 'السلام', supervisor: 'عماد مسعد', phone: '01201715413' },
+  { point: 'النزهه', supervisor: 'كريم صابر', phone: '01068195235' },
   { point: 'العباسيه', supervisor: 'كريم صابر', phone: '01201715413' },
   { point: 'الماظه', supervisor: 'محمود فخرى', phone: '01555662070' },
   { point: 'أكتوبر', supervisor: 'على هاشم', phone: '01552344470' },
@@ -32,7 +33,7 @@ const ROWS = [
   { point: 'حلوان', supervisor: 'تامر عبد الصمد', phone: '01028885883' },
   { point: 'شبرا مصر', supervisor: 'محمد فاروق', phone: '01069700338' },
   { point: 'الزمالك', supervisor: 'وليد عبد العليم', phone: '01062342819' },
-  { point: 'طلعت حرب', supervisor: '', phone: '' },
+  { point: 'طلعت حرب', supervisor: 'غير متوفر', phone: '' },
   { point: 'الروضه', supervisor: 'مصطفى مكسر', phone: '01552010001' },
   { point: 'باب اللوق', supervisor: 'مصطفى مكسر', phone: '01552010001' },
   { point: 'حدائق حلوان', supervisor: 'مصطفى مكسر', phone: '01552010001' },
@@ -91,6 +92,7 @@ const BusGatheringPoints = () => {
     return POINT_COLORS[Math.abs(hash) % POINT_COLORS.length];
   };
 
+  // دمج المجموعات المتتالية التي تحمل نفس اسم النقطة بشكل صحيح
   const groupedRows = ROWS.reduce((acc, row) => {
     const lastGroup = acc[acc.length - 1];
     if (lastGroup && lastGroup.point === row.point) {
