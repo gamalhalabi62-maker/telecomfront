@@ -158,7 +158,6 @@ const Election = () => {
               يرجى تسجيل مشاركتكم في انتخابات الجمعية العمومية لنادي المصرية للاتصالات
             </p>
 
-            {/* ⭐ عرض ميعاد الانتخابات */}
             <div className="inline-flex items-center gap-2 mt-4 bg-white/15 backdrop-blur-sm border border-white/30 rounded-full px-5 py-2">
               <FaClock className="text-secondary" />
               <span className="font-bold text-sm md:text-base">
@@ -311,11 +310,12 @@ const Election = () => {
                     value={member.committeeNumber || 'لم يُحدد بعد'}
                     ltr
                   />
-                  {/* مكان اللجنة */}
+                  {/* ⭐ مكان اللجنة — رابط قابل للضغط يفتح الخريطة */}
                   <InfoRow
                     icon={<FaMapMarkerAlt />}
                     label="مكان اللجنة"
-                    value={member.committeeName || 'لم يُحدد بعد'}
+                    href={MAPS_URL}
+                    linkLabel="اضغط لعرض المقر على الخريطة"
                   />
                   {/* ⭐ ميعاد الانتخاب ثابت في الفرونت */}
                   <InfoRow
@@ -432,7 +432,6 @@ const Election = () => {
                       سيتم التواصل معكم لاحقاً بتفاصيل الموعد الرسمي للانتخابات.
                     </p>
 
-                    {/* ⭐ عرض رقم اللجنة + الميعاد في شاشة النجاح */}
                     {member && (
                       <div className="mt-3 space-y-1">
                         {member.committeeNumber && (
@@ -445,6 +444,16 @@ const Election = () => {
                           <FaClock className="text-red-600" />
                           <strong>ميعاد الانتخاب:</strong> {ELECTION_TIME}
                         </p>
+                        {/* ⭐ رابط مكان اللجنة */}
+                        <a
+                          href={MAPS_URL}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-red-700 text-sm font-bold flex items-center gap-2 underline decoration-dotted underline-offset-4 hover:text-red-900"
+                        >
+                          <FaMapMarkerAlt className="text-red-600" />
+                          <strong>مكان اللجنة:</strong> اضغط لعرض المقر على الخريطة
+                        </a>
                       </div>
                     )}
 
@@ -485,20 +494,33 @@ const Election = () => {
   );
 };
 
-const InfoRow = ({ icon, label, value, ltr }) => (
+// ⭐ InfoRow معدّل عشان يدعم روابط قابلة للضغط
+const InfoRow = ({ icon, label, value, ltr, href, linkLabel }) => (
   <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-gray-100">
     <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary flex-shrink-0">
       {icon}
     </div>
     <div className="min-w-0 flex-1">
       <p className="text-xs text-gray-500 font-medium">{label}</p>
-      <p
-        className="font-bold text-primary truncate"
-        dir={ltr ? 'ltr' : 'rtl'}
-        style={ltr ? { textAlign: 'right' } : {}}
-      >
-        {value}
-      </p>
+      {href ? (
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-bold text-primary hover:text-primary-dark underline decoration-dotted underline-offset-4 flex items-center gap-1.5 truncate"
+        >
+          <FaMapPin className="text-primary flex-shrink-0" />
+          <span className="truncate">{linkLabel || value || 'عرض على الخريطة'}</span>
+        </a>
+      ) : (
+        <p
+          className="font-bold text-primary truncate"
+          dir={ltr ? 'ltr' : 'rtl'}
+          style={ltr ? { textAlign: 'right' } : {}}
+        >
+          {value}
+        </p>
+      )}
     </div>
   </div>
 );
