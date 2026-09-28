@@ -1,11 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   FaVoteYea, FaSearch, FaCheckCircle, FaTimesCircle,
-  FaUser, FaPhone, FaMapMarkerAlt, FaHashtag, FaSpinner,
-  FaInfoCircle, FaUsers, FaExclamationTriangle, FaShieldAlt,
+  FaUser, FaHashtag, FaSpinner, FaClock, FaMapMarkerAlt,
+  FaInfoCircle, FaUsers, FaExclamationTriangle, FaMapPin,
 } from 'react-icons/fa';
 import { electionAPI } from '../services/api';
 import { useToast } from '../context/ToastContext';
+
+const MAPS_URL = 'https://maps.app.goo.gl/sooKnHng1tPsGam68?g_st=iwb';
 
 const Election = () => {
   const toast = useToast();
@@ -19,18 +21,34 @@ const Election = () => {
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const autoResetTimer = useRef(null);
 
   const trimmedInput = input.trim();
   const isNumericInput = /^\d+$/.test(trimmedInput);
-  const isMembershipNumber = isNumericInput && trimmedInput.length === 6;
+  const isMembershipNumber = isNumericInput && trimmedInput.length >= 3;
   const nameWords = trimmedInput.split(/\s+/).filter(Boolean);
   const isNameSearch = !isNumericInput && nameWords.length >= 3;
+  const isReady = isMembershipNumber || isNameSearch;
+
+  useEffect(() => {
+    if (step === 'success') {
+      autoResetTimer.current = setTimeout(() => {
+        resetForm();
+      }, 10000);
+    }
+    return () => {
+      if (autoResetTimer.current) {
+        clearTimeout(autoResetTimer.current);
+        autoResetTimer.current = null;
+      }
+    };
+  }, [step]);
 
   const handleInputChange = (e) => {
     const val = e.target.value;
 
     if (/^\d+$/.test(val)) {
-      setInput(val.slice(0, 6));
+      setInput(val.slice(0, 17));
     } else {
       setInput(val);
     }
@@ -45,9 +63,14 @@ const Election = () => {
     setWillAttend(null);
 
     if (isNumericInput) {
-      if (trimmedInput.length !== 6) {
-        setError('يجب إدخال 6 أرقام بالضبط — مثال: 000029');
-        toast.error('يجب إدخال 6 أرقام بالضبط');
+      if (trimmedInput.length < 3) {
+        setError('يجب إدخال 3 أرقام على الأقل');
+        toast.error('يجب إدخال 3 أرقام على الأقل');
+        return;
+      }
+      if (trimmedInput.length > 17) {
+        setError('الرقم طويل جداً');
+        toast.error('الرقم طويل جداً');
         return;
       }
     } else {
@@ -101,6 +124,10 @@ const Election = () => {
   };
 
   const resetForm = () => {
+    if (autoResetTimer.current) {
+      clearTimeout(autoResetTimer.current);
+      autoResetTimer.current = null;
+    }
     setStep('search');
     setInput('');
     setMember(null);
@@ -130,15 +157,23 @@ const Election = () => {
           </div>
         </div>
 
-        <div className="bg-red-50 border-2 border-red-400 rounded-2xl p-5 mb-6 flex items-start gap-3 animate-pulse-slow">
+        <div className="bg-red-50 border-2 border-red-400 rounded-2xl p-5 mb-6 flex items-start gap-3">
           <FaExclamationTriangle className="text-red-600 text-2xl flex-shrink-0 mt-0.5" />
-          <div>
+          <div className="flex-1">
             <p className="font-black text-red-800 mb-1">⚠️ ملاحظة مهمة</p>
             <p className="text-red-700 text-sm leading-relaxed font-bold">
               هذا التسجيل <strong>لتأكيد حضور الانتخابات فقط</strong> — لتحديد نقاط التجمع ومعرفة مكان اللجنة.
               <br />
               هذا <strong>ليس إجراء الانتخابات نفسها</strong>، بل خطوة تحضيرية لتنظيم الحضور.
             </p>
+            <a
+              href={MAPS_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 mt-3 bg-red-600 text-white px-4 py-2 rounded-lg font-bold text-sm hover:bg-red-700 transition"
+            >
+              <FaMapPin />
+اضغط هنا لمعرفة مكان الانتخابات ♡            </a>
           </div>
         </div>
 
@@ -151,7 +186,7 @@ const Election = () => {
                 </div>
                 <div>
                   <h2 className="text-xl md:text-2xl font-black text-primary">ابحث عن بياناتك</h2>
-                  <p className="text-sm text-gray-500">ابحث برقم العضوية أو رقم العامل أو بالاسم الثلاثي</p>
+                  <p className="text-sm text-gray-500"></p>
                 </div>
               </div>
 
@@ -165,55 +200,36 @@ const Election = () => {
               <form onSubmit={handleSearch} className="space-y-6">
                 <div>
                   <label className="block font-bold text-gray-700 mb-2">
-                    رقم العضوية او رقم العامل  أو الاسم الثلاثي *
+                    رقم العامل أو رقم العضوية أو الاسم الثلاثي *
                   </label>
-                  <p className="text-xs text-gray-500 mb-3">
-                    أدخل 6 أرقام (مثال: 000029) <strong>أو</strong> الاسم الثلاثي كاملاً (مثال: أحمد محمد علي)
-                  </p>
 
                   <input
                     type="text"
                     value={input}
                     onChange={handleInputChange}
-                    placeholder="رقم العضوية او رقم العامل (6 أرقام) أو الاسم الثلاثي"
+                    placeholder="اكتب الرقم أو الاسم الثلاثي"
                     dir={isNumericInput ? 'ltr' : 'rtl'}
                     className={`input-field text-center text-lg sm:text-xl md:text-2xl font-black tracking-wider sm:tracking-widest placeholder:text-sm sm:placeholder:text-base md:placeholder:text-lg placeholder:font-normal placeholder:tracking-normal ${
                       isNumericInput ? '' : 'text-right'
                     }`}
-                    maxLength={isNumericInput ? 6 : 60}
+                    maxLength={isNumericInput ? 17 : 60}
                     autoFocus
                   />
 
-                  <div className="flex items-center justify-between mt-2 text-xs">
-                    {trimmedInput.length === 0 ? (
-                      <span className="text-gray-400">
-                        اكتب رقم العضوية او رقم العامل أو الاسم الثلاثي
-                      </span>
-                    ) : isNumericInput ? (
-                      <>
-                        <span className="text-gray-500">{input.length} / 6</span>
-                        {input.length === 6 ? (
-                          <span className="text-green-600 font-bold">✅ جاهز للبحث</span>
-                        ) : (
-                          <span className="text-yellow-600 font-bold">⚠️ يجب إدخال 6 أرقام</span>
-                        )}
-                      </>
-                    ) : (
-                      <>
-                        <span className="text-gray-500">{nameWords.length} كلمات</span>
-                        {isNameSearch ? (
-                          <span className="text-green-600 font-bold">✅ جاهز للبحث</span>
-                        ) : (
-                          <span className="text-yellow-600 font-bold">⚠️ يجب إدخال الاسم الثلاثي كاملاً</span>
-                        )}
-                      </>
-                    )}
-                  </div>
+                  <p className="text-xs text-gray-500 mt-2 text-center">
+                    {trimmedInput.length === 0
+                      ? 'اكتب رقم العامل أو رقم العضوية — أو الاسم الثلاثي كاملاً'
+                      : isReady
+                      ? '✅ جاهز'
+                      : isNumericInput
+                      ? '⚠️ 3 أرقام على الأقل'
+                      : '⚠️ اكتب الاسم الثلاثي كاملاً'}
+                  </p>
                 </div>
 
                 <button
                   type="submit"
-                  disabled={loading || (!isMembershipNumber && !isNameSearch)}
+                  disabled={loading || !isReady}
                   className="w-full btn-primary flex items-center justify-center gap-2 disabled:opacity-50 py-4 text-lg"
                 >
                   {loading ? (
@@ -255,15 +271,33 @@ const Election = () => {
               <div className="bg-gray-50 rounded-2xl p-6 mb-6 space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <InfoRow icon={<FaUser />} label="الاسم" value={member.name} />
-                  <InfoRow icon={<FaHashtag />} label="رقم او رقم العامل او الاسم ثلاثي أو رقم العضوية" value={member.companyNumber} ltr />
+                  <InfoRow
+                    icon={<FaHashtag />}
+                    label="رقم العامل"
+                    value={member.companyNumber}
+                    ltr
+                  />
+                  <InfoRow
+                    icon={<FaHashtag />}
+                    label="رقم العضوية"
+                    value={member.membershipNumber}
+                    ltr
+                  />
                   <InfoRow
                     icon={<FaUsers />}
                     label="نوع العضوية"
                     value={member.membershipType === 'working' ? '👷 عامل' : '👴 بالمعاش'}
                   />
-                  <InfoRow icon={<FaPhone />} label="الهاتف" value={member.phone || 'غير مسجل'} ltr />
-                  <InfoRow icon={<FaMapMarkerAlt />} label="مكان اللجنة" value={member.committeeName || 'لم يُحدد بعد'} />
-                  <InfoRow icon={<FaHashtag />} label="رقم اللجنة" value={member.committeeNumber || 'لم يُحدد بعد'} />
+                  <InfoRow
+                    icon={<FaMapMarkerAlt />}
+                    label="مكان اللجنة"
+                    value={member.committeeName || 'لم يُحدد بعد'}
+                  />
+                  <InfoRow
+                    icon={<FaClock />}
+                    label="توقيت الانتخاب"
+                    value={member.electionTime || 'لم يُحدد بعد'}
+                  />
                 </div>
               </div>
 
@@ -362,7 +396,7 @@ const Election = () => {
               <div className="bg-red-50 border-2 border-red-300 rounded-2xl p-5 mb-8 max-w-2xl mx-auto text-right">
                 <div className="flex items-start gap-3">
                   <FaExclamationTriangle className="text-red-600 text-xl flex-shrink-0 mt-0.5" />
-                  <div>
+                  <div className="flex-1">
                     <p className="font-black text-red-700 mb-2">تنبيه مهم</p>
                     <p className="text-red-600 text-sm leading-relaxed">
                       هذا التسجيل <strong>لتأكيد حضور الانتخابات فقط</strong> — بهدف تحديد نقاط التجمع
@@ -372,6 +406,15 @@ const Election = () => {
                       <strong>هذا ليس إجراء الانتخابات نفسها</strong>، بل خطوة تحضيرية لتنظيم الحضور.
                       سيتم التواصل معكم لاحقاً بتفاصيل الموعد الرسمي للانتخابات.
                     </p>
+                    <a
+                      href={MAPS_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 mt-3 bg-red-600 text-white px-4 py-2 rounded-lg font-bold text-sm hover:bg-red-700 transition"
+                    >
+                      <FaMapPin />
+اضغط هنا لمعرفة مكان الانتخابات ♡            
+                    </a>
                   </div>
                 </div>
               </div>
@@ -380,8 +423,7 @@ const Election = () => {
                 onClick={resetForm}
                 className="btn-primary inline-flex items-center gap-2"
               >
-                تسجيل عضو آخر
-              </button>
+رجوع              </button>
             </div>
           )}
         </div>

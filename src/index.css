@@ -14,11 +14,20 @@ html {
   direction: rtl;
   font-family: 'Cairo', sans-serif;
   scroll-behavior: smooth;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 body {
   background-color: #F5F5F5;
   color: #212121;
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+#root {
+  width: 100%;
   min-height: 100vh;
 }
 
@@ -36,7 +45,6 @@ body {
   background: #6A1B9A;
 }
 
-/* Utility Classes */
 .container-custom {
   @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
 }
@@ -104,6 +112,7 @@ body {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
 @keyframes progress-glow {
   0%, 100% { box-shadow: 0 0 10px rgba(251, 192, 45, 0.5); }
   50% { box-shadow: 0 0 20px rgba(251, 192, 45, 0.9); }
@@ -179,10 +188,10 @@ body {
 }
 
 @keyframes pulse-glow {
-  0%, 100% { 
+  0%, 100% {
     box-shadow: 0 0 0 0 rgba(74, 20, 140, 0.7);
   }
-  50% { 
+  50% {
     box-shadow: 0 0 0 15px rgba(74, 20, 140, 0);
   }
 }
@@ -244,6 +253,7 @@ html {
     opacity: 0;
   }
 }
+
 @keyframes slideInFromRight {
   from {
     opacity: 0;
@@ -333,6 +343,7 @@ html {
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+
 @keyframes live-pulse {
   0%, 100% {
     opacity: 1;
@@ -383,6 +394,7 @@ html {
 .countdown-glow {
   animation: countdown-glow 2s ease-in-out infinite;
 }
+
 @keyframes toast-progress {
   from { width: 100%; }
   to { width: 0%; }
@@ -402,6 +414,7 @@ html {
 .animate-slide-in-top {
   animation: slide-in-top 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
 @keyframes ticker-scroll {
   0% {
     transform: translateX(0);
@@ -471,7 +484,6 @@ html {
     opacity: 1;
   }
 }
-
 
 .loading-spin-slow {
   animation: ball-spin 3s linear infinite;

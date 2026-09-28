@@ -38,10 +38,10 @@ const Home = () => {
   const otherNews = latestNews.slice(0, 6);
 
   const categories = [
-    { slug: 'football', name: 'كرة القدم', icon: <FaFutbol />, color: 'from-green-500 to-green-700' },
-    { slug: 'club', name: 'أخبار النادي', icon: <FaNewspaper />, color: 'from-primary to-primary-dark' },
-    { slug: 'elections', name: 'الانتخابات', icon: <FaUsers />, color: 'from-orange-500 to-red-600' },
-    { slug: 'academy', name: 'الأكاديمية', icon: <FaTrophy />, color: 'from-blue-500 to-blue-700' },
+    { name: 'كرة القدم', icon: <FaFutbol />, to: '/news', color: 'from-green-500 to-green-700' },
+    { name: 'أخبار النادي', icon: <FaNewspaper />, to: '/news', color: 'from-primary to-primary-dark' },
+    { name: 'الانتخابات', icon: <FaUsers />, to: '/elections', color: 'from-orange-500 to-red-600' },
+    { name: 'الأكاديمية', icon: <FaTrophy />, to: '/news', color: 'from-blue-500 to-blue-700' },
   ];
 
   if (loading) return <Loading />;
@@ -95,8 +95,8 @@ const Home = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {categories.map((cat) => (
             <Link
-              key={cat.slug}
-              to={`/news?category=${cat.slug}`}
+              key={cat.name}
+              to={cat.to}
               className={`bg-gradient-to-br ${cat.color} text-white p-6 rounded-xl text-center hover:shadow-2xl hover:scale-105 transition-all duration-300 group`}
             >
               <div className="text-5xl mb-3 group-hover:scale-110 transition">{cat.icon}</div>
@@ -108,7 +108,7 @@ const Home = () => {
 
       <VideoBar />
 
-      <section className="container-custom py-12">
+      <section id="news-section" className="container-custom py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
             <div className="flex justify-between items-center mb-6">

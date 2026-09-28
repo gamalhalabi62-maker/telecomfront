@@ -1,4 +1,4 @@
-import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 import {
   FaBars, FaTimes, FaUser, FaSignOutAlt, FaEnvelope,
@@ -21,8 +21,8 @@ const Navbar = () => {
 
   const navLinks = [
     { to: '/', label: 'الرئيسية', icon: <FaHome /> },
-    { to: '/#news-section', label: 'الأخبار', icon: <FaNewspaper />, hash: 'news-section' },
-    { to: '/second-division', label: 'دوري المحترفين', icon: <FaTrophy />, highlight: true },
+    { to: '/news', label: 'الأخبار', icon: <FaNewspaper /> },
+    { to: '/second-division', label: 'دوري المحترفين', icon: <FaTrophy /> },
     { to: '/matches', label: 'المباريات', icon: <FaCalendarAlt /> },
     { to: '/videos', label: 'الفيديوهات', icon: <FaVideo /> },
     { to: '/team', label: 'الفريق', icon: <FaUsers /> },
@@ -64,33 +64,7 @@ const Navbar = () => {
     navigate('/');
   };
 
-  const handleNavClick = (e, link) => {
-    if (link.hash) {
-      e.preventDefault();
-      const scrollToSection = () => {
-        const element = document.getElementById(link.hash);
-        if (element) {
-          const offset = 90;
-          const elementPosition = element.getBoundingClientRect().top + window.scrollY;
-          window.scrollTo({
-            top: elementPosition - offset,
-            behavior: 'smooth',
-          });
-        }
-      };
-
-      if (location.pathname === '/') {
-        scrollToSection();
-      } else {
-        navigate('/');
-        setTimeout(scrollToSection, 350);
-      }
-      setIsOpen(false);
-    }
-  };
-
   const isLinkActive = (link) => {
-    if (link.hash) return false;
     if (link.to === '/') return location.pathname === '/';
     return location.pathname === link.to;
   };
@@ -112,7 +86,7 @@ const Navbar = () => {
               to="/"
               className="flex items-center flex-shrink-0 hover:opacity-90 transition py-2"
             >
-              <Logo size={scrolled ? 'sm' : 'md'} />
+              <Logo size={scrolled ? 'sm' : 'md'} linkTo={null} />
             </Link>
 
             <div className="hidden lg:flex items-center gap-0.5 flex-1 justify-center">
@@ -122,20 +96,14 @@ const Navbar = () => {
                   <Link
                     key={link.to}
                     to={link.to}
-                    onClick={(e) => handleNavClick(e, link)}
                     className={`relative px-2 xl:px-3 py-2 rounded-lg font-bold text-xs xl:text-sm transition-all duration-200 flex items-center gap-1.5 whitespace-nowrap ${
                       active
                         ? 'text-secondary bg-white/10'
-                        : link.highlight
-                        ? 'text-secondary/90 hover:text-secondary hover:bg-white/5'
                         : 'text-white/90 hover:text-secondary hover:bg-white/5'
                     }`}
                   >
                     <span className="text-[10px] xl:text-xs">{link.icon}</span>
                     <span>{link.label}</span>
-                    {link.highlight && !active && (
-                      <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-secondary rounded-full animate-pulse" />
-                    )}
                     {active && (
                       <span className="absolute bottom-0 right-2 left-2 h-0.5 bg-secondary rounded-full" />
                     )}
@@ -295,7 +263,7 @@ const Navbar = () => {
         } overflow-y-auto`}
       >
         <div className="sticky top-0 bg-primary border-b border-white/10 p-4 flex items-center justify-between z-10">
-          <Logo size="sm" />
+          <Logo size="sm" linkTo={null} />
           <button
             onClick={() => setIsOpen(false)}
             className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white/10 transition text-xl"
@@ -328,7 +296,7 @@ const Navbar = () => {
                 <Link
                   key={link.to}
                   to={link.to}
-                  onClick={(e) => handleNavClick(e, link)}
+                  onClick={() => setIsOpen(false)}
                   className={`flex items-center gap-3 py-3 px-3 rounded-lg font-bold transition-all duration-200 ${
                     active ? 'bg-secondary text-primary' : 'hover:bg-white/10'
                   }`}
@@ -402,7 +370,7 @@ const Navbar = () => {
               <Link
                 to="/login"
                 onClick={() => setIsOpen(false)}
-                className="block bg-secondary text-primary py-3 px-4 rounded-lg font-bold text-center hover:bg-secondary/90 transition"
+                className="bg-secondary text-primary block py-3 px-4 rounded-lg font-bold text-center hover:bg-secondary/90 transition"
               >
                 تسجيل الدخول
               </Link>
