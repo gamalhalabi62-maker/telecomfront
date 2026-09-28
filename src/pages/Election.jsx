@@ -3,12 +3,14 @@ import {
   FaVoteYea, FaSearch, FaCheckCircle, FaTimesCircle,
   FaUser, FaHashtag, FaSpinner, FaClock, FaMapMarkerAlt,
   FaInfoCircle, FaUsers, FaExclamationTriangle, FaMapPin,
+  FaLayerGroup,
 } from 'react-icons/fa';
 import { electionAPI } from '../services/api';
 import { useToast } from '../context/ToastContext';
 import BusGatheringPoints from '../components/BusGatheringPoints';
 
 const MAPS_URL = 'https://maps.app.goo.gl/sooKnHng1tPsGam68?g_st=iwb';
+const ELECTION_TIME = 'من 10 صباحاً حتى 7 مساءً';
 
 const Election = () => {
   const toast = useToast();
@@ -155,6 +157,14 @@ const Election = () => {
             <p className="text-gray-200 text-base md:text-lg max-w-2xl mx-auto">
               يرجى تسجيل مشاركتكم في انتخابات الجمعية العمومية لنادي المصرية للاتصالات
             </p>
+
+            {/* ⭐ عرض ميعاد الانتخابات */}
+            <div className="inline-flex items-center gap-2 mt-4 bg-white/15 backdrop-blur-sm border border-white/30 rounded-full px-5 py-2">
+              <FaClock className="text-secondary" />
+              <span className="font-bold text-sm md:text-base">
+                ميعاد الانتخابات: {ELECTION_TIME}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -166,6 +176,10 @@ const Election = () => {
               هذا التسجيل <strong>لتأكيد حضور الانتخابات فقط</strong> — لتحديد نقاط التجمع ومعرفة مكان اللجنة.
               <br />
               هذا <strong>ليس إجراء الانتخابات نفسها</strong>، بل خطوة تحضيرية لتنظيم الحضور.
+            </p>
+            <p className="text-red-700 text-sm leading-relaxed font-bold mt-2 flex items-center gap-2">
+              <FaClock className="text-red-600" />
+              <strong>ميعاد الانتخابات:</strong> {ELECTION_TIME}
             </p>
             <a
               href={MAPS_URL}
@@ -290,15 +304,24 @@ const Election = () => {
                     label="نوع العضوية"
                     value={member.membershipType === 'working' ? '👷 عامل' : '👴 بالمعاش'}
                   />
+                  {/* ⭐ رقم اللجنة */}
+                  <InfoRow
+                    icon={<FaLayerGroup />}
+                    label="رقم اللجنة"
+                    value={member.committeeNumber || 'لم يُحدد بعد'}
+                    ltr
+                  />
+                  {/* مكان اللجنة */}
                   <InfoRow
                     icon={<FaMapMarkerAlt />}
                     label="مكان اللجنة"
                     value={member.committeeName || 'لم يُحدد بعد'}
                   />
+                  {/* ⭐ ميعاد الانتخاب ثابت في الفرونت */}
                   <InfoRow
                     icon={<FaClock />}
-                    label="توقيت الانتخاب"
-                    value={member.electionTime || 'لم يُحدد بعد'}
+                    label="ميعاد الانتخاب"
+                    value={ELECTION_TIME}
                   />
                 </div>
               </div>
@@ -408,6 +431,23 @@ const Election = () => {
                       <strong>هذا ليس إجراء الانتخابات نفسها</strong>، بل خطوة تحضيرية لتنظيم الحضور.
                       سيتم التواصل معكم لاحقاً بتفاصيل الموعد الرسمي للانتخابات.
                     </p>
+
+                    {/* ⭐ عرض رقم اللجنة + الميعاد في شاشة النجاح */}
+                    {member && (
+                      <div className="mt-3 space-y-1">
+                        {member.committeeNumber && (
+                          <p className="text-red-700 text-sm font-bold flex items-center gap-2">
+                            <FaLayerGroup className="text-red-600" />
+                            <strong>رقم اللجنة:</strong> {member.committeeNumber}
+                          </p>
+                        )}
+                        <p className="text-red-700 text-sm font-bold flex items-center gap-2">
+                          <FaClock className="text-red-600" />
+                          <strong>ميعاد الانتخاب:</strong> {ELECTION_TIME}
+                        </p>
+                      </div>
+                    )}
+
                     <a
                       href={MAPS_URL}
                       target="_blank"
