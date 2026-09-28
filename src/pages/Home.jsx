@@ -11,6 +11,7 @@ import BreakingSection from '../components/BreakingSection';
 import VideoBar from '../components/VideoBar';
 import Loading from '../components/Loading';
 import SecondDivisionSection from '../components/SecondDivisionSection';
+import BusGatheringPoints from '../components/BusGatheringPoints';
 
 const Home = () => {
   const [latestNews, setLatestNews] = useState([]);
@@ -143,6 +144,10 @@ const Home = () => {
       <SecondDivisionSection />
 
       <StatsSection />
+
+      <section className="container-custom py-12">
+        <BusGatheringPoints />
+      </section>
 
       <section className="container-custom py-16">
         <div className="bg-gradient-to-br from-primary to-primary-dark rounded-3xl p-8 md:p-16 text-center text-white relative overflow-hidden">

@@ -6,6 +6,7 @@ import {
 } from 'react-icons/fa';
 import { electionAPI } from '../services/api';
 import { useToast } from '../context/ToastContext';
+import BusGatheringPoints from '../components/BusGatheringPoints';
 
 const MAPS_URL = 'https://maps.app.goo.gl/sooKnHng1tPsGam68?g_st=iwb';
 
@@ -173,7 +174,8 @@ const Election = () => {
               className="inline-flex items-center gap-2 mt-3 bg-red-600 text-white px-4 py-2 rounded-lg font-bold text-sm hover:bg-red-700 transition"
             >
               <FaMapPin />
-اضغط هنا لمعرفة مكان الانتخابات ♡            </a>
+              اضغط هنا لمعرفة مكان الانتخابات
+            </a>
           </div>
         </div>
 
@@ -413,7 +415,7 @@ const Election = () => {
                       className="inline-flex items-center gap-2 mt-3 bg-red-600 text-white px-4 py-2 rounded-lg font-bold text-sm hover:bg-red-700 transition"
                     >
                       <FaMapPin />
-اضغط هنا لمعرفة مكان الانتخابات ♡            
+                      اضغط هنا لمعرفة مكان الانتخابات
                     </a>
                   </div>
                 </div>
@@ -423,10 +425,15 @@ const Election = () => {
                 onClick={resetForm}
                 className="btn-primary inline-flex items-center gap-2"
               >
-رجوع              </button>
+                رجوع
+              </button>
             </div>
           )}
         </div>
+
+        <section className="mt-8">
+          <BusGatheringPoints />
+        </section>
 
         <div className="text-center mt-8 space-y-2">
           <p className="text-gray-400 text-xs">
